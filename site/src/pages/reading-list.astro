@@ -1,0 +1,85 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { READING_LIST, ALL_REFS } from "../lib/reading-list";
+
+const loadBearingCount = ALL_REFS.filter((r) => r.loadBearing).length;
+---
+
+<BaseLayout
+  title="Reading list"
+  description="The 25 most load-bearing primary sources across all 10 dossiers, organized by thread. Read these and you'll have ground-truth on the empirical state of every claim."
+>
+  <article class="mx-auto max-w-wide px-6 py-12 lg:px-12 lg:py-20">
+    <header class="mx-auto max-w-prose">
+      <p class="font-sans text-xs uppercase tracking-[0.18em] text-ink-500">
+        {ALL_REFS.length} primary sources · {loadBearingCount} load-bearing
+      </p>
+      <h1 class="mt-4 font-serif text-4xl font-medium leading-[1.1] tracking-[-0.01em] text-ink-900 lg:text-5xl">
+        Curated reading list
+      </h1>
+      <p class="mt-5 font-serif text-prose-lg leading-relaxed text-ink-700">
+        These are the primary sources that recurred across multiple dossiers — the load-bearing references for verifying every verdict in this package. Read these and you'll have ground-truth on the empirical state of the field. Each dossier additionally lists 5–10 sources specific to its claim.
+      </p>
+      <p class="mt-3 font-sans text-sm italic text-ink-500">
+        ★ marks the "read this before…" papers — papers cited often enough that a single misreading would distort the whole package.
+      </p>
+    </header>
+
+    <div class="mx-auto mt-16 max-w-prose space-y-16">
+      {READING_LIST.map((thread) => (
+        <section>
+          <header class="mb-6">
+            <p class="font-sans text-xs uppercase tracking-[0.18em] text-accent-600">Thread</p>
+            <h2 class="mt-1 font-serif text-2xl font-medium text-ink-900">{thread.label}</h2>
+            <p class="mt-2 font-serif leading-relaxed text-ink-700">{thread.description}</p>
+          </header>
+
+          <ol class="space-y-5">
+            {thread.refs.map((ref, i) => {
+              const number = i + 1;
+              const href = ref.link
+                ? ref.link
+                : ref.arxiv
+                  ? `https://arxiv.org/abs/${ref.arxiv}`
+                  : ref.doi
+                    ? `https://doi.org/${ref.doi}`
+                    : null;
+              return (
+                <li class="flex gap-4">
+                  <span class="font-mono text-sm text-ink-400 pt-0.5">
+                    {String(number).padStart(2, "0")}
+                  </span>
+                  <div class="flex-1">
+                    <p class="font-serif text-ink-900">
+                      {ref.loadBearing && (
+                        <span aria-label="load-bearing" title="Load-bearing reference" class="mr-1.5 text-accent-600">★</span>
+                      )}
+                      <strong class="font-medium">{ref.authors}</strong>{" "}
+                      <span class="text-ink-500">({ref.year}).</span>{" "}
+                      {href ? (
+                        <a href={href} target="_blank" rel="noopener" class="italic">
+                          {ref.title}
+                        </a>
+                      ) : (
+                        <span class="italic">{ref.title}</span>
+                      )}{" "}
+                      <span class="text-ink-500">— {ref.venue}{ref.arxiv && `, arXiv:${ref.arxiv}`}.</span>
+                    </p>
+                    <p class="mt-1.5 font-serif text-sm leading-relaxed text-ink-600">{ref.annotation}</p>
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+      ))}
+    </div>
+
+    <aside class="mx-auto mt-16 max-w-prose rounded-lg border border-ink-400/20 bg-bone-50 p-6">
+      <p class="font-sans text-xs uppercase tracking-[0.18em] text-accent-600">A note on citation verification</p>
+      <p class="mt-2 font-serif leading-relaxed text-ink-700">
+        Several dossiers reference 2025–2026 arXiv papers. Given the publication speed in this field these dates are plausible, but a few citations to very recent papers may be agent-generated and should be verified before use in serious work. The papers listed above are older, well-established references that are independently verifiable.
+      </p>
+    </aside>
+  </article>
+</BaseLayout>

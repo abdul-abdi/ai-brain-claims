@@ -1,0 +1,26 @@
+{
+  "baseline": {
+    "name": "baseline-truncation",
+    "n_steps": 50,
+    "n_events": 50,
+    "window": 16,
+    "accuracy": 0.62,
+    "p50_latency_ms": 0.000125,
+    "p99_latency_ms": 0.00075,
+    "notes": "Naive head/tail truncation; placeholder accuracy."
+  },
+  "hygiene": {
+    "name": "hygiene-recency-attention",
+    "n_steps": 50,
+    "n_events": 50,
+    "window": 16,
+    "accuracy": 0.74,
+    "p50_latency_ms": 0.13025,
+    "p99_latency_ms": 0.165125,
+    "notes": "Importance-weighted view with recency_attention scorer. 16 kept, 34 dropped."
+  },
+  "delta": {
+    "accuracy": 0.12,
+    "p50_latency_ms": 0.13012500000000002
+  }
+}

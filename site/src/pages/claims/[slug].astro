@@ -1,0 +1,69 @@
+---
+import { getCollection, getEntry } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import VerdictPill from "../../components/VerdictPill.astro";
+import { CLAIMS } from "../../lib/verdicts";
+
+export async function getStaticPaths() {
+  const entries = await getCollection("claims");
+  return entries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+const data = entry.data;
+
+const claimSummary = CLAIMS.find((c) => c.id === entry.slug);
+
+const idx = CLAIMS.findIndex((c) => c.id === entry.slug);
+const prev = idx > 0 ? CLAIMS[idx - 1] : null;
+const next = idx < CLAIMS.length - 1 ? CLAIMS[idx + 1] : null;
+---
+
+<BaseLayout title={data.title} description={data.description} type="article">
+  <article class="mx-auto max-w-wide px-6 py-12 lg:px-12 lg:py-20">
+    <!-- Header -->
+    <header class="mx-auto max-w-prose">
+      <p class="font-sans text-xs uppercase tracking-[0.18em] text-ink-500">
+        Claim {String(data.number).padStart(2, "0")} · {data.thread}
+      </p>
+      <h1 class="mt-4 font-serif text-4xl font-medium leading-[1.1] tracking-[-0.01em] text-ink-900 lg:text-5xl">
+        {data.title}
+      </h1>
+      <p class="mt-5 font-serif text-prose-lg leading-relaxed text-ink-700">
+        {data.description}
+      </p>
+      <div class="mt-6 flex flex-wrap items-center gap-4 font-sans text-sm text-ink-600">
+        <VerdictPill verdict={data.verdict} size="lg" showDescription />
+        <span class="text-ink-400">·</span>
+        <span>Lenses: <strong class="text-ink-900">{data.personas.join(" + ")}</strong></span>
+        <span class="text-ink-400">·</span>
+        <span>{data.date}</span>
+      </div>
+    </header>
+
+    <!-- Body -->
+    <div class="mx-auto mt-14 max-w-prose prose-claim font-serif text-ink-800">
+      <Content />
+    </div>
+
+    <!-- Pager -->
+    <nav class="mx-auto mt-20 grid max-w-prose gap-3 border-t border-ink-400/20 pt-8 font-sans text-sm sm:grid-cols-2">
+      {prev ? (
+        <a href={`/claims/${prev.id}`} class="group rounded border border-ink-400/20 bg-bone-50 p-4 no-underline transition-colors hover:border-accent/50">
+          <p class="text-xs text-ink-500">← Previous</p>
+          <p class="mt-1 font-serif text-ink-900">{String(prev.number).padStart(2, "0")} · {prev.shortTitle}</p>
+        </a>
+      ) : <span></span>}
+      {next ? (
+        <a href={`/claims/${next.id}`} class="group rounded border border-ink-400/20 bg-bone-50 p-4 text-right no-underline transition-colors hover:border-accent/50">
+          <p class="text-xs text-ink-500">Next →</p>
+          <p class="mt-1 font-serif text-ink-900">{String(next.number).padStart(2, "0")} · {next.shortTitle}</p>
+        </a>
+      ) : <span></span>}
+    </nav>
+  </article>
+</BaseLayout>

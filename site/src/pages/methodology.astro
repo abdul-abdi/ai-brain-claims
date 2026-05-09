@@ -1,0 +1,82 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Methodology"
+  description="How the 10 claims were generated, validated, and adjudicated — the process behind the verdicts."
+>
+  <article class="mx-auto max-w-wide px-6 py-12 lg:px-12 lg:py-20">
+    <header class="mx-auto max-w-prose">
+      <p class="font-sans text-xs uppercase tracking-[0.18em] text-ink-500">Process</p>
+      <h1 class="mt-4 font-serif text-4xl font-medium leading-[1.1] tracking-[-0.01em] text-ink-900 lg:text-5xl">
+        Methodology
+      </h1>
+      <p class="mt-5 font-serif text-prose-lg leading-relaxed text-ink-700">
+        Why the verdicts can be trusted as much as their evidence will allow — and where to push back.
+      </p>
+    </header>
+
+    <section class="mx-auto mt-14 max-w-prose prose-claim font-serif text-ink-800">
+      <h2>One sentence</h2>
+      <p>
+        Generate ten ambitious hypotheses spanning AI ↔ brain, formulate each with a strong form (theory-grade equivalence) and an implicit weak form (the underlying engineering or algorithmic intuition), then dispatch parallel adversarial-validation agents that surface supporting and contradicting evidence, apply two analytical lenses from a persona roster, articulate a steelman counterargument, and commit to a verdict.
+      </p>
+
+      <h2>Stage 1 — Hypothesis generation</h2>
+      <p>
+        The ten claims were chosen to span four sub-domains (memory, attention/architecture, metacognition, social cognition) and to be deliberately <em>over</em>-strong — to fail on the strong form so the weak form's structure could be examined cleanly. None were chosen because they were likely to be vindicated; several were chosen because they were likely to be unfalsifiable, and that itself is informative.
+      </p>
+
+      <h2>Stage 2 — Adversarial research per claim</h2>
+      <p>
+        Ten parallel research agents (one per claim) executed:
+      </p>
+      <ul>
+        <li>8–12 web searches across peer-reviewed neuroscience, ML conferences, arXiv, and credible commentary</li>
+        <li>Surfacing of 4–6 supporting and 4–6 contradicting sources, plus 1–2 active-debate references</li>
+        <li>Application of two analytical lenses from a persona roster (Karpathy, Joscha Bach, Hickey, Carmack, Bret Victor, Bryan Cantrill, Ayanokoji), with attention to each persona's actual published positions</li>
+        <li>Explicit steelman counterargument</li>
+        <li>Verdict ∈ {`{`} VINDICATED, PLAUSIBLE, CONTESTED, REFUTED, UNFALSIFIABLE {`}`} with justification of what would change it</li>
+        <li>5–10 papers-to-read with annotations</li>
+      </ul>
+      <p>
+        Each dossier targeted 1,800–2,500 words. The full text is in <code>~/Brain/wiki/research/2026-05-09-ai-brain-context/</code> for the author and is mirrored as MDX into <code>site/src/content/claims/</code>.
+      </p>
+
+      <h2>Stage 3 — Synthesis</h2>
+      <p>
+        After the 10 dossiers returned, a synthesis pass identified five recurring failure modes (Marr-level confusion, load-bearing strong words, confirmation-bias trap, confounded causal channels, partial unfalsifiability) and four cross-cutting threads (Memory & Context, Architecture & Computation, Metacognition & Self-Model, Social & Identity). The convergent verdict pattern (0/10 vindicated, 0/10 cleanly refuted, all 10 in CONTESTED or SPLIT) emerged directly from the dossier-by-dossier process — it was not designed in.
+      </p>
+
+      <h2>Stage 4 — Product-surface stress test</h2>
+      <p>
+        The strongest engineering surface across the package (claim 9: active forgetting in agent context-window management) was developed into a product candidate and put through a 4-persona roundtable in full mode (Round 1 independent takes + Round 2 forced cross-examination + neutral synthesis). Panelists: pg, carmack, taleb, hickey. The roundtable unanimously killed the proposed library architecture and converged on an immutable-log + pure-function-views architecture as the substrate.
+      </p>
+      <p>
+        The roundtable was followed by 3 dedicated angle-research agents engaging the kill logic per go-to-market angle (library / protocol / managed service). Decisive new evidence surfaced: Anthropic shipped native persistent memory to Managed Agents on 2026-04-23 (Netflix in production), making the library angle an unambiguous CONFIRMS_KILL and forcing the protocol and service angles into narrower surviving forms. The current site + observatory primitive ships the architecture that survived all of that scrutiny.
+      </p>
+
+      <h2>Limits & honest caveats</h2>
+      <ul>
+        <li>
+          <strong>Citation verification</strong>. Several dossiers reference 2025–2026 arXiv papers. Given publication speed, the dates are plausible, but a few citations to very recent papers may be agent-generated and should be verified before use in serious work. The <a href="/reading-list">reading list</a> deliberately foregrounds older, well-established references.
+        </li>
+        <li>
+          <strong>Persona lenses are stylistic, not authoritative</strong>. The lenses are framed in terms of each persona's published positions. They are an analytical convenience, not endorsements by the named individuals.
+        </li>
+        <li>
+          <strong>Strong-form / weak-form is a prompted dichotomy</strong>. Some claims may have additional intermediate forms not surfaced by the adjudication. The verdict per claim is in this sense a coarse summary.
+        </li>
+        <li>
+          <strong>The "convergent pattern" is partly an artifact of construction</strong>. Strong forms were deliberately chosen to overshoot. A different claim-generation process might produce a different distribution of verdicts. The package is honest about this — the convergent pattern is informative <em>about how 'wild' claims at this frontier are typically structured</em>, not a universal property of the domain.
+        </li>
+      </ul>
+
+      <h2>Reproducibility</h2>
+      <p>
+        The full corpus — claim formulations, web-search trails (in part), persona prompts, roundtable transcripts, and angle-research dossiers — lives in the source repository. Critique a verdict by reading the dossier, the steelman, and the listed papers. Disagreements are PRs.
+      </p>
+    </section>
+  </article>
+</BaseLayout>

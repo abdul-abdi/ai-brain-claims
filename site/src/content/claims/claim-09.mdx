@@ -1,0 +1,87 @@
+---
+title: "Active Forgetting as Capability"
+number: 9
+shortTitle: "Active Forgetting"
+verdict: "SPLIT"
+personas: ["Hickey", "Karpathy"]
+thread: "memory"
+date: "2026-05-09"
+description: "Adding active / adversarial forgetting mechanisms to LLMs improves rather than degrades downstream task performance. Strong form fails for post-hoc unlearning; weak form survives — and agent context-window management is where it pays out."
+tags: ["memory", "unlearning", "regularization", "agent-context"]
+---
+
+## The claim
+
+**Strong form**: Adding adversarial / active forgetting mechanisms to LLMs (machine unlearning, scheduled memory decay, importance-weighted information pruning) *improves* rather than degrades downstream task performance — both in continual learning and reasoning. Active forgetting is a *capability*, not a regulatory burden, and ablating it hurts performance.
+
+**Weak form**: Forgetting is necessary in some narrow cases (privacy, copyright) but neutral-to-negative for capability outside those.
+
+The literature splits these two phenomena that the strong form conflates: (a) machine unlearning under regulatory pressure, (b) regularization as forgetting (weight decay, dropout), (c) interference reduction in continual learning, (d) context-management at agent runtime.
+
+## Evidence
+
+The claim fractures into three distinct phenomena that should not be conflated.
+
+### Trivially true — regularization as active forgetting
+
+Weight decay and dropout *are* active forgetting at training time, and they robustly improve generalization. Every well-trained LLM relies on them. At this level, the strong claim is correct but uninteresting — it has been known since the 1990s and is standard practice. Karpathy's framing in the lens below: "if you flatten the claim down to 'forgetting at the training level helps,' it's true but answering a question nobody asked."
+
+### Moderately supported — interference reduction in continual learning
+
+The 2025 spurious-forgetting literature shows that *selectively protecting* lower model layers during fine-tuning — deciding what to retain and what to discard — substantially improves continual-learning performance. Importance-weighted pruning achieves efficiency with minimal capability loss in studies on ImageNet-scale and language continual learning benchmarks. The mechanism is interference reduction, not forgetting per se.
+
+This partially supports the strong form: principled decisions about what to retain and what to discard improve multi-task performance.
+
+### Not supported — post-hoc machine unlearning
+
+Gradient ascent on forget sets degrades shallow layers that encode general linguistic competence. The TOFU benchmark (2024) reports that no baseline method achieves effective unlearning without collateral capability damage. Adapter-based approaches (Chen & Yang, 2023) mitigate but do not eliminate the degradation. Machine unlearning is a compliance burden, not a capability lever.
+
+### The strongest operational case
+
+Agent context-window management is the clearest case where active forgetting *is* a capability. Strategic summarization plus targeted deletion of stale context — implemented as importance-weighted pruning — improves reasoning quality on multi-step agent loops. The mechanism is grounded in Anderson's retrieval-induced forgetting theory: inhibitory control over irrelevant retrievals improves access to relevant ones. This is the empirical surface where the architecture proposed alongside this research package — the [Observatory](/observatory) — actually pays out.
+
+## Lens 1 — Hickey
+
+> The structure of memory is a place vs. value problem.
+
+Hickey's frame: information accumulates without principle, complecting otherwise-orthogonal computations. Active forgetting is structural simplicity over time. In human cognition, forgetting irrelevant detail is a *feature* that lets you generalize — you don't remember every dish you've ever eaten; you have *food*. LLMs are place-oriented memory systems where the model weights *are* the place. Without a value-vs-place distinction and the ability to garbage-collect, the system gets hairy.
+
+He'd push the claim further than its authors did: in agent context, active forgetting at runtime is essentially regularization done at deployment time. The two-tier mutable storage architecture proposed by some context-management libraries is exactly the wrong shape — it brings place-oriented programming back through the side door. The right shape is an immutable event log with importance scoring as a pure function over the log; tier membership is a derived, lazy view, not a stored place.
+
+## Lens 2 — Karpathy
+
+> The interesting form is content-specific scheduled forgetting at deployment, not a meta-claim about training-time regularization.
+
+Karpathy's frame: there's an actual machine-unlearning literature, but the empirical question — does forgetting *help* capability? — is mixed. Most unlearning methods either degrade nearby capabilities (catastrophic side effects) or fail to unlearn at all (jailbreak-recoverable knowledge). Weight decay *is* active forgetting at training time, and it helps. Dropout is forgetting. So at the regularization level the claim is trivially true.
+
+The interesting and contested form is: scheduled, content-specific unlearning at test time / deployment improves capability. Probably yes for narrow cases, neutral for most, with a long tail of failure modes. The framing matters — this is not a single claim but a family with very different evidentiary statuses.
+
+## Strongest counterargument (steelman)
+
+The skeptical position has real force: most attempts to make "active forgetting" a deliberate engineering primitive in LLMs — beyond standard regularization — fail. Gradient-ascent unlearning damages capabilities. Knowledge editing has retrieval-collapse failures. Machine unlearning compliance approaches preserve privacy at the cost of nearby task performance. The strong form claim requires a clean operationalization where added forgetting consistently improves downstream metrics on tasks the original capability targeted, and that case is narrow at best.
+
+The narrowness is itself instructive. The research finding is not "active forgetting works"; it's "active forgetting at the agent context layer specifically — not at the weights — works."
+
+## Verdict
+
+**SPLIT.** The strong form is supported only when restricted to standard regularization (trivially true) and to agent context-window management (where it shows real capability gains). Post-hoc machine unlearning is not supported — collateral capability damage is the rule, not the exception, in the literature.
+
+The weak form is robust at the agent-context layer specifically, which is the load-bearing surface for the [Observatory](/observatory) primitive shipped alongside this research.
+
+What would change the verdict: a clean benchmark showing that scheduled content-specific unlearning at test time *consistently* preserves nearby capabilities while removing target knowledge, or evidence that adversarial forgetting at training (beyond standard regularization) systematically improves downstream task performance.
+
+## Papers to read
+
+1. Bjork & Bjork (1992). "A new theory of disuse and an old theory of stimulus fluctuation." Two-factor theory of forgetting in human cognition.
+2. Anderson (1983). "Retrieval-induced forgetting." The cognitive-science substrate for "forgetting as a feature."
+3. Bourtoule et al. (2021). "Machine Unlearning." IEEE S&P. The starting point for the unlearning literature.
+4. Chen & Yang (2023). "Unlearn What You Want to Forget: Efficient Unlearning for LLMs." Adapter-based mitigation; partial fix.
+5. Maini et al. (2024). "TOFU: A Task of Fictitious Unlearning." The benchmark that surfaced no method achieving clean unlearning.
+6. Spurious Forgetting in Continual Learning (2025). Layer-protective fine-tuning for continual learning.
+7. Lin & Anderson (1971). Inhibitory control evidence in human memory retrieval.
+
+## Notes for synthesis
+
+- Threads with claim 1 (working memory) and claim 5 (RAG TOT) on the memory cluster.
+- The agent-context-window-management case is the same engineering surface as the Observatory primitive — claim 9 is the empirical justification for what the Observatory ships.
+- The weak-form-survives / strong-form-refuted pattern matches the package-level meta-finding.

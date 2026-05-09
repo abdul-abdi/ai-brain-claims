@@ -1,0 +1,44 @@
+---
+import { SITE } from "../lib/site";
+---
+
+<footer class="mt-24 border-t border-ink-400/20 bg-bone-200/40">
+  <div class="mx-auto max-w-wide px-6 py-12 lg:px-12 font-sans text-sm text-ink-600">
+    <div class="grid gap-8 lg:grid-cols-3">
+      <div>
+        <p class="font-serif text-lg text-ink-900">{SITE.title}</p>
+        <p class="mt-2 max-w-md leading-relaxed">{SITE.tagline}.</p>
+        <p class="mt-4 text-ink-500">
+          By <span class="text-ink-900">{SITE.author.name}</span> · {SITE.author.role}
+        </p>
+        <p class="mt-1 text-ink-500">First ship: {SITE.date}.</p>
+      </div>
+
+      <div>
+        <p class="font-medium text-ink-900">Methodology</p>
+        <ul class="mt-2 space-y-1">
+          <li>21 parallel adversarial agents</li>
+          <li>2 analytical-lens personas per claim</li>
+          <li>4-persona roundtable for product surface</li>
+          <li>3 deep angle-research agents (A/B/C)</li>
+          <li><a href="/methodology">Read the full methodology →</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="font-medium text-ink-900">Cite this</p>
+        <pre class="mt-2 whitespace-pre-wrap text-xs leading-relaxed font-mono"><code>{`@misc{ai-brain-claims-2026,
+  title = {10 Claims at the Frontier},
+  author = {Abdi, Abdullahi},
+  year = {2026},
+  url = {${SITE.repo}}
+}`}</code></pre>
+      </div>
+    </div>
+
+    <div class="mt-12 flex flex-col gap-2 border-t border-ink-400/20 pt-6 sm:flex-row sm:items-center sm:justify-between">
+      <p>MIT licensed. Source on <a href={SITE.repo} target="_blank" rel="noopener">GitHub</a>.</p>
+      <p class="text-ink-500">{SITE.citation}</p>
+    </div>
+  </div>
+</footer>

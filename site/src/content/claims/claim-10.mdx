@@ -1,0 +1,174 @@
+---
+title: "Cortical Column ≈ Transformer Block"
+number: 10
+shortTitle: "Cortical Column"
+verdict: "SPLIT"
+personas: ["Joscha Bach", "Bryan Cantrill"]
+thread: "architecture"
+date: "2026-05-09"
+description: "At a computational/algorithmic level, the canonical neocortical column implements something Turing-equivalent to a transformer block. Strong form fails — the cortical column itself is a contested empirical unit (Horton & Adams 2005). Weak form (Hopfield-attention equivalence at the right scope) is supported with caveats."
+tags: ["cortex", "cortical-column", "transformer-architecture", "marr-levels", "neuroai"]
+---
+
+## The Claim
+
+**Strong form:** At a computational/algorithmic level, the canonical neocortical column implements something Turing-equivalent (or close) to a transformer block—multi-head attention over context, followed by feedforward transformation, with residual connections—with a theorem-like equivalence at the right level of abstraction.
+
+**Weak form:** Cortical columns and transformer blocks share a small set of computational primitives (selection/competition, transformation, recurrent integration) that constrain both designs.
+
+---
+
+## The Unit Is Contested Before the Comparison Begins
+
+Any analogy between cortical column and transformer block faces a prior problem: the cortical column itself is a contested empirical and conceptual entity.
+
+### Mountcastle's Original Proposal
+
+Vernon Mountcastle (1957, somatosensory cortex) proposed vertically oriented "elementary functional units" spanning white matter to cortical surface across all six layers—modules that perform the same modality-independent intrinsic computation regardless of their sensory input domain (Mountcastle, 1997, _Brain_ 120:701–722). Hubel and Wiesel extended this to V1 orientation and ocular dominance columns. The conceptual payload was strong: if cortex is tiled by a homogeneous computation unit, one could abstract away the domain-specific details and study the universal algorithm.
+
+### Horton and Adams 2005: The Unit Without a Function
+
+Horton and Adams, _Philosophical Transactions of the Royal Society B_, 2005 (PMC1569491), published a direct challenge marking the 50th anniversary of Mountcastle's work. Their case:
+
+- **Species inconsistency:** Orientation columns are present in cats, ferrets, monkeys, and sheep but absent in mice, rats, hamsters, and rabbits—yet all these animals exhibit comparable orientation tuning in V1 neurons. The computation (orientation selectivity) is preserved; the columnar structure is not.
+- **Intra-species variation:** Ocular dominance columns vary twofold in periodicity between macaques and are entirely absent in some squirrel monkeys, with no measurable behavioral difference.
+- **Lack of functional necessity:** No visual function has been identified that requires columnar organization. Horton and Adams conclude the column may be a developmentally entrained artifact, not a functional prerequisite.
+
+The practical consequence for this claim: if you cannot pin down _what_ a cortical column is or whether it is a real functional unit, any computational analogy built on it lacks a stable referent. The transformer block is homogeneous by construction; the "cortical column" is not.
+
+### Cell-Type Heterogeneity Across Areas
+
+The Hodge et al. (2019, _Nature_ 573:61–68) single-cell transcriptomic study of human versus mouse medial temporal cortex documented substantial divergence in cell-type composition, gene expression, and proportions across species and cortical areas. The canonical six-layer laminar structure is preserved, but the cellular populations within it are not uniform. Visual cortex (V1), prefrontal cortex, and entorhinal cortex differ dramatically in cell-type ratios, layer thicknesses, and connectivity motifs. A transformer block, by contrast, applies the same weight matrix across all positions. Cortex cannot be truthfully described this way.
+
+**Marr-level note:** This heterogeneity lives at the _implementation_ level (which neurons, which layer thicknesses). The claim is about the _algorithmic_ level. But Horton & Adams' functional critique strikes at Marr's Level 1 (computational): if the column is not the unit that solves a well-defined problem, there is no stable algorithm to abstract. The skeptical case is therefore not merely implementational.
+
+---
+
+## What the Canonical Microcircuit Does Offer: The Douglas-Martin-Bastos Line
+
+Setting aside the species-variation problem, a well-characterized circuit motif has been proposed and modeled.
+
+### Douglas and Martin's Canonical Microcircuit (1989)
+
+Douglas and Martin (_Neural Computation_ 1:480–488, 1989) analyzed the cat striate cortex via single-neuron microanatomy and intracellular recording and derived a three-population circuit (superficial pyramidal, deep pyramidal, and inhibitory interneurons). Key findings:
+
+- Thalamic input is numerically minor; the dominant excitation at any neuron comes from intracortical recurrent connections.
+- Excitation and inhibition are inseparable: activating the column sets in motion a coupled excitation-inhibition sequence throughout.
+- The circuit acts as an amplifier with controlled gain via inhibitory feedback.
+
+This motif—a recurrent loop with feedforward input and inhibitory gating—is the first anatomically grounded "module" that can be compared to engineered circuits.
+
+### Bastos et al. 2012: Predictive Coding on the Canonical Microcircuit
+
+Bastos, Usrey, Adams, Mangun, Fries, and Friston (_Neuron_, 2012, PMC3777738) mapped hierarchical predictive coding onto the laminar structure of the column with specific layer assignments:
+
+- **Superficial layers (L2/3):** encode _prediction errors_ (the mismatch between top-down prediction and bottom-up input); project forward to higher cortical areas; operate at gamma-band frequencies.
+- **Deep layers (L5/6):** encode _conditional expectations_ (predictions); project downward (feedback) to suppress errors in lower areas; operate at beta-band frequencies.
+- **Layer 4 / supragranular interneurons:** receive both error signals and predictions; act as the integration locus.
+
+The column thus implements a _within-column_ error-correction loop between upward-going error units and downward-going prediction units. The macroscopic architecture is a Bayesian hierarchy of these loops.
+
+**What this resembles and what it does not:** The within-column L5/6-to-L2/3 prediction-then-error structure has some structural resemblance to the transformer's residual stream (a base signal being updated by successive operations). However, self-attention in a transformer block mixes information _laterally_ across token positions within a single layer—there is no equivalent of cross-layer error/prediction segregation. The transformer feedforward sublayer transforms each position independently after the attention mixing. These are meaningfully different circuit topologies at the algorithmic level, not just implementation.
+
+---
+
+## Where the Analogy Has Genuine Traction
+
+Despite the mismatches, three computational primitives do appear in both systems:
+
+### Competitive Selection / Soft Attention
+
+Lateral inhibition in cortex—implemented via GABAergic interneurons spread horizontally within layers—produces winner-take-all competition among locally co-active neurons. The result is sparse, selective activation of a subset of neurons representing the most salient input features. This is computationally similar to softmax attention's sharpening effect: a weighted competition over keys that suppresses weaker activations and amplifies stronger ones.
+
+The analogy has a formal anchor: Krotov & Hopfield (2016, 2018) and Ramsauer et al. (NeurIPS 2020, "Hopfield Networks Is All You Need") proved that the update rule for modern continuous Hopfield networks with polynomial energy functions is _mathematically equivalent_ to the self-attention operation. Classical Hopfield-like attractor dynamics have long been posited as a model of cortical memory retrieval. This provides a genuine algorithmic-level bridge between a biologically plausible associative memory mechanism and scaled dot-product attention.
+
+**Caveat on scope:** The Ramsauer/Krotov result connects the _attention operation_ to Hopfield dynamics. It does not connect _cortical columns_ specifically to transformer _blocks_. The result is about the similarity of the key-query-value update to a memory retrieval step. The multi-head architecture and feedforward sublayer are not derived from this.
+
+### Recurrent Integration and Residual Streaming
+
+Both systems maintain a running representation that is updated at each processing step rather than replaced. In cortex, the recurrent amplification shown by Douglas-Martin, and the top-down expectation signals in Bastos predictive coding, function as context-maintaining loops. In a transformer block, the residual connection ensures that the original input is preserved and updated additively, not overwritten. The computational function—maintain context while integrating new information—is shared.
+
+### Feedforward Nonlinear Transformation
+
+Both the column (excitatory pyramidal projections with dendritic nonlinearities and subsequent inhibitory gating) and the transformer MLP sublayer (two linear projections with a nonlinear activation) perform positional, non-relational transformation of representations. Hawkins (Frontiers in Neural Circuits, 2017) situates each column as performing feature-location binding with Hebbian-like plasticity, which at an abstract level is a nonlinear mapping from sensory features and location codes to a combined representation. The two-layer MLP in a transformer block performs the same abstract function within each token.
+
+---
+
+## Hawkins' Thousand Brains Theory: A Separate Claim
+
+Hawkins (Frontiers in Neural Circuits 2017; _A Thousand Brains_, 2021; Numenta Thousand Brains Project, arXiv:2412.18354) makes the universality claim independently of the transformer analogy. His framework argues:
+
+- Every cortical column builds a _complete model_ of the object or concept it is processing, using allocentric reference frames derived from grid-cell-like position signals.
+- The "thousand brains" behavior—voting consensus across columns—produces stable global representations from locally ambiguous inputs.
+- This mechanism is universal across all cortical areas (sensory, motor, frontal), implementing Mountcastle's homogeneity conjecture.
+
+Importantly, the Thousand Brains Project paper (2024) makes **no claim** that cortical columns are equivalent to transformer blocks or implement attention. It explicitly positions itself as an alternative to deep learning, not a biological interpretation of it. The voting mechanism has superficial resemblance to a multi-head aggregation, but Hawkins' framing is sensorimotor rather than token-based sequence processing.
+
+---
+
+## The Tolman-Eichenbaum Machine: A Useful Comparator
+
+Whittington, Muller, and Behrens (_Cell_, 2020, PMC7707106) showed that the TEM—a model of hippocampal-entorhinal function—emerges from a single principle: structural knowledge (grid-cell-like reference frames) separates from sensory content (place-cell-like representations). The TEM generates diverse apparent "special-purpose" spatial cells as emergent properties of this factorized representation.
+
+This is relevant for the column-transformer analogy because it demonstrates a case where a biologically grounded module has a clean algorithmic-level description. The key-value separation in attention—keys encode relational structure, values encode content—shares the TEM's structural logic. But the TEM is an entorhinal-hippocampal circuit, not a neocortical column. Using it to support the column-transformer analogy requires an additional inference step that is not currently supported by direct evidence.
+
+---
+
+## On Turing-Equivalence: Why the Strong Form Is a Low and Unhelpful Bar
+
+Joscha Bach would note that Turing-equivalence is computationally cheap—almost any sufficiently expressive recurrent system is Turing-complete at scale. Establishing that cortical columns are Turing-equivalent to transformer blocks says almost nothing informative at Marr's algorithmic level: it says only that both can simulate each other given sufficient resources, not that they implement the same family of efficient algorithms, not that they scale the same way, and not that they make the same inductive biases or generalization decisions.
+
+The more useful question at the algorithmic level is: **Do cortical columns and transformer blocks implement the same bounded-resource algorithm on typical problem distributions?** That question cannot be answered with current neuroscience. The field does not have a settled account of what algorithm a cortical column runs, full stop.
+
+No theorem establishing algorithmic-level equivalence between the canonical column and the transformer block exists in the literature surveyed.
+
+---
+
+## Persona Analysis
+
+### Joscha Bach (Functionalism, Cognitive Architectures)
+
+Bach would defend the weak form. His framework holds that computation at the algorithmic level is substrate-independent, so structural analogies between cortex and transformer blocks should be taken seriously as empirical evidence about efficient algorithmic primitives—not dismissed because one is wet and the other is silicon. The three shared primitives (competitive selection, recurrent integration, feedforward transformation) reflect constraints on any system that must compress high-dimensional sensory input into context-stable representations. Predictive coding, implemented by the Bastos microcircuit, is recognizably a form of iterative error minimization that shares structure with the attention-then-residual-update of a transformer block.
+
+But Bach would flag the strong form as intellectually unserious: Turing-equivalence is a bar so low that it is not a finding. The stronger and genuinely interesting question is whether the _efficiency profile_—which functions are learnable with what sample complexity—is similar. That question is open. He would also note that the column's heterogeneity (Hodge 2019) creates problems for the homogeneity assumption of the transformer block; the analogy likely holds only for a narrow class of cortical areas and sensory processing regimes, not as a universal claim.
+
+### Bryan Cantrill (Systems Realism, Observability)
+
+Cantrill would lead with Horton and Adams and would not let go. The column is not observable as a stable, canonical unit across species or even across areas within a single brain. A transformer block is precisely specified: you can read the weight matrix, inspect the attention pattern, run an activation sweep. The column has no equivalent precision. Saying "column ≈ transformer block" without specifying _which_ column in _which_ cortical area at _which_ layer of abstraction is engineering hand-waving dressed in neuroscience vocabulary.
+
+He would further note that the Bastos microcircuit (L2/3 errors, L5/6 predictions) maps to a _hierarchical between-area_ computation, not to the _within-block lateral_ computation of self-attention. The architectural topologies are different, and confusing them is exactly the kind of imprecision that produces unfalsifiable analogies. He would accept the weak form only if it is operationalized: identify the specific shared primitive (e.g., lateral inhibition implements something like softmax competition), measure whether the inductive biases it produces are actually similar, and state what evidence would disconfirm the analogy.
+
+---
+
+## Verdict
+
+| Form | Assessment |
+| --- | --- |
+| **Strong form** (theorem-like algorithmic equivalence) | **Unsupported.** No such theorem exists in the literature. Turing-equivalence is too weak to be meaningful at the algorithmic level. |
+| **Weak form** (shared computational primitives) | **Supported with caveats.** Lateral inhibition / softmax competition, recurrent residual-stream-like integration, and feedforward nonlinear transformation appear in both systems. The Krotov-Ramsauer result anchors the attention-Hopfield connection formally, though this connects the attention operation to associative memory, not columns to blocks. The analogy is productive for AI architecture design but is not an identity claim. |
+
+**Key disanalogies that the dossier must not hide:**
+
+1. Transformer self-attention is lateral (across positions within a layer); Bastos predictive coding is hierarchical (across levels, between areas). These are different circuit topologies.
+2. Transformer blocks are homogeneous; cortical columns are empirically heterogeneous across areas, species, and individuals.
+3. The "canonical column" is a modeling abstraction with contested biological grounding; the transformer block is a precisely defined mathematical object.
+
+**For the Anthropic engineer building agent systems:** The weak analogy is useful for intuition-pumping—particularly the attention-as-Hopfield-retrieval connection and the predictive-coding-as-residual-update framing. These suggest that hierarchical residual architectures with iterative error correction may be computationally privileged. But do not build an architecture argument on "the brain uses transformer blocks"—the neuroscience does not support that, and the column abstraction itself is contested.
+
+---
+
+## Key Sources
+
+- Mountcastle, V.B. (1997). _The columnar organization of the neocortex._ Brain 120:701–722.
+- Horton, J.C. & Adams, D.L. (2005). _The cortical column: a structure without a function._ Philosophical Transactions of the Royal Society B. [PMC1569491](https://pmc.ncbi.nlm.nih.gov/articles/PMC1569491/)
+- Douglas, R.J. & Martin, K.A.C. (1989). _A canonical microcircuit for neocortex._ Neural Computation 1:480–488.
+- Bastos, A.M. et al. (2012). _Canonical microcircuits for predictive coding._ Neuron. [PMC3777738](https://pmc.ncbi.nlm.nih.gov/articles/PMC3777738/)
+- Ramsauer, H. et al. (2020). _Hopfield Networks Is All You Need._ ICLR 2021. [openreview.net](https://openreview.net/pdf/4dfbed3a6ececb7282dfef90fd6c03812ae0da7b.pdf)
+- Widrich, M. et al. (2020). _Modern Hopfield Networks and Attention for Immune Repertoire Classification._ NeurIPS 2020. [proceedings.neurips.cc](https://proceedings.neurips.cc/paper/2020/hash/da4902cb0bc38210839714ebdcf0efc3-Abstract.html)
+- Hawkins, J. et al. (2017). _A Theory of How Columns in the Neocortex Enable Learning the Structure of the World._ Frontiers in Neural Circuits. [doi:10.3389/fncir.2017.00081](https://www.frontiersin.org/journals/neural-circuits/articles/10.3389/fncir.2017.00081/full)
+- Hawkins, J. (2021). _A Thousand Brains: A New Theory of Intelligence._ Basic Books.
+- Hawkins, J. et al. (2024). _The Thousand Brains Project._ arXiv:2412.18354. [arxiv.org](https://arxiv.org/html/2412.18354v1)
+- Whittington, J.C.R. et al. (2020). _The Tolman-Eichenbaum Machine._ Cell. [PMC7707106](https://pmc.ncbi.nlm.nih.gov/articles/PMC7707106/)
+- Hodge, R.D. et al. (2019). _Conserved cell types with divergent features in human versus mouse cortex._ Nature 573:61–68.
+- Lillicrap, T.P. & Santoro, A. (2019). _Backpropagation through time and the brain._ Current Opinion in Neurobiology.
+- Lillicrap, T.P. et al. (2020). _Backpropagation and the brain._ Nature Reviews Neuroscience.

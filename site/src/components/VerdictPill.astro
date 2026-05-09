@@ -1,0 +1,37 @@
+---
+import { VERDICTS, type Verdict } from "../lib/verdicts";
+
+interface Props {
+  verdict: Verdict;
+  size?: "sm" | "md" | "lg";
+  showDescription?: boolean;
+}
+
+const { verdict, size = "md", showDescription = false } = Astro.props;
+const v = VERDICTS[verdict];
+
+const sizeClasses = {
+  sm: "text-[0.7rem] px-2 py-0.5 tracking-wider",
+  md: "text-xs px-2.5 py-1 tracking-wider",
+  lg: "text-sm px-3 py-1.5 tracking-wider",
+}[size];
+---
+
+<span class="inline-flex flex-col">
+  <span
+    class={`inline-flex items-center gap-1.5 rounded-full border font-sans font-medium uppercase ${sizeClasses} ${v.bg} ${v.color}`}
+  >
+    <span
+      class={`inline-block h-1.5 w-1.5 rounded-full ${v.color.replace("text-", "bg-")}`}
+      aria-hidden="true"
+    ></span>
+    {v.label}
+  </span>
+  {
+    showDescription && (
+      <span class="mt-1 font-sans text-xs italic text-ink-500">
+        {v.description}
+      </span>
+    )
+  }
+</span>

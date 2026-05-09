@@ -1,0 +1,34 @@
+# Node / Astro
+node_modules/
+dist/
+.astro/
+.env
+.env.local
+.env.production
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+build/
+*.egg
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Eval scratch
+eval/results/scratch/
+eval/results/*.local.json
+
+# Lock files (commit these intentionally; uncomment to skip)
+# package-lock.json
+# uv.lock

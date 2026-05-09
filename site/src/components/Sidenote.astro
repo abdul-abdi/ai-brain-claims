@@ -1,0 +1,15 @@
+---
+// Distill.pub-style sidenote / marginalia.
+// On wide screens, renders into the right gutter; on narrow, inline as a small block.
+interface Props {
+  number?: string | number;
+}
+const { number } = Astro.props;
+---
+
+<aside
+  class="my-3 block rounded border-l-2 border-accent/40 bg-bone-200/40 px-3 py-2 font-sans text-sidenote text-ink-600 lg:absolute lg:right-[calc(-1*var(--aside-width)-var(--gutter)/2)] lg:top-0 lg:my-0 lg:max-w-[16rem] lg:border-l-0 lg:bg-transparent lg:px-0 lg:py-0"
+>
+  {number && <span class="mr-1 font-medium text-accent-600">{number}</span>}
+  <slot />
+</aside>
