@@ -10,7 +10,8 @@ import pagefind from "astro-pagefind";
 // causes friction on `npm run dev`.
 
 export default defineConfig({
-  site: "https://ai-brain-claims.example.com",
+  site: "https://abdul-abdi.github.io",
+  base: "/ai-brain-claims",
   trailingSlash: "ignore",
   integrations: [
     mdx(),

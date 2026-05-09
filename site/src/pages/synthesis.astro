@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import VerdictPill from "../components/VerdictPill.astro";
 import { CLAIMS, THREADS } from "../lib/verdicts";
+import { u } from "../lib/site";
 ---
 
 <BaseLayout
@@ -38,7 +39,7 @@ import { CLAIMS, THREADS } from "../lib/verdicts";
               <tr>
                 <td class="font-mono text-ink-500">{String(c.number).padStart(2, "0")}</td>
                 <td>
-                  <a href={`/claims/${c.id}`} class="font-medium">{c.shortTitle}</a>
+                  <a href={u(`/claims/${c.id}`)} class="font-medium">{c.shortTitle}</a>
                 </td>
                 <td><VerdictPill verdict={c.verdict} size="sm" /></td>
                 <td class="text-ink-600">{c.oneLineAgainst}</td>
@@ -83,7 +84,7 @@ import { CLAIMS, THREADS } from "../lib/verdicts";
               {t.claims.map((n) => {
                 const c = CLAIMS.find((x) => x.number === n)!;
                 return (
-                  <a href={`/claims/${c.id}`} class="rounded border border-ink-400/30 bg-bone-100 px-2.5 py-1 text-ink-800 no-underline">
+                  <a href={u(`/claims/${c.id}`)} class="rounded border border-ink-400/30 bg-bone-100 px-2.5 py-1 text-ink-800 no-underline">
                     {String(n).padStart(2, "0")} {c.shortTitle}
                   </a>
                 );

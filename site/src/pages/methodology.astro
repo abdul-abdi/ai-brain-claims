@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { u } from "../lib/site";
 ---
 
 <BaseLayout
@@ -60,7 +61,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       <h2>Limits & honest caveats</h2>
       <ul>
         <li>
-          <strong>Citation verification</strong>. Several dossiers reference 2025–2026 arXiv papers. Given publication speed, the dates are plausible, but a few citations to very recent papers may be agent-generated and should be verified before use in serious work. The <a href="/reading-list">reading list</a> deliberately foregrounds older, well-established references.
+          <strong>Citation verification</strong>. Several dossiers reference 2025–2026 arXiv papers. Given publication speed, the dates are plausible, but a few citations to very recent papers may be agent-generated and should be verified before use in serious work. The <a href={u("/reading-list")}>reading list</a> deliberately foregrounds older, well-established references.
         </li>
         <li>
           <strong>Persona lenses are stylistic, not authoritative</strong>. The lenses are framed in terms of each persona's published positions. They are an analytical convenience, not endorsements by the named individuals.

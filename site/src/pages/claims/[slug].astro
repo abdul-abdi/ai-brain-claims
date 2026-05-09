@@ -3,6 +3,7 @@ import { getCollection, getEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import VerdictPill from "../../components/VerdictPill.astro";
 import { CLAIMS } from "../../lib/verdicts";
+import { u } from "../../lib/site";
 
 export async function getStaticPaths() {
   const entries = await getCollection("claims");
@@ -53,13 +54,13 @@ const next = idx < CLAIMS.length - 1 ? CLAIMS[idx + 1] : null;
     <!-- Pager -->
     <nav class="mx-auto mt-20 grid max-w-prose gap-3 border-t border-ink-400/20 pt-8 font-sans text-sm sm:grid-cols-2">
       {prev ? (
-        <a href={`/claims/${prev.id}`} class="group rounded border border-ink-400/20 bg-bone-50 p-4 no-underline transition-colors hover:border-accent/50">
+        <a href={u(`/claims/${prev.id}`)} class="group rounded border border-ink-400/20 bg-bone-50 p-4 no-underline transition-colors hover:border-accent/50">
           <p class="text-xs text-ink-500">← Previous</p>
           <p class="mt-1 font-serif text-ink-900">{String(prev.number).padStart(2, "0")} · {prev.shortTitle}</p>
         </a>
       ) : <span></span>}
       {next ? (
-        <a href={`/claims/${next.id}`} class="group rounded border border-ink-400/20 bg-bone-50 p-4 text-right no-underline transition-colors hover:border-accent/50">
+        <a href={u(`/claims/${next.id}`)} class="group rounded border border-ink-400/20 bg-bone-50 p-4 text-right no-underline transition-colors hover:border-accent/50">
           <p class="text-xs text-ink-500">Next →</p>
           <p class="mt-1 font-serif text-ink-900">{String(next.number).padStart(2, "0")} · {next.shortTitle}</p>
         </a>

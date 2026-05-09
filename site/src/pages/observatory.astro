@@ -2,7 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { CompareFigure } from "../components/CompareFigure";
 import compareData from "../data/baseline-vs-hygiene.json";
-import { SITE } from "../lib/site";
+import { SITE, u } from "../lib/site";
 ---
 
 <BaseLayout
@@ -82,7 +82,7 @@ delta = compare(working, alt)`}</code></pre>
         <li>Real-time attention-pattern hooks into proprietary models (only available where the model exposes them — open weights primarily)</li>
         <li>Branch / merge semantics for divergent agent context (intentionally deferred — single-branch first)</li>
         <li>Cross-provider client SDKs (Python + Anthropic SDK first; OpenAI / Google later)</li>
-        <li>A managed service (deliberately not — see the <a href="/synthesis">angle research</a>)</li>
+        <li>A managed service (deliberately not — see the <a href={u("/synthesis")}>angle research</a>)</li>
       </ul>
 
       <h2>Install</h2>

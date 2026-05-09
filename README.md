@@ -97,7 +97,7 @@ MIT — research, code, and prose. Cite the repository if you build on it.
 @misc{ai-brain-claims-2026,
   title  = {10 Claims at the Frontier: Adversarial Validation at the AI {\(\leftrightarrow\)} Brain Boundary},
   year   = {2026},
-  url    = {https://github.com/<owner>/ai-brain-claims},
+  url    = {https://github.com/abdul-abdi/ai-brain-claims},
   note   = {Methodology: parallel multi-agent adversarial validation with persona analytical lenses}
 }
 ```

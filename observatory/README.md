@@ -28,7 +28,7 @@ assert sig.diverged()  # the dominant RAG failure mode
 - **Importance is context-relative** — there is no "correct" importance scorer independent of the task. Different scorers are first-class; the choice is exposed, not buried.
 - **Retrieval-confidence ≠ generation-confidence** — overconfidence on wrong context is the dominant RAG failure mode. The library surfaces these as separate signals.
 
-The architecture survived a 4-persona roundtable (pg + carmack + taleb + hickey) and 3 dedicated angle-research agents (library / protocol / service). See [the research](https://ai-brain-claims.example.com).
+The architecture survived a 4-persona roundtable (pg + carmack + taleb + hickey) and 3 dedicated angle-research agents (library / protocol / service). See [the research](https://abdul-abdi.github.io/ai-brain-claims).
 
 ## Install
 
@@ -69,7 +69,7 @@ python -m observatory.eval hygiene       # importance-weighted view
 python -m observatory.eval compare       # produces eval/results/*.json
 ```
 
-The result JSON is consumed by the [website](https://ai-brain-claims.example.com) to render comparison figures.
+The result JSON is consumed by the [website](https://abdul-abdi.github.io/ai-brain-claims) to render comparison figures.
 
 ## License
 

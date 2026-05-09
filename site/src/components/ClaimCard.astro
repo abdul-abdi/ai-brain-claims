@@ -1,6 +1,7 @@
 ---
 import VerdictPill from "./VerdictPill.astro";
 import type { ClaimSummary } from "../lib/verdicts";
+import { u } from "../lib/site";
 
 interface Props {
   claim: ClaimSummary;
@@ -12,7 +13,7 @@ const numStr = String(claim.number).padStart(2, "0");
 ---
 
 <a
-  href={`/claims/${claim.id}`}
+  href={u(`/claims/${claim.id}`)}
   class="group block rounded-lg border border-ink-400/20 bg-bone-50 p-6 no-underline transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/50 hover:shadow-[0_8px_30px_-12px_rgba(204,120,92,0.18)]"
 >
   <div class="flex items-baseline justify-between gap-3">
