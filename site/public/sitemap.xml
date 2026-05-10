@@ -26,6 +26,21 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://abdul-abdi.github.io/ai-brain-claims/agents/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://abdul-abdi.github.io/ai-brain-claims/paper/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://abdul-abdi.github.io/ai-brain-claims/reproduce/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://abdul-abdi.github.io/ai-brain-claims/search/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>

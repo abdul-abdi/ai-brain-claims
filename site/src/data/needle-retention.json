@@ -1,0 +1,137 @@
+{
+  "schema": "ach-benchmark-1",
+  "config": {
+    "benchmark": "needle_retention",
+    "needles_per_trace": 8,
+    "total_events": 64,
+    "noise_events": 56,
+    "working_window": 16,
+    "seeds": 10,
+    "replays_per_strategy": 3
+  },
+  "strategies": [
+    {
+      "name": "truncation",
+      "mean_retention": 0.275,
+      "std_retention": 0.11486707293408518,
+      "min_retention": 0.125,
+      "max_retention": 0.375,
+      "retentions_per_seed": [
+        0.375,
+        0.375,
+        0.375,
+        0.25,
+        0.125,
+        0.375,
+        0.125,
+        0.375,
+        0.125,
+        0.25
+      ],
+      "mean_latency_ms": 0.0004084,
+      "p99_latency_ms": 0.000917,
+      "replay_consistency": 1.0
+    },
+    {
+      "name": "recency",
+      "mean_retention": 0.275,
+      "std_retention": 0.11486707293408518,
+      "min_retention": 0.125,
+      "max_retention": 0.375,
+      "retentions_per_seed": [
+        0.375,
+        0.375,
+        0.375,
+        0.25,
+        0.125,
+        0.375,
+        0.125,
+        0.375,
+        0.125,
+        0.25
+      ],
+      "mean_latency_ms": 0.1301832,
+      "p99_latency_ms": 0.147208,
+      "replay_consistency": 1.0
+    },
+    {
+      "name": "recency+role",
+      "mean_retention": 0.2125,
+      "std_retention": 0.11858541225631422,
+      "min_retention": 0.0,
+      "max_retention": 0.375,
+      "retentions_per_seed": [
+        0.125,
+        0.25,
+        0.375,
+        0.25,
+        0.125,
+        0.25,
+        0.0,
+        0.375,
+        0.125,
+        0.25
+      ],
+      "mean_latency_ms": 0.17523339999999998,
+      "p99_latency_ms": 0.20575,
+      "replay_consistency": 1.0
+    },
+    {
+      "name": "task_relevance",
+      "mean_retention": 0.65,
+      "std_retention": 0.1536590742882148,
+      "min_retention": 0.375,
+      "max_retention": 0.875,
+      "retentions_per_seed": [
+        0.75,
+        0.625,
+        0.375,
+        0.75,
+        0.875,
+        0.75,
+        0.5,
+        0.75,
+        0.5,
+        0.625
+      ],
+      "mean_latency_ms": 0.1945333,
+      "p99_latency_ms": 0.245333,
+      "replay_consistency": 1.0
+    },
+    {
+      "name": "needle_aware (oracle)",
+      "mean_retention": 1.0,
+      "std_retention": 0.0,
+      "min_retention": 1.0,
+      "max_retention": 1.0,
+      "retentions_per_seed": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mean_latency_ms": 0.1467001,
+      "p99_latency_ms": 0.157,
+      "replay_consistency": 1.0
+    }
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "timestamp": "2026-05-10T13:07:33Z"
+}

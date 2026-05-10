@@ -1,14 +1,5 @@
 import type { CSSProperties } from "react";
 
-// Live comparison figure — reads the eval result JSON shape produced by
-// `python -m observatory.eval compare`. Renders accuracy + p50 latency as
-// horizontal bars; both metrics share the same vertical axis (variant) but
-// each occupies its own row pair so the visual story is "what improved" vs
-// "what cost."
-//
-// Accepts the result JSON as a prop so the page can fetch it once and render
-// at build time.
-
 export interface EvalRecord {
   name: string;
   n_steps: number;
@@ -48,7 +39,6 @@ function ms(n: number) {
 export function CompareFigure({ data }: Props) {
   const { baseline, hygiene, delta } = data;
 
-  // Accuracy axis [0,1]; latency axis scaled to max p50 across the two.
   const latMax = Math.max(
     baseline.p50_latency_ms,
     hygiene.p50_latency_ms,
@@ -92,7 +82,6 @@ export function CompareFigure({ data }: Props) {
         </p>
       </figcaption>
 
-      {/* Accuracy bars */}
       <div className="space-y-2.5">
         <div className="flex items-baseline justify-between text-xs">
           <span className="font-medium" style={{ color: TEXT_INK }}>
@@ -130,7 +119,6 @@ export function CompareFigure({ data }: Props) {
         style={{ background: "rgba(168,156,136,0.25)" }}
       ></div>
 
-      {/* Latency bars */}
       <div className="space-y-2.5">
         <div className="flex items-baseline justify-between text-xs">
           <span className="font-medium" style={{ color: TEXT_INK }}>

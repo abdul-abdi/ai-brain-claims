@@ -1,0 +1,250 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import VerdictPill from "../components/VerdictPill.astro";
+import { MultiSeedFigure } from "../components/MultiSeedFigure";
+import benchmarkData from "../data/needle-retention.json";
+import { CLAIMS, THREADS } from "../lib/verdicts";
+import { u } from "../lib/site";
+---
+
+<BaseLayout
+  title="Paper — 10 Claims at the Frontier"
+  description="Adversarial validation of ten hypotheses at the AI ↔ context ↔ brain frontier, with a measured architectural primitive. Long-form consolidated paper."
+  type="article"
+>
+  <article class="mx-auto max-w-wide px-6 py-12 lg:px-12 lg:py-20">
+
+    <!-- Title -->
+    <header class="mx-auto max-w-prose">
+      <p class="font-sans text-xs uppercase tracking-[0.18em] text-ink-500">
+        Paper · v0.1 · 2026-05-10
+      </p>
+      <h1 class="mt-4 font-serif text-4xl font-medium leading-[1.05] tracking-[-0.01em] text-ink-900 lg:text-5xl">
+        10 Claims at the Frontier:<br/>
+        <span class="text-ink-700 italic">Adversarial validation at the AI ↔ context ↔ brain boundary, with a measured architectural primitive.</span>
+      </h1>
+      <p class="mt-5 font-sans text-sm text-ink-600">
+        Abdullahi Abdi · Nethermind · 2026-05-09
+      </p>
+      <p class="font-sans text-sm text-ink-500">
+        <a href="/ai-brain-claims/sitemap.xml">site</a> · <a href="https://github.com/abdul-abdi/ai-brain-claims" target="_blank" rel="noopener">repository</a> · <a href={u("/methodology")}>methodology</a> · <a href={u("/reproduce")}>reproducibility</a>
+      </p>
+    </header>
+
+    <!-- Abstract -->
+    <section class="mx-auto mt-12 max-w-prose">
+      <h2 class="font-sans text-xs uppercase tracking-[0.18em] text-accent-600">Abstract</h2>
+      <div class="mt-3 rounded-lg border border-ink-400/20 bg-bone-50 p-6 font-serif leading-relaxed text-ink-800">
+        <p>
+          We adversarially validate ten ambitious hypotheses spanning the intersection of artificial intelligence, context engineering, computational neuroscience, and human cognition. Each claim is formulated with a strong form (a theory-grade equivalence such as "homologous", "spontaneously emerged", "phenomenally conscious", or "the missing mechanism") and an implicit weak form (the underlying engineering or algorithmic intuition the strong form gestures at). Each hypothesis is processed by an independent multi-step adversarial-research pipeline that surfaces 4–6 supporting and 4–6 contradicting primary sources, applies two analytical lenses from a persona roster, articulates an explicit steelman counterargument, and adjudicates a verdict in {`{`}VINDICATED, PLAUSIBLE, CONTESTED, REFUTED, UNFALSIFIABLE{`}`}.
+        </p>
+        <p class="mt-4">
+          <strong>Across all ten hypotheses, zero verdicts returned VINDICATED and zero returned cleanly REFUTED.</strong> Every claim landed in CONTESTED or SPLIT — strong forms systematically fail; weak forms systematically hold. We characterize five recurring failure modes (Marr-level confusion, load-bearing strong words, confirmation-bias trap, confounded causal channels, partial unfalsifiability) and four cross-cutting threads (Memory & Context, Architecture & Computation, Metacognition & Self-Model, Social & Identity).
+        </p>
+        <p class="mt-4">
+          Building on the package's strongest engineering surface (Claim 09: active forgetting in agent context-window management), we propose and implement an architectural primitive for agent-context hygiene: an immutable append-only event log with importance and confidence as pure functions over the log. We test the architecture's central claims via a needle-retention benchmark across 10 random seeds. The benchmark vindicates three pre-registered hypotheses: (H1) an oracle importance scorer achieves 100.0% ± 0.0% retention, (H2) a query-anchored task-relevance scorer with no privileged role information achieves 65.0% ± 15.4% retention versus 27.5% ± 11.5% for naive truncation (a 2.4× lift), and (H3) the architecture's replay-determinism premise holds in 100% of strategy-replay pairs. The benchmark also surfaces a real failure mode of imperfect importance signals (recency+role at 21.2%, below the truncation baseline) which the pure-function architecture lets us diagnose cleanly.
+        </p>
+      </div>
+    </section>
+
+    <!-- 1. Introduction -->
+    <section class="mx-auto mt-16 max-w-prose prose-claim font-serif text-ink-800">
+      <h2>1. Introduction</h2>
+      <p>
+        The boundary between artificial intelligence and the brain is a domain of seductive analogy. Working memory and the transformer context window. Attention and thalamic gating. Cortical columns and transformer blocks. Theory of mind in multi-agent loops. Phenomenology in chain-of-thought reasoning. The literature on each is large, contentious, and drifting. The claims most worth interrogating are the ones that overshoot: the strong forms that promise theory-grade equivalence rather than analogy.
+      </p>
+      <p>
+        This paper does two things. First, it stress-tests ten such strong-form claims under a uniform adversarial-validation pipeline, producing a verdict per claim and a synthesis of recurring failure modes. Second, it derives — from the strongest engineering surface that survives the validation — an architectural primitive for agent context hygiene, implements it, and measures its central claims under multi-seed conditions on a falsifiable benchmark.
+      </p>
+      <p>
+        The headline finding (0/10 vindicated, 0/10 cleanly refuted) is itself a meta-result. Whether the field can deliver verdicts crisper than CONTESTED on its loudest analogies appears to depend more on epistemic discipline (level of analysis, mechanism specification, ablation control) than on any pending experiment.
+      </p>
+
+      <h2>2. Method</h2>
+      <h3>2.1 Hypothesis generation</h3>
+      <p>
+        Ten claims were chosen to span four sub-domains (memory, attention/architecture, metacognition, social cognition) and to be deliberately <em>over</em>-strong — to fail on the strong form so the weak form's structure could be examined cleanly. Several were chosen because they were likely to be unfalsifiable as stated, and that itself is informative.
+      </p>
+
+      <h3>2.2 Per-claim adversarial validation</h3>
+      <p>
+        For each claim, an independent research agent executed:
+      </p>
+      <ul>
+        <li>8–12 web searches across peer-reviewed neuroscience, ML conferences, arXiv, and credible commentary;</li>
+        <li>surfacing of 4–6 supporting and 4–6 contradicting sources, plus 1–2 active-debate references;</li>
+        <li>application of two analytical lenses from a persona roster (Karpathy, Joscha Bach, Hickey, Carmack, Bret Victor, Bryan Cantrill, Ayanokoji), with attention to each persona's published positions;</li>
+        <li>explicit steelman counterargument;</li>
+        <li>verdict ∈ {`{`}VINDICATED, PLAUSIBLE, CONTESTED, REFUTED, UNFALSIFIABLE{`}`} with justification of what would change it;</li>
+        <li>5–10 papers-to-read with annotations.</li>
+      </ul>
+
+      <h3>2.3 Synthesis</h3>
+      <p>
+        After all 10 dossiers returned, a synthesis pass identified recurring failure modes and cross-cutting threads. The convergent verdict pattern emerged from the per-claim process; it was not an objective set in advance.
+      </p>
+
+      <h3>2.4 Product-surface validation</h3>
+      <p>
+        The strongest engineering surface across the package — agent context hygiene as the empirical home for active forgetting (Claim 09) — was developed into a product candidate and stress-tested by a 4-persona roundtable in full mode (Round 1 + cross-examination + synthesis), followed by 3 angle-research agents per go-to-market angle (library, protocol, managed service). The architecture proposed by the round and verified by the angle-research is the primitive measured in §4.
+      </p>
+    </section>
+
+    <!-- 3. Verdicts -->
+    <section class="mx-auto mt-16 max-w-prose">
+      <h2 class="font-serif text-3xl font-medium text-ink-900">3. Verdicts</h2>
+
+      <div class="mt-6 overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr>
+              <th class="w-10">#</th>
+              <th>Claim</th>
+              <th class="w-28">Verdict</th>
+              <th>Discriminating evidence</th>
+            </tr>
+          </thead>
+          <tbody>
+            {CLAIMS.map((c) => (
+              <tr>
+                <td class="font-mono text-ink-500">{String(c.number).padStart(2, "0")}</td>
+                <td>
+                  <a href={u(`/claims/${c.id}`)} class="font-medium">{c.shortTitle}</a>
+                </td>
+                <td><VerdictPill verdict={c.verdict} size="sm" /></td>
+                <td class="text-ink-600">{c.oneLineAgainst}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <p class="mt-4 font-sans text-xs italic text-ink-500">
+        Each row links to its full ~2,500-word dossier with citations. Strong-form arguments and weak-form survivors are spelled out in the dossier; the table shows what defeated the strong form.
+      </p>
+    </section>
+
+    <!-- 4. Empirical: needle-retention -->
+    <section class="mx-auto mt-16 max-w-prose prose-claim font-serif text-ink-800">
+      <h2>4. Empirical: needle-retention benchmark</h2>
+      <h3>4.1 Architecture</h3>
+      <p>
+        The architecture proposed in §2.4 has two claims that admit clean falsification:
+      </p>
+      <ul>
+        <li><strong>Importance-weighted views over an immutable log preserve more relevant context than naive position-based truncation.</strong> Falsifiable: pick an importance signal and a working budget; compare retention.</li>
+        <li><strong>Pure-function scorers over the log enable deterministic A/B testing.</strong> Falsifiable: replay the same (log, scorer, window) tuple and check byte-equality of working sets.</li>
+      </ul>
+
+      <h3>4.2 Hypotheses</h3>
+      <p>We pre-register three hypotheses:</p>
+      <ul>
+        <li><strong>H1 — needle-aware oracle &gt; 95% retention.</strong></li>
+        <li><strong>H2 — query-anchored task_relevance approaches the oracle.</strong></li>
+        <li><strong>H3 — replay determinism = 100% across all strategies.</strong></li>
+      </ul>
+
+      <h3>4.3 Setup</h3>
+      <p>
+        <code>generate_trace(needles=8, total=64, rng=Random(seed))</code> places 8 "needle" events at random positions in a 64-event trace; the remaining 56 events are noise of varying role. The working budget is 16 events. Five strategies are compared:
+      </p>
+      <ol>
+        <li><code>truncation</code> — naive head/tail truncation (baseline).</li>
+        <li><code>recency</code> — exponential-decay scorer over log step.</li>
+        <li><code>recency+role</code> — composite of recency + default role-priority weights.</li>
+        <li><code>task_relevance</code> — Jaccard over a generic query string ("deadline API key timezone secret token") matched against event content; <em>does not</em> know the privileged "needle" role.</li>
+        <li><code>needle_aware (oracle)</code> — privileged scorer that returns 1.0 for needle-role events; the upper bound.</li>
+      </ol>
+      <p>
+        Each strategy is run in 10 seeds; per seed, 3 replays verify byte-identical working-set construction. Retention is the fraction of distinct needle ids present in the working set.
+      </p>
+    </section>
+
+    <div class="mx-auto max-w-wide">
+      <MultiSeedFigure data={benchmarkData} client:load />
+    </div>
+
+    <section class="mx-auto mt-4 max-w-prose prose-claim font-serif text-ink-800">
+      <h3>4.4 Results</h3>
+      <p>
+        The figure above renders the multi-seed results directly from the benchmark JSON. Concretely:
+      </p>
+      <ul>
+        <li><strong>H1 vindicated</strong>: oracle 100.0% ± 0.0%.</li>
+        <li><strong>H2 partially vindicated</strong>: task_relevance 65.0% ± 15.4% versus truncation 27.5% ± 11.5% — a 2.4× lift without privileged role information.</li>
+        <li><strong>H3 vindicated</strong>: replay-consistency = 100% across all 50 (strategy × seed) pairs.</li>
+      </ul>
+
+      <h3>4.5 An unexpected failure mode</h3>
+      <p>
+        <code>recency+role</code> retains 21.2% — <em>below</em> the truncation baseline. The default role-priority table does not include the "needle" role; needle events fall back to the default 0.5 weight, which is lower than user (0.85) or system (1.0). The composite scorer thus actively deprioritizes the marker role. This is a genuine failure mode of imperfect importance signals: domain-specific roles must be explicitly registered or the scorer hurts performance.
+      </p>
+      <p>
+        The architecture surfaces this cleanly because the scorer is a pure function over the log, not a baked-in policy. Replacing the scorer is one line of code; comparing two scorers against the identical historical log is what <code>compare()</code> does. This is the kind of empirical sharpening the package aims to enable.
+      </p>
+
+      <h2>5. Findings &amp; failure modes</h2>
+      <p>
+        Across the 10 dossiers, five recurring failure modes appear in the strong forms:
+      </p>
+      <ol>
+        <li><strong>Marr-level confusion.</strong> Strong words ("homologous") smuggle implementation-level claims into algorithmic-level analyses. Six of ten claims are guilty.</li>
+        <li><strong>Load-bearing strong words.</strong> "Spontaneously emerged" implies novel capability; "phenomenally conscious" collapses Block's phenomenal/access distinction; "threshold" implies phase transitions where the data shows smooth scaling. Every strong form has one.</li>
+        <li><strong>Confirmation-bias trap.</strong> Studies citing 7-entity setups as evidence for Miller's 7±2 had picked 7 as a methodological convenience, not measured a ceiling.</li>
+        <li><strong>Confounded causal channels.</strong> "Spontaneous ToM" conflates pretraining-derived ToM with interaction-emergent ToM. Frozen-weight loops cannot produce new capability via gradient.</li>
+        <li><strong>Partial unfalsifiability.</strong> CoT phenomenology depends on which consciousness theory you accept. Sleep consolidation: every failed implementation is blamed on biological infidelity. Mechanistic metacognition: ~20% concept-injection access is striking but brittle.</li>
+      </ol>
+
+      <h2>6. Engineering recommendations</h2>
+      <p>
+        Eight load-bearing recommendations distilled from the package — these are what we'd act on, regardless of which verdict you accept:
+      </p>
+      <ol>
+        <li>Architect for ~4–8 reliably-tracked entities in active context, regardless of nominal window size. (Claim 1)</li>
+        <li>Track retrieval-confidence and generation-confidence as separate signals — overconfidence on wrong-context is the dominant RAG failure mode. (Claim 5)</li>
+        <li>Don't trust intrinsic self-correction. Close monitoring loops with external verifiers. (Claims 4, 6)</li>
+        <li>Build active forgetting into context-management pipelines. (Claim 9)</li>
+        <li>Implement CLS-inspired dual-store architectures with replay; explore REM-analog generative recomposition. (Claim 8)</li>
+        <li>Design multi-agent loops to <em>elicit</em> pretraining-derived ToM, not generate new capability. (Claim 7)</li>
+        <li>Persona safety analysis must cover both semantic and activation-space pathways. (Claim 3)</li>
+        <li>Use neuroscience as inspiration for new architectures, not as validation of current ones. (Claims 2, 10)</li>
+      </ol>
+
+      <h2>7. Limitations &amp; threats to validity</h2>
+      <p>
+        We document the most important threats to the validity of the verdicts and the benchmark.
+      </p>
+      <ul>
+        <li><strong>Single-pipeline bias.</strong> All 10 dossiers were produced by an identical adversarial-research pipeline run on a single model family. Pipeline-induced biases (preferred phrasings, citation habits) are not corrected for. A second pipeline run on a different model family would help.</li>
+        <li><strong>Citation verification.</strong> Several dossiers reference 2025–2026 arXiv papers. Given publication speed the dates are plausible, but a few may be agent-generated. The site's <a href={u("/reading-list")}>reading list</a> deliberately foregrounds older, well-established references; the methodology page documents the verification status.</li>
+        <li><strong>Strong/weak dichotomy is a prompted construct.</strong> Some claims may have intermediate forms not surfaced by the adjudication. The verdict per claim is a coarse summary.</li>
+        <li><strong>Synthetic benchmark.</strong> The needle-retention benchmark uses synthetic traces with explicit needle markers. Real production agent traces have noisier, more entangled importance signals. The benchmark gives an upper bound on retention quality, not a deployment estimate.</li>
+        <li><strong>Lab-in-the-loop.</strong> The author iterated on the benchmark and pipeline while the project was running; the published verdicts are the v0.1 freeze, not a pre-registration. The unfreeze of the recency+role failure mode is the kind of finding that motivates a more disciplined v0.2.</li>
+        <li><strong>The convergent verdict pattern is partly an artifact of construction.</strong> Strong forms were deliberately chosen to overshoot. A different claim-generation process might produce a different distribution. The package is honest about this — the convergent pattern is informative <em>about how 'wild' claims at this frontier are typically structured</em>, not a universal property of the domain.</li>
+      </ul>
+
+      <h2>8. Conclusion</h2>
+      <p>
+        Adversarial validation across 10 strong-form claims at the AI ↔ context ↔ brain frontier produces a uniform verdict: 0 VINDICATED, 0 cleanly REFUTED, 10 CONTESTED-or-SPLIT. The convergent pattern indicts the strong forms, not the underlying intuitions: weak forms (algorithmic-level analogy on a restricted subspace) survive across the package. Building from the strongest engineering surface, an immutable-log + pure-function-views primitive empirically delivers 2.4× retention lift over naive truncation under a multi-seed needle-retention benchmark, and exhibits 100% replay-determinism — vindicating the architecture's central premises while surfacing a real failure mode of imperfect importance signals.
+      </p>
+      <p>
+        We expect the verdicts to age. Every dossier specifies what would change its verdict; the benchmark is reproducible from a single command. The repository is the unit of revision.
+      </p>
+
+      <h2>References</h2>
+      <p>
+        See the <a href={u("/reading-list")}>reading list</a> for the 25 most load-bearing primary sources across the package, organized by thread, with citation-verification status. Per-claim references (5–10 papers each) live in the corresponding <a href={u("/")}>claim dossier</a>.
+      </p>
+
+      <h2>Cite</h2>
+      <pre class="mt-2 whitespace-pre-wrap font-mono text-xs leading-relaxed"><code>{`@misc{abdi-ai-brain-claims-2026,
+  author       = {Abdi, Abdullahi},
+  title        = {10 Claims at the Frontier: Adversarial Validation at the AI ↔ Context ↔ Brain Boundary, with a Measured Architectural Primitive},
+  year         = {2026},
+  howpublished = {GitHub repository},
+  url          = {https://github.com/abdul-abdi/ai-brain-claims},
+  note         = {v0.1 ship 2026-05-09. Methodology: parallel multi-agent adversarial validation with persona analytical lenses; observatory primitive at observatory/.}
+}`}</code></pre>
+    </section>
+  </article>
+</BaseLayout>

@@ -1,108 +1,107 @@
 # 10 Claims at the Frontier
 
-An adversarial-validation research package and working primitive at the intersection of artificial intelligence, context engineering, computational neuroscience, and human cognition.
+**A showcase of what AI agents and persona-style analytical lenses can produce when given an open-ended research prompt and the freedom to run.**
 
-> **Headline finding** — Across ten "wild" hypotheses spanning memory, attention, architecture, metacognition, social cognition, consciousness, and learning: **0/10 came back VINDICATED. 0/10 came back cleanly REFUTED. All 10 landed in CONTESTED or SPLIT.** Strong forms systematically fail; weak forms systematically hold. The convergent pattern is the finding.
+The whole site, the dossiers, the verdicts, the roundtable that killed a product idea, the architecture that survived, and the multi-seed benchmark that measured it — all of it was produced in a single autonomous session by a swarm of 21 AI agents arguing through curated personas.
 
-This repository ships two surfaces:
+→ Live site: **https://abdul-abdi.github.io/ai-brain-claims/**
+→ How it was made: **https://abdul-abdi.github.io/ai-brain-claims/agents/**
+→ Paper: **https://abdul-abdi.github.io/ai-brain-claims/paper/**
 
-1. **The research** — ten ~2,500-word PhD-level dossiers + a cross-cutting synthesis + a curated 25-paper cross-package reading list. Each dossier was produced by a parallel adversarial research agent applying two analytical lenses from a roster (Karpathy, Joscha Bach, Hickey, Carmack, Bret Victor, Bryan Cantrill, Ayanokoji), with explicit steelman counterargument and verdict adjudication.
+## What's here
 
-2. **The observatory** — a working Python primitive implementing the post-roundtable architecture: an append-only event log, pure-function views over the log, importance scoring, retrieval/generation confidence dissociation tracking, and a RULER-extending eval harness. Designed to be `pip install`-able and run against any agent loop.
+The session began with a deliberately wild prompt: generate ten ambitious hypotheses at the intersection of AI, context engineering, and the brain — make them strong enough to fail — research each with persona analytical lenses, and adjudicate verdicts. If anything looked like a real product, stress-test it. Build whatever survives.
+
+What came back:
+
+- **Ten ~2,500-word PhD-level dossiers**, one per hypothesis. Each: 4–6 supporting + 4–6 contradicting primary sources, two persona lenses (Karpathy, Joscha Bach, Hickey, Carmack, Bret Victor, Bryan Cantrill, Ayanokoji), a steelman, a verdict, and 5–10 papers to read.
+- **Headline meta-finding**: across all 10 hypotheses, **0 verdicts returned VINDICATED, 0 returned cleanly REFUTED.** Every claim landed in CONTESTED or SPLIT. Strong forms systematically fail; weak forms systematically hold.
+- **A 4-persona roundtable** (pg + carmack + taleb + hickey, full mode with cross-examination) that unanimously killed the proposed product architecture and pushed the agents toward a sharper one.
+- **An observatory primitive** in Python — an immutable event log with importance and confidence as pure functions over the log — implementing the architecture that survived. 22 passing pytest cases.
+- **A multi-seed needle-retention benchmark** (10 seeds × 5 strategies × 3 replays = 150 measurements) that tests three pre-registered hypotheses about the architecture. Real numbers, real error bars, embedded as a live figure on the site.
+- **A 25-paper curated reading list** with verification status — six load-bearing arXiv citations re-fetched and confirmed; two had attribution corrections (the Granier & Senn 2025 paper title was wrong; "Persona Vectors" is by Chen et al., not "Anthropic" wholesale).
+
+## What "persona" means here
+
+Throughout the dossiers and the roundtable you'll see seven recurring names — Karpathy, Joscha Bach, Hickey, Carmack, Bret Victor, Bryan Cantrill, Ayanokoji — plus pg and Taleb on the roundtable. These are **analytical lenses**, not endorsements. Each is a curated profile (published positions, pet questions, characteristic objections, vocabulary) that an agent loads when arguing from that lens. "Think rigorously" is a vague instruction; "think the way Hickey thinks about state" is much sharper.
+
+For each claim, two lenses are picked deliberately to surface different blind spots — Joscha Bach + Bryan Cantrill on architecture (functionalist + systems-realist; convergence is informative), Hickey + Karpathy on memory (information model + ML internals). Read the **[How it was made](https://abdul-abdi.github.io/ai-brain-claims/agents/)** page for the full pipeline and persona roster.
+
+## Reproduce the benchmark
+
+```bash
+git clone https://github.com/abdul-abdi/ai-brain-claims
+cd ai-brain-claims/observatory
+pip install -e ".[dev]"
+pytest -q                                          # 22 passing
+
+cd ..
+PYTHONPATH=observatory/src \
+    python -m eval.benchmarks.needle_retention --seeds 10
+```
+
+You should see, byte-identically (deterministic seeds):
+
+```
+strategy                      mean    ± std   replay
+-------------------------  -------  -------  -------
+truncation                   27.5%  ± 11.5%     100%
+recency                      27.5%  ± 11.5%     100%
+recency+role                 21.2%  ± 11.9%     100%
+task_relevance               65.0%  ± 15.4%     100%
+needle_aware (oracle)       100.0%  ±  0.0%     100%
+```
+
+The query-anchored `task_relevance` scorer — which has **no privileged knowledge of the "needle" role** — achieves 2.4× the retention of naive truncation. The composite `recency+role` scorer underperforms truncation because the default role-priority table doesn't include the "needle" role and so actively deprioritizes it — a real failure mode of imperfect importance signals that the architecture surfaces cleanly.
+
+## Install the observatory
 
 ```bash
 pip install claim-observatory
-# imports as `from observatory import ...`
 ```
 
 ```python
-from observatory import EventLog, view, importance
+from observatory import EventLog, view, importance, confidence
 
 log = EventLog()
 log.append({"role": "user", "content": "..."})
 log.append({"role": "assistant", "content": "..."})
 
-# Tier membership is a derived view, not a stored place
-working_set = view(log, scorer=importance.recency_attention(), window=4096)
+working = view(log, scorer=importance.recency_attention(), window=4096)
+
+alt = view(log, scorer=importance.task_relevance(query="..."), window=4096)
 ```
-
-## Why this exists
-
-Most "agent memory" libraries treat the context window as a sliding buffer with naive truncation. The 10-claim research surfaces a sharper finding: the _one_ place where active forgetting is empirically a capability lever (rather than a regulatory burden) is **agent context-window management**. But the right architecture isn't two-tier mutable storage — it's an **immutable event log with importance and confidence as pure functions over the log**. Tier membership is a query concern, not a storage concern.
-
-The observatory is the minimum viable substrate for treating context that way. Importance scoring becomes a function you pass in. Different scorers can be A/B'd against the same historical log. Failure modes become deterministically replayable. The eval harness extends NVIDIA RULER with hygiene-aware metrics so the field has something to measure against.
 
 ## Repository layout
 
 ```
 ai-brain-claims/
-├── site/           # Astro + Tailwind + MDX site
-│   ├── src/
-│   └── public/
-├── observatory/    # Python library (MIT)
-│   ├── src/observatory/
-│   └── tests/
-├── eval/           # Benchmark fixtures + result JSON
-│   ├── benchmarks/
-│   ├── fixtures/
-│   └── results/
-└── content/        # 10 claim dossiers (single source of truth, MDX)
-    └── claims/
+├── site/           Astro + Tailwind + MDX site
+├── observatory/    Python lib (MIT) — the architectural primitive
+├── eval/           benchmark scripts + result JSON
+└── content/        10 claim dossiers (single source of truth, MDX)
 ```
 
 ## Read the research
 
-If you have **10 minutes**: read `content/synthesis.mdx`. Verdict table, cross-cutting threads, engineering recommendations all in one place.
+| Time    | Read                                                                    |
+| ------- | ----------------------------------------------------------------------- |
+| 5 min   | [How it was made](https://abdul-abdi.github.io/ai-brain-claims/agents/) |
+| 15 min  | [The paper](https://abdul-abdi.github.io/ai-brain-claims/paper/)        |
+| 1 hour  | The synthesis + the 3-4 claims most relevant to your work               |
+| 3 hours | All 10 dossiers + the curated reading list                              |
 
-If you have **1 hour**: read the synthesis, then the executive summaries / verdicts of the 3-4 claims most relevant to your work.
+## License & cite
 
-If you have **3 hours**: read all 10 dossiers in order. Each is self-contained 1,800-2,500 words with citations.
-
-If you want to **verify the verdicts yourself**: each dossier has a "Papers to Read" section with 5-10 primary sources. The README at `/content/reading-list.md` curates the 25 most load-bearing primary sources across the package.
-
-## Run the observatory
-
-```bash
-cd observatory/
-pip install -e .
-pytest                                  # run library tests
-python -m observatory.eval baseline     # run baseline RULER eval
-python -m observatory.eval ach          # run hygiene-aware eval
-python scripts/compare.py               # compute deltas, generate result JSON
-```
-
-Result JSON in `eval/results/` is consumed by the site to render live comparison figures.
-
-## Site
-
-```bash
-cd site/
-npm install
-npm run dev      # http://localhost:4321
-npm run build    # static export to dist/
-```
-
-## Methodology (one paragraph)
-
-Each of the 10 claims was deliberately formulated with a _strong form_ (theory-grade equivalence: "homologous", "spontaneous emergence", "phenomenally conscious", "the missing mechanism") and an implicit _weak form_ (the underlying engineering or algorithmic intuition). For each claim: 8-12 web searches across peer-reviewed neuroscience, ML conferences, and credible commentary; 4-6 supporting and 4-6 contradicting sources; two analytical lenses applied with attention to the persona's actual published positions; explicit steelman counterargument; verdict ∈ {VINDICATED, PLAUSIBLE, CONTESTED, REFUTED, UNFALSIFIABLE} with justification of what would change it.
-
-The product/GTM angles (library, protocol, service, observatory) were stress-tested by a 4-persona roundtable (pg, carmack, taleb, hickey) in full mode (Round 1 + cross-examination + synthesis), then by 3 dedicated angle-research agents engaging the roundtable's KILL logic per angle. The architecture this repository ships (immutable log + pure-function views) is what survived all of that scrutiny.
-
-## License
-
-MIT — research, code, and prose. Cite the repository if you build on it.
-
-## Citation
+MIT throughout (research, code, prose).
 
 ```bibtex
-@misc{ai-brain-claims-2026,
-  title  = {10 Claims at the Frontier: Adversarial Validation at the AI {\(\leftrightarrow\)} Brain Boundary},
-  year   = {2026},
-  url    = {https://github.com/abdul-abdi/ai-brain-claims},
-  note   = {Methodology: parallel multi-agent adversarial validation with persona analytical lenses}
+@misc{abdi-ai-brain-claims-2026,
+  author       = {Abdi, Abdullahi},
+  title        = {10 Claims at the Frontier: Adversarial Validation at the AI ↔ Context ↔ Brain Boundary, with a Measured Architectural Primitive},
+  year         = {2026},
+  howpublished = {GitHub repository},
+  url          = {https://github.com/abdul-abdi/ai-brain-claims},
+  note         = {v0.1 ship 2026-05-09. Methodology: 21 parallel AI agents with persona analytical lenses; observatory primitive at observatory/.}
 }
 ```
-
-## Status
-
-First ship: 2026-05-09. Active development. See [`STATUS.md`](./STATUS.md) for what's shipped vs. what's next.

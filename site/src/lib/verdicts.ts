@@ -1,5 +1,3 @@
-// Verdict taxonomy — single source of truth for color, label, and ordering.
-
 export type Verdict =
   | "VINDICATED"
   | "PLAUSIBLE"
@@ -51,8 +49,6 @@ export const VERDICTS: Record<
   },
 };
 
-// Compact summary of all 10 claims — used by home grid.
-// Sourced from the synthesis verdict table.
 export interface ClaimSummary {
   id: string; // slug, e.g. "claim-01"
   number: number;

@@ -4,11 +4,6 @@ import react from "@astrojs/react";
 import tailwind from "@astrojs/tailwind";
 import pagefind from "astro-pagefind";
 
-// Note: @astrojs/sitemap 3.x has a known incompatibility with our base-path
-// config (crashes with "Cannot read properties of undefined (reading 'reduce')"
-// during build). We use a hand-rolled `public/sitemap.xml` instead — it covers
-// all 15 routes and is updated alongside content changes.
-
 export default defineConfig({
   site: "https://abdul-abdi.github.io",
   base: "/ai-brain-claims",

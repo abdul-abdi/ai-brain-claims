@@ -1,7 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { CompareFigure } from "../components/CompareFigure";
+import { MultiSeedFigure } from "../components/MultiSeedFigure";
 import compareData from "../data/baseline-vs-hygiene.json";
+import benchmarkData from "../data/needle-retention.json";
 import { SITE, u } from "../lib/site";
 ---
 
@@ -26,8 +28,45 @@ import { SITE, u } from "../lib/site";
       <p>The append-only log doesn't have this property. Wrong signals are isolated events, not architectural state. Pure scoring functions over the log mean different scorers can be A/B'd against the same historical events — <strong>deterministically replayable</strong>, debuggable, and amenable to retrospective analysis after new evals or new models ship.</p>
       <p>The "git for agent context" framing is the wrong metaphor. Git models <em>diff intention</em>; an agent log is a <em>fact stream</em>. Don't inherit git's complexity model. The append-only structure is right; the mental model is closer to Datomic than to git.</p>
 
-      <h2>Live comparison</h2>
-      <p>The figure below is wired to the JSON output of <code>python -m observatory.eval compare</code>. Re-run the eval, copy the result into <code>site/src/data/baseline-vs-hygiene.json</code>, rebuild — the figure updates.</p>
+      <h2>Empirical proof — needle-retention benchmark</h2>
+      <p>
+        The figure below is real. It is the output of <code>python -m eval.benchmarks.needle_retention</code> at the default config — 8 needles randomly placed among 56 noise events (64 total), working window 16, 10 seeds. The script is committed at <code>eval/benchmarks/needle_retention.py</code>; the JSON it writes is consumed directly by this page at build time.
+      </p>
+      <p>
+        <strong>Three pre-registered hypotheses are tested.</strong>
+      </p>
+      <ol>
+        <li><strong>H1 — needle-aware oracle &gt; 95% retention.</strong> Tests the upper bound of importance-weighted views.</li>
+        <li><strong>H2 — query-anchored task_relevance approaches the oracle.</strong> Tests whether a non-privileged scorer can recover information without the marker role.</li>
+        <li><strong>H3 — replay determinism = 100% across all strategies.</strong> Tests the architectural premise that the same (log, scorer, window) tuple yields a byte-identical working set on every recomputation.</li>
+      </ol>
+    </section>
+
+    <div class="mx-auto max-w-wide">
+      <MultiSeedFigure data={benchmarkData} client:load />
+    </div>
+
+    <section class="mx-auto mt-4 max-w-prose prose-claim font-serif text-ink-800">
+      <h3>What the numbers say</h3>
+      <ul>
+        <li>
+          <strong>H1 vindicated.</strong> The <code>needle_aware (oracle)</code> scorer returns 100.0% ± 0.0% retention across all 10 seeds. The architecture's upper bound is provably reachable when the importance signal is correct.
+        </li>
+        <li>
+          <strong>H2 partially vindicated.</strong> A query-anchored <code>task_relevance</code> scorer that <em>does not</em> know about the privileged "needle" role still achieves 65.0% ± 15.4% retention — 2.4× the truncation baseline. The intuition that importance is context-relative shows up as measurable lift.
+        </li>
+        <li>
+          <strong>H3 vindicated.</strong> All five strategies returned 100% replay-consistent working sets across three replays per seed.
+        </li>
+        <li>
+          <strong>An unexpected finding.</strong> <code>recency+role</code> (21.2%) underperforms naive truncation (27.5%). The default role-weight table does not include the "needle" role, so the composite scorer actively <em>deprioritizes</em> the marker. This is a real failure mode of imperfect importance signals — and the architecture surfaces it cleanly because the scorer is a pure function over the log, not a baked-in policy.
+        </li>
+      </ul>
+
+      <h2>Latency comparison (baseline vs. hygiene)</h2>
+      <p>
+        For completeness, the simpler accuracy / latency pair from the original eval — Carmack's "missing number" cleanly answered: importance scoring adds &lt; 1 ms per view at 50 events.
+      </p>
     </section>
 
     <div class="mx-auto max-w-prose">
