@@ -2,7 +2,7 @@
 
 **A showcase of what AI agents and persona-style analytical lenses can produce when given an open-ended research prompt and the freedom to run.**
 
-The whole site, the dossiers, the verdicts, the roundtable that killed a product idea, the architecture that survived, and the multi-seed benchmark that measured it — all of it was produced in a single autonomous session by a swarm of 21 AI agents arguing through curated personas.
+The whole site, the dossiers, the verdicts, the roundtable that killed a product idea, the architecture that survived, and the multi-seed benchmark that measured it — all of it was produced in a single autonomous session via **21 parallel research dispatches**: 10 claim-research agents (each given prompt-level persona lens primers), 3 idea-research agents (no personas), and 8 roundtable agents (4 personas × 2 rounds; these loaded the full persona skills). Persona deployment across the work was uneven — see the [How it was made](https://abdul-abdi.github.io/ai-brain-claims/agents/) page for honest counts.
 
 → Live site: **https://abdul-abdi.github.io/ai-brain-claims/**
 → How it was made: **https://abdul-abdi.github.io/ai-brain-claims/agents/**
@@ -102,6 +102,6 @@ MIT throughout (research, code, prose).
   year         = {2026},
   howpublished = {GitHub repository},
   url          = {https://github.com/abdul-abdi/ai-brain-claims},
-  note         = {v0.1 ship 2026-05-09. Methodology: 21 parallel AI agents with persona analytical lenses; observatory primitive at observatory/.}
+  note         = {v0.1 ship 2026-05-09. Methodology: 21 parallel research dispatches (10 claim agents using prompt-level persona lens primers + 3 idea-research agents + 8 roundtable agents loading the full persona skills); observatory primitive at observatory/.}
 }
 ```

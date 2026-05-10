@@ -18,7 +18,7 @@ import { u } from "../lib/site";
         Agents at the wheel.
       </h1>
       <p class="mt-5 font-serif text-prose-lg leading-relaxed text-ink-700">
-        Everything on this site — every dossier, every verdict, the roundtable that killed the product, the benchmark that measured the architecture — was produced in a single autonomous session by a swarm of AI agents working under structured constraints. This page tells that story, because the research <em>and</em> the way it was made are both the point.
+        Everything on this site — every dossier, every verdict, the roundtable that killed the product, the benchmark that measured the architecture — was produced in a single autonomous session via <strong>21 parallel research dispatches</strong>. This page tells that story honestly, including which agents loaded the full persona skills and which only had prompt-level primers, because the research <em>and</em> the way it was made are both the point.
       </p>
     </header>
 
@@ -53,17 +53,56 @@ import { u } from "../lib/site";
         For every claim, two lenses are picked deliberately to surface different blind spots — Joscha Bach + Bryan Cantrill on architecture (functionalist + systems-realist; convergence is informative), Hickey + Karpathy on memory (information model + ML internals). The dossier's "Lens 1" / "Lens 2" sections are the agent arguing in-character, not paraphrasing the named individual.
       </p>
 
-      <h2>The pipeline (21 agents, one session)</h2>
+      <h2>The pipeline — what actually ran</h2>
       <p>
-        The session ran 21 parallel adversarial-research agents in three waves:
+        The session dispatched <strong>21 agents in three waves</strong>. Be specific about what each agent did and didn't do — the framing matters:
       </p>
       <ol>
-        <li><strong>Ten claim-research agents</strong>, one per hypothesis, each running 8–12 web searches, surfacing 4–6 supporting + 4–6 contradicting primary sources, applying two persona lenses, articulating a steelman, and committing to a verdict in {`{`}VINDICATED, PLAUSIBLE, CONTESTED, REFUTED, UNFALSIFIABLE{`}`}.</li>
-        <li><strong>Three idea-research agents</strong>, dispatched once the strongest engineering surface emerged — surveying prior art, demand signals, and technical feasibility for a candidate product.</li>
-        <li><strong>Eight roundtable agents</strong> — pg, carmack, taleb, hickey in two rounds (independent take + forced cross-examination), then a neutral synthesis pass.</li>
+        <li>
+          <strong>Ten claim-research agents</strong>, one per hypothesis. Each ran 8–12 web searches, surfaced 4–6 supporting + 4–6 contradicting primary sources, articulated a steelman, and committed to a verdict in {`{`}VINDICATED, PLAUSIBLE, CONTESTED, REFUTED, UNFALSIFIABLE{`}`}. <strong>These agents did NOT load the full persona skills.</strong> They received <em>prompt-level persona lens primers</em> — 50–80 words per persona describing how to argue from that perspective — and produced "Lens 1 / Lens 2" sections of the dossier in that style. Calling them "the personas" is overclaim. They are research agents <em>shaped by</em> persona primers.
+        </li>
+        <li>
+          <strong>Three idea-research agents</strong>, dispatched after the strongest engineering surface emerged — surveying prior art, demand signals, and technical feasibility for a candidate product. No personas; just bounded-scope research.
+        </li>
+        <li>
+          <strong>Eight roundtable agents</strong> — pg, carmack, taleb, hickey in two rounds. <strong>These are the only agents in the session that actually loaded the full persona skills</strong> via the skill registry, which means they had access to each persona's curated knowledge, voice, contextual modes, and refresh cadence — not just a primer.
+        </li>
       </ol>
       <p>
-        The agents did not coordinate beyond their shared input. Each wave's outputs fed forward to the next: dossier verdicts informed which engineering surface to test; the idea-research informed the roundtable's framing; the roundtable killed the proposed library architecture and proposed a sharper one; that sharper architecture became the observatory primitive whose retention is now measured on this site.
+        The agents did not coordinate beyond their shared input. Each wave's outputs fed forward to the next: dossier verdicts informed which engineering surface to test; the idea-research informed the roundtable's framing; the roundtable killed the proposed library architecture and proposed a sharper one; that sharper architecture became the observatory primitive whose retention is measured on this site.
+      </p>
+
+      <h3>Persona deployment — honest counts</h3>
+      <p>
+        The roster has 9 personas. Deployment across the work was uneven. The honest table:
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Persona</th>
+            <th>Claim dossiers</th>
+            <th>Roundtable</th>
+            <th>Other</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Joscha Bach</td><td>6 (claims 1, 2, 4, 6, 8, 10)</td><td>—</td><td>—</td><td>6</td></tr>
+          <tr><td>Karpathy</td><td>5 (claims 1, 3, 5, 7, 9)</td><td>—</td><td>—</td><td>5</td></tr>
+          <tr><td>Hickey</td><td>3 (claims 4, 5, 9)</td><td>R1 + R2</td><td>—</td><td>5</td></tr>
+          <tr><td>Carmack</td><td>2 (claims 7, 8)</td><td>R1 + R2</td><td>—</td><td>4</td></tr>
+          <tr><td>Bryan Cantrill</td><td>2 (claims 2, 10)</td><td>—</td><td>—</td><td>2</td></tr>
+          <tr><td>pg</td><td>—</td><td>R1 + R2</td><td>—</td><td>2</td></tr>
+          <tr><td>Taleb</td><td>—</td><td>R1 + R2</td><td>—</td><td>2</td></tr>
+          <tr><td>Bret Victor</td><td>1 (claim 6)</td><td>—</td><td>1 (design pass)</td><td>2</td></tr>
+          <tr><td>Ayanokoji</td><td>1 (claim 3)</td><td>—</td><td>—</td><td>1</td></tr>
+        </tbody>
+      </table>
+      <p>
+        Only four personas — Hickey, Carmack, pg, Taleb — were on the roundtable, and only those four (plus Bret Victor for the design pass) had their full persona skills loaded. The rest were prompt-shaped, not skill-loaded.
+      </p>
+      <p>
+        This matters because "21 agents argued through 9 personas" is technically true and substantively misleading. The strongest persona-as-skill work happened in the roundtable's 8 agents and the design pass's 1 agent — 9 deeply persona-loaded runs. The remaining 12 agents were research workers with persona-flavored prompting.
       </p>
 
       <h2>What the agents discovered, that I did not start with</h2>
@@ -92,13 +131,13 @@ import { u } from "../lib/site";
         Treat the verdicts as serious — they're grounded — but treat them as agent-mediated, not authoritative. Read the dossiers; pick at the citations; run the benchmark yourself. The <a href={u("/methodology")}>methodology page</a> is brutally honest about what the pipeline can and cannot do. The <a href={u("/reading-list")}>reading list</a> marks every citation's verification status.
       </p>
       <p>
-        The contribution is two-layered: at the surface, ten serious adversarial verdicts on hypotheses people argue about. Underneath, a worked example of what happens when you give a structured swarm of AI agents an open prompt, real personas, and the freedom to dispatch each other.
+        The contribution is two-layered: at the surface, ten serious adversarial verdicts on hypotheses people argue about. Underneath, a worked example of what happens when you give a structured cohort of AI agents an open prompt, mixed-fidelity persona deployment (some skills fully loaded, some prompt-shaped), and the freedom to dispatch each other.
       </p>
 
       <h2>Numbers</h2>
       <ul>
-        <li><strong>21</strong> autonomous research agents in the main session</li>
-        <li><strong>9</strong> personas in the roster (7 used as lenses; pg, taleb, hickey, carmack additionally seated on the roundtable)</li>
+        <li><strong>21</strong> autonomous research dispatches in the main session</li>
+        <li><strong>9</strong> personas in the roster · <strong>9</strong> deeply persona-loaded runs (8 roundtable + 1 design pass) · <strong>12</strong> prompt-shaped research workers</li>
         <li><strong>10</strong> PhD-level dossiers (1,800–3,500 words each)</li>
         <li><strong>~33,500</strong> total words of research before this page</li>
         <li><strong>25</strong> primary sources in the curated reading list, with verification status</li>

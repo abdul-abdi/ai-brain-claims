@@ -21,7 +21,7 @@ import { u } from "../lib/site";
     <section class="mx-auto mt-14 max-w-prose prose-claim font-serif text-ink-800">
       <h2>One sentence</h2>
       <p>
-        Generate ten ambitious hypotheses spanning AI ↔ brain, formulate each with a strong form (theory-grade equivalence) and an implicit weak form (the underlying engineering or algorithmic intuition), then dispatch parallel adversarial-validation agents that surface supporting and contradicting evidence, apply two analytical lenses from a persona roster, articulate a steelman counterargument, and commit to a verdict.
+        Generate ten ambitious hypotheses spanning AI ↔ brain, formulate each with a strong form (theory-grade equivalence) and an implicit weak form (the underlying engineering or algorithmic intuition), then dispatch parallel adversarial-validation agents that surface supporting and contradicting evidence, apply two prompt-level persona lens primers (the full persona skills are loaded later in the pipeline, only at the roundtable), articulate a steelman counterargument, and commit to a verdict.
       </p>
 
       <h2>Stage 1 — Hypothesis generation</h2>
@@ -36,7 +36,7 @@ import { u } from "../lib/site";
       <ul>
         <li>8–12 web searches across peer-reviewed neuroscience, ML conferences, arXiv, and credible commentary</li>
         <li>Surfacing of 4–6 supporting and 4–6 contradicting sources, plus 1–2 active-debate references</li>
-        <li>Application of two analytical lenses from a persona roster (Karpathy, Joscha Bach, Hickey, Carmack, Bret Victor, Bryan Cantrill, Ayanokoji), with attention to each persona's actual published positions</li>
+        <li>Application of two analytical lenses via <em>prompt-level persona primers</em> (50–80 words per persona describing how to argue from that perspective; the full persona skills are not loaded at this stage). The roster: Karpathy, Joscha Bach, Hickey, Carmack, Bret Victor, Bryan Cantrill, Ayanokoji, pg, Taleb. Deployment across the 10 dossiers is uneven — see <a href={u("/agents")}>How it was made</a> for honest counts.</li>
         <li>Explicit steelman counterargument</li>
         <li>Verdict ∈ {`{`} VINDICATED, PLAUSIBLE, CONTESTED, REFUTED, UNFALSIFIABLE {`}`} with justification of what would change it</li>
         <li>5–10 papers-to-read with annotations</li>

@@ -36,7 +36,7 @@ import { u } from "../lib/site";
       <h2 class="font-sans text-xs uppercase tracking-[0.18em] text-accent-600">Abstract</h2>
       <div class="mt-3 rounded-lg border border-ink-400/20 bg-bone-50 p-6 font-serif leading-relaxed text-ink-800">
         <p>
-          We adversarially validate ten ambitious hypotheses spanning the intersection of artificial intelligence, context engineering, computational neuroscience, and human cognition. Each claim is formulated with a strong form (a theory-grade equivalence such as "homologous", "spontaneously emerged", "phenomenally conscious", or "the missing mechanism") and an implicit weak form (the underlying engineering or algorithmic intuition the strong form gestures at). Each hypothesis is processed by an independent multi-step adversarial-research pipeline that surfaces 4–6 supporting and 4–6 contradicting primary sources, applies two analytical lenses from a persona roster, articulates an explicit steelman counterargument, and adjudicates a verdict in {`{`}VINDICATED, PLAUSIBLE, CONTESTED, REFUTED, UNFALSIFIABLE{`}`}.
+          We adversarially validate ten ambitious hypotheses spanning the intersection of artificial intelligence, context engineering, computational neuroscience, and human cognition. Each claim is formulated with a strong form (a theory-grade equivalence such as "homologous", "spontaneously emerged", "phenomenally conscious", or "the missing mechanism") and an implicit weak form (the underlying engineering or algorithmic intuition the strong form gestures at). Each hypothesis is processed by an independent claim-research agent that surfaces 4–6 supporting and 4–6 contradicting primary sources, applies two prompt-level persona lens primers (Karpathy, Joscha Bach, Hickey, Carmack, Bret Victor, Bryan Cantrill, Ayanokoji), articulates an explicit steelman counterargument, and adjudicates a verdict in {`{`}VINDICATED, PLAUSIBLE, CONTESTED, REFUTED, UNFALSIFIABLE{`}`}. The candidate product surface that emerges is then stress-tested by eight roundtable agents (pg, carmack, taleb, hickey × Round 1 + Round 2) which loaded the full persona skills via the skill registry, not just primers.
         </p>
         <p class="mt-4">
           <strong>Across all ten hypotheses, zero verdicts returned VINDICATED and zero returned cleanly REFUTED.</strong> Every claim landed in CONTESTED or SPLIT — strong forms systematically fail; weak forms systematically hold. We characterize five recurring failure modes (Marr-level confusion, load-bearing strong words, confirmation-bias trap, confounded causal channels, partial unfalsifiability) and four cross-cutting threads (Memory & Context, Architecture & Computation, Metacognition & Self-Model, Social & Identity).
@@ -73,11 +73,14 @@ import { u } from "../lib/site";
       <ul>
         <li>8–12 web searches across peer-reviewed neuroscience, ML conferences, arXiv, and credible commentary;</li>
         <li>surfacing of 4–6 supporting and 4–6 contradicting sources, plus 1–2 active-debate references;</li>
-        <li>application of two analytical lenses from a persona roster (Karpathy, Joscha Bach, Hickey, Carmack, Bret Victor, Bryan Cantrill, Ayanokoji), with attention to each persona's published positions;</li>
+        <li>application of two analytical lenses via prompt-level persona primers (50–80 words per persona describing how to argue from that perspective; the full persona skills were <em>not</em> loaded at the claim-agent level — see §2.4);</li>
         <li>explicit steelman counterargument;</li>
         <li>verdict ∈ {`{`}VINDICATED, PLAUSIBLE, CONTESTED, REFUTED, UNFALSIFIABLE{`}`} with justification of what would change it;</li>
         <li>5–10 papers-to-read with annotations.</li>
       </ul>
+      <p>
+        Persona deployment across the 10 dossiers was uneven: Joscha Bach 6×, Karpathy 5×, Hickey 3×, Carmack 2×, Bryan Cantrill 2×, Bret Victor 1×, Ayanokoji 1×. pg and Taleb appeared only at the roundtable.
+      </p>
 
       <h3>2.3 Synthesis</h3>
       <p>
@@ -86,7 +89,7 @@ import { u } from "../lib/site";
 
       <h3>2.4 Product-surface validation</h3>
       <p>
-        The strongest engineering surface across the package — agent context hygiene as the empirical home for active forgetting (Claim 09) — was developed into a product candidate and stress-tested by a 4-persona roundtable in full mode (Round 1 + cross-examination + synthesis), followed by 3 angle-research agents per go-to-market angle (library, protocol, managed service). The architecture proposed by the round and verified by the angle-research is the primitive measured in §4.
+        The strongest engineering surface across the package — agent context hygiene as the empirical home for active forgetting (Claim 09) — was developed into a product candidate and stress-tested by a 4-persona roundtable in full mode (Round 1 + cross-examination + synthesis), followed by 3 angle-research agents per go-to-market angle (library, protocol, managed service). <strong>The eight roundtable agents (4 personas × 2 rounds) are the only ones in the session that loaded the full persona skills</strong> via the skill registry — voice, contextual modes, knowledge bases, refresh cadence — rather than prompt-level primers. The architecture proposed by the round and verified by the angle-research is the primitive measured in §4.
       </p>
     </section>
 

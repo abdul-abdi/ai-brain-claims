@@ -13,9 +13,14 @@ abstract: >-
   (theory-grade equivalence) and an implicit weak form. Across all ten: zero
   vindicated, zero cleanly refuted; all CONTESTED or SPLIT. The convergent
   pattern — strong forms systematically fail, weak forms systematically hold —
-  is the headline finding. Ships with an observatory primitive (Python) that
-  implements the architecture surviving roundtable scrutiny: an immutable
-  event log with importance and confidence as pure functions over the log.
+  is the headline finding. Methodology is 21 parallel research dispatches:
+  10 claim-research agents (prompt-level persona lens primers from a roster
+  of 9), 3 idea-research agents (no personas), and 8 roundtable agents (full
+  persona skills loaded via skill registry; pg + carmack + taleb + hickey,
+  Round 1 + Round 2 cross-examination). Persona deployment was uneven across
+  the work. Ships with an observatory primitive (Python) that implements the
+  architecture surviving roundtable scrutiny: an immutable event log with
+  importance and confidence as pure functions over the log.
 keywords:
   - artificial intelligence
   - large language models
