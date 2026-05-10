@@ -1,158 +1,105 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import SigilAstro from "../components/SigilAstro.astro";
+import { PERSONAS } from "../lib/personas";
 import { u } from "../lib/site";
 ---
 
 <BaseLayout
-  title="How this was made — agents at the wheel"
+  title="Agents at the wheel"
   description="A showcase of what AI agents and persona-style analytical lenses produce when given an open-ended research prompt and the freedom to run."
   type="article"
+  wave="research"
 >
-  <article class="mx-auto max-w-wide px-6 py-12 lg:px-12 lg:py-20">
+  <main class="prose-col">
+    <div class="tracked">How this was made</div>
+    <h1 style="margin-top:.5rem;">Agents at the wheel.</h1>
+    <p class="lede" style="margin-top:1.25rem;color:var(--ink-sub);">
+      Every dossier, every verdict, the roundtable that killed the product, the benchmark that measured the architecture — produced in a single autonomous session via <strong style="color:var(--ink);">21 parallel research dispatches</strong>. This page tells that story honestly, including which agents loaded the full persona skills and which only had prompt-level primers.
+    </p>
 
-    <header class="mx-auto max-w-prose">
-      <p class="font-sans text-xs uppercase tracking-[0.18em] text-ink-500">
-        How this was made
-      </p>
-      <h1 class="mt-4 font-serif text-4xl font-medium leading-[1.05] tracking-[-0.01em] text-ink-900 lg:text-5xl">
-        Agents at the wheel.
-      </h1>
-      <p class="mt-5 font-serif text-prose-lg leading-relaxed text-ink-700">
-        Everything on this site — every dossier, every verdict, the roundtable that killed the product, the benchmark that measured the architecture — was produced in a single autonomous session via <strong>21 parallel research dispatches</strong>. This page tells that story honestly, including which agents loaded the full persona skills and which only had prompt-level primers, because the research <em>and</em> the way it was made are both the point.
-      </p>
-    </header>
+    <h2>The prompt</h2>
+    <p>
+      A single, deliberately wild instruction: generate ten ambitious hypotheses at the intersection of AI, context, and the brain — make them strong enough to fail — then research each one rigorously with persona-level analytical lenses, and adjudicate a verdict. If anything looked like a real product, stress-test it. Build whatever survives.
+    </p>
+    <p>The shape of the work — the file layout, the design language, the measurement, the website — emerged from the work itself.</p>
 
-    <section class="mx-auto mt-14 max-w-prose prose-claim font-serif text-ink-800">
-      <h2>The prompt</h2>
-      <p>
-        The session began with a single, deliberately wild instruction: generate ten ambitious hypotheses at the intersection of AI, context, and the brain — make them strong enough to fail — then research each one rigorously, with persona-level analytical lenses, and adjudicate a verdict. If anything looked like a real product, stress-test it. Build whatever survives.
-      </p>
-      <p>
-        No narrower spec. No "use this model" or "follow this template." The shape of the work — the file layout, the design language, the measurement, the website — emerged from the work itself.
-      </p>
+    <h2>The roster</h2>
+    <p>Nine analytical lenses. Each persona narrows the agent to a specific epistemic mode:</p>
 
-      <h2>What's a "persona," exactly?</h2>
-      <p>
-        Throughout the dossiers and the roundtable you'll see seven recurring names — Karpathy, Joscha Bach, Hickey, Carmack, Bret Victor, Bryan Cantrill, Ayanokoji. These are <strong>analytical lenses</strong>, not endorsements. Each persona is a curated profile — a roster of published positions, pet questions, characteristic objections, vocabulary — that an agent loads when it argues from that lens.
-      </p>
-      <p>
-        Why personas? Because <em>"think rigorously"</em> is a vague instruction; <em>"think the way Rich Hickey thinks about state"</em> is much sharper. Each persona narrows the agent to a specific epistemic mode:
-      </p>
-      <ul>
-        <li><strong>Karpathy</strong> — ML/transformer internals; statistical view; "show the empirical curve, not the analogy."</li>
-        <li><strong>Joscha Bach</strong> — computational consciousness; functionalism; "what is the computational pattern this implements?"</li>
-        <li><strong>Hickey</strong> — software design; <em>complect</em> vs <em>decomplect</em>; place vs. value; <em>"what is your information model?"</em></li>
-        <li><strong>Carmack</strong> — systems engineering; "what's the missing number?"; ship-fewer-things-that-work.</li>
-        <li><strong>Bret Victor</strong> — representation; explorable explanations; <em>"creators need immediate connection to what they create."</em></li>
-        <li><strong>Bryan Cantrill</strong> — systems realism; observability; "show me the data, not the diagram."</li>
-        <li><strong>Ayanokoji</strong> — cold strategic analysis; psychological profiling; the mask vs. the self.</li>
-        <li><strong>PG (Paul Graham)</strong> — startup product sense; founder-market-fit; <em>"is it worth doing?"</em></li>
-        <li><strong>Taleb</strong> — risk, fragility, fat tails; antifragile vs concave payoff; Lindy effect.</li>
-      </ul>
-      <p>
-        For every claim, two lenses are picked deliberately to surface different blind spots — Joscha Bach + Bryan Cantrill on architecture (functionalist + systems-realist; convergence is informative), Hickey + Karpathy on memory (information model + ML internals). The dossier's "Lens 1" / "Lens 2" sections are the agent arguing in-character, not paraphrasing the named individual.
-      </p>
+    <div style="display:grid;gap:1rem;margin:1.5rem 0;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
+      {PERSONAS.map((p) => (
+        <article class="note-card" style="display:flex;gap:.75rem;align-items:flex-start;">
+          <span class="sigil-hit" style="flex-shrink:0;"><SigilAstro id={p.id} size={28} /></span>
+          <div>
+            <div style="font-family:var(--serif);font-style:italic;font-size:1.0625rem;">{p.name}</div>
+            <div style="font-family:var(--sans);font-size:.75rem;color:var(--ink-sub);margin-top:.25rem;">{p.blurb}</div>
+            <blockquote style="margin-top:.6rem;border-left:2px solid var(--accent);padding-left:.7rem;color:var(--ink-sub);font-size:.875rem;">“{p.quote}”</blockquote>
+          </div>
+        </article>
+      ))}
+    </div>
 
-      <h2>The pipeline — what actually ran</h2>
-      <p>
-        The session dispatched <strong>21 agents in three waves</strong>. Be specific about what each agent did and didn't do — the framing matters:
-      </p>
-      <ol>
-        <li>
-          <strong>Ten claim-research agents</strong>, one per hypothesis. Each ran 8–12 web searches, surfaced 4–6 supporting + 4–6 contradicting primary sources, articulated a steelman, and committed to a verdict in {`{`}VINDICATED, PLAUSIBLE, CONTESTED, REFUTED, UNFALSIFIABLE{`}`}. <strong>These agents did NOT load the full persona skills.</strong> They received <em>prompt-level persona lens primers</em> — 50–80 words per persona describing how to argue from that perspective — and produced "Lens 1 / Lens 2" sections of the dossier in that style. Calling them "the personas" is overclaim. They are research agents <em>shaped by</em> persona primers.
-        </li>
-        <li>
-          <strong>Three idea-research agents</strong>, dispatched after the strongest engineering surface emerged — surveying prior art, demand signals, and technical feasibility for a candidate product. No personas; just bounded-scope research.
-        </li>
-        <li>
-          <strong>Eight roundtable agents</strong> — pg, carmack, taleb, hickey in two rounds. <strong>These are the only agents in the session that actually loaded the full persona skills</strong> via the skill registry, which means they had access to each persona's curated knowledge, voice, contextual modes, and refresh cadence — not just a primer.
-        </li>
-      </ol>
-      <p>
-        The agents did not coordinate beyond their shared input. Each wave's outputs fed forward to the next: dossier verdicts informed which engineering surface to test; the idea-research informed the roundtable's framing; the roundtable killed the proposed library architecture and proposed a sharper one; that sharper architecture became the observatory primitive whose retention is measured on this site.
-      </p>
+    <h2>The pipeline — what actually ran</h2>
+    <ol>
+      <li>
+        <strong>Ten claim-research agents</strong>, one per hypothesis. <strong>These agents did NOT load the full persona skills.</strong> They received <em>prompt-level persona lens primers</em> (50–80 words per persona) and produced "Lens 1 / Lens 2" sections in that style. Calling them "the personas" is overclaim; they are research agents <em>shaped by</em> persona primers.
+      </li>
+      <li>
+        <strong>Three idea-research agents</strong> — surveying prior art, demand signals, and feasibility for the candidate product. No personas; just bounded-scope research.
+      </li>
+      <li>
+        <strong>Eight roundtable agents</strong> — pg, carmack, taleb, hickey × R1 and R2. <strong>These are the only agents in the session that loaded the full persona skills</strong> via the skill registry. See the <a href={u("/roundtable")}>roundtable</a>.
+      </li>
+    </ol>
 
-      <h3>Persona deployment — honest counts</h3>
-      <p>
-        The roster has 9 personas. Deployment across the work was uneven. The honest table:
-      </p>
-      <table>
-        <thead>
-          <tr>
-            <th>Persona</th>
-            <th>Claim dossiers</th>
-            <th>Roundtable</th>
-            <th>Other</th>
-            <th>Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>Joscha Bach</td><td>6 (claims 1, 2, 4, 6, 8, 10)</td><td>—</td><td>—</td><td>6</td></tr>
-          <tr><td>Karpathy</td><td>5 (claims 1, 3, 5, 7, 9)</td><td>—</td><td>—</td><td>5</td></tr>
-          <tr><td>Hickey</td><td>3 (claims 4, 5, 9)</td><td>R1 + R2</td><td>—</td><td>5</td></tr>
-          <tr><td>Carmack</td><td>2 (claims 7, 8)</td><td>R1 + R2</td><td>—</td><td>4</td></tr>
-          <tr><td>Bryan Cantrill</td><td>2 (claims 2, 10)</td><td>—</td><td>—</td><td>2</td></tr>
-          <tr><td>pg</td><td>—</td><td>R1 + R2</td><td>—</td><td>2</td></tr>
-          <tr><td>Taleb</td><td>—</td><td>R1 + R2</td><td>—</td><td>2</td></tr>
-          <tr><td>Bret Victor</td><td>1 (claim 6)</td><td>—</td><td>1 (design pass)</td><td>2</td></tr>
-          <tr><td>Ayanokoji</td><td>1 (claim 3)</td><td>—</td><td>—</td><td>1</td></tr>
-        </tbody>
-      </table>
-      <p>
-        Only four personas — Hickey, Carmack, pg, Taleb — were on the roundtable, and only those four (plus Bret Victor for the design pass) had their full persona skills loaded. The rest were prompt-shaped, not skill-loaded.
-      </p>
-      <p>
-        This matters because "21 agents argued through 9 personas" is technically true and substantively misleading. The strongest persona-as-skill work happened in the roundtable's 8 agents and the design pass's 1 agent — 9 deeply persona-loaded runs. The remaining 12 agents were research workers with persona-flavored prompting.
-      </p>
+    <h3>Persona deployment — honest counts</h3>
+    <table>
+      <thead>
+        <tr><th>Persona</th><th>Claim dossiers</th><th>Roundtable</th><th>Other</th><th>Total</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Joscha Bach</td><td>6 (1, 2, 4, 6, 8, 10)</td><td>—</td><td>—</td><td>6</td></tr>
+        <tr><td>Karpathy</td><td>5 (1, 3, 5, 7, 9)</td><td>—</td><td>—</td><td>5</td></tr>
+        <tr><td>Hickey</td><td>3 (4, 5, 9)</td><td>R1 + R2</td><td>—</td><td>5</td></tr>
+        <tr><td>Carmack</td><td>2 (7, 8)</td><td>R1 + R2</td><td>—</td><td>4</td></tr>
+        <tr><td>Bryan Cantrill</td><td>2 (2, 10)</td><td>—</td><td>—</td><td>2</td></tr>
+        <tr><td>pg</td><td>—</td><td>R1 + R2</td><td>—</td><td>2</td></tr>
+        <tr><td>Taleb</td><td>—</td><td>R1 + R2</td><td>—</td><td>2</td></tr>
+        <tr><td>Bret Victor</td><td>1 (6)</td><td>—</td><td>1 (design pass)</td><td>2</td></tr>
+        <tr><td>Ayanokōji</td><td>1 (3)</td><td>—</td><td>—</td><td>1</td></tr>
+      </tbody>
+    </table>
+    <p>
+      Only four personas — Hickey, Carmack, pg, Taleb — were on the roundtable, and only those four (plus Bret Victor for the design pass) had their full persona skills loaded. The rest were prompt-shaped.
+    </p>
 
-      <h2>What the agents discovered, that I did not start with</h2>
-      <p>
-        The headline finding — <strong>0 vindicated, 0 cleanly refuted, all CONTESTED or SPLIT</strong> — was not a hypothesis going in. It emerged from the per-claim verdicts and is the kind of pattern an agent pipeline notices because it doesn't pre-commit to a story.
-      </p>
-      <p>
-        The roundtable killed my proposed product. I had drafted a Python library with two-tier mutable storage and a "git for agent context" pitch. The four-persona panel unanimously refused it. Hickey decomposed it into "complected concerns." pg called the wrapper-not-product trap "the premise, not a risk." Taleb called it concave payoff and a transaction with Anthropic that had already cleared (Anthropic shipped native context memory <em>16 days before</em> the session ran). What survived was a smaller, sharper architecture — an immutable event log with importance and confidence as pure functions over the log — which I then implemented and measured.
-      </p>
-      <p>
-        The benchmark surfaced a real failure mode I had not anticipated. The composite <code>recency+role</code> scorer <em>underperforms</em> naive truncation (21.2% vs 27.5% retention) because the default role-priority table doesn't include a "needle" role and so actively deprioritizes the marker. That's a small finding with a big lesson: imperfect importance signals don't fail neutrally; they fail toward the wrong answer. The architecture surfaces this precisely because the scorer is a pure function over the log — you can swap, replay, and diff without retraining.
-      </p>
+    <h2>What the agents discovered, that I did not start with</h2>
+    <p>
+      The headline finding — <strong>0 vindicated, 0 cleanly refuted, all CONTESTED or SPLIT</strong> — was not a hypothesis going in.
+    </p>
+    <p>
+      The <a href={u("/roundtable")}>roundtable</a> killed my proposed product. I had drafted a Python library with two-tier mutable storage and a "git for agent context" pitch. The four-persona panel unanimously refused it. What survived was an immutable event log with importance and confidence as pure functions over the log — which I implemented and measured at the <a href={u("/observatory")}>Observatory</a>.
+    </p>
+    <p>
+      The benchmark surfaced a real failure mode I had not anticipated. The composite <code>recency+role</code> scorer underperforms naive truncation because the default role-priority table doesn't include "needle". That's a small finding with a big lesson: imperfect importance signals don't fail neutrally; they fail toward the wrong answer.
+    </p>
 
-      <h2>Why this is interesting beyond the topic</h2>
-      <p>
-        Most "AI for research" demos are template-shaped: a query → a summary, a paper → a TL;DR, a pile of sources → a literature review. This package is different in three ways:
-      </p>
-      <ul>
-        <li><strong>The agents argued with each other.</strong> Roundtable Round 2 forced each persona to pick the argument they most disagreed with and dismantle it specifically — by name, by quote — and pick the most compelling argument that <em>wasn't</em> their own and steelman it stronger than the original. The convergence on Hickey's information model came from PG, Carmack, and Taleb each independently steelmanning him in R2.</li>
-        <li><strong>The verdicts admit specific defeat conditions.</strong> Each dossier's "Verdict" section says what would change it. The benchmark is reproducible from a single command. The verdicts are not pronouncements; they're bets with stated falsification criteria.</li>
-        <li><strong>The agents built the artifact for inspecting their work.</strong> The site is the deliverable. The eval JSON is committed alongside the figure that renders it. The reading list flags which citations were verified by re-fetching the source after the fact (six were verified clean; seven needed corrections — including author lists I had wrong; this page tells you which).</li>
-      </ul>
+    <h2>Numbers</h2>
+    <ul>
+      <li><strong>21</strong> autonomous research dispatches in the main session</li>
+      <li><strong>9</strong> personas in the roster · <strong>9</strong> deeply persona-loaded runs · <strong>12</strong> prompt-shaped research workers</li>
+      <li><strong>10</strong> PhD-level dossiers (1,800–3,500 words each)</li>
+      <li><strong>~33,500</strong> total words of research before this page</li>
+      <li><strong>25</strong> primary sources in the curated reading list</li>
+      <li><strong>22</strong> passing pytest cases on the observatory primitive</li>
+      <li><strong>10</strong> seeds × 5 strategies × 3 replays = 150 measurements</li>
+      <li><strong>0</strong> vindications, <strong>0</strong> clean refutations</li>
+    </ul>
 
-      <h2>What the reader should take from this</h2>
-      <p>
-        Treat the verdicts as serious — they're grounded — but treat them as agent-mediated, not authoritative. Read the dossiers; pick at the citations; run the benchmark yourself. The <a href={u("/methodology")}>methodology page</a> is brutally honest about what the pipeline can and cannot do. The <a href={u("/reading-list")}>reading list</a> marks every citation's verification status.
-      </p>
-      <p>
-        The contribution is two-layered: at the surface, ten serious adversarial verdicts on hypotheses people argue about. Underneath, a worked example of what happens when you give a structured cohort of AI agents an open prompt, mixed-fidelity persona deployment (some skills fully loaded, some prompt-shaped), and the freedom to dispatch each other.
-      </p>
-
-      <h2>Numbers</h2>
-      <ul>
-        <li><strong>21</strong> autonomous research dispatches in the main session</li>
-        <li><strong>9</strong> personas in the roster · <strong>9</strong> deeply persona-loaded runs (8 roundtable + 1 design pass) · <strong>12</strong> prompt-shaped research workers</li>
-        <li><strong>10</strong> PhD-level dossiers (1,800–3,500 words each)</li>
-        <li><strong>~33,500</strong> total words of research before this page</li>
-        <li><strong>25</strong> primary sources in the curated reading list, with verification status</li>
-        <li><strong>22</strong> passing pytest cases on the observatory primitive</li>
-        <li><strong>10</strong> seeds × 5 strategies × 3 replays = 150 measurements in the needle-retention benchmark</li>
-        <li><strong>0</strong> vindications, <strong>0</strong> clean refutations</li>
-      </ul>
-
-      <h2>If you want to reproduce this</h2>
-      <p>
-        The whole pipeline is open source and reproducible. Clone the repo. Run the benchmark — you'll get the same numbers (deterministic seeds). Read the per-claim dossiers — the searches, sources, persona analyses, and verdicts are all there. Disagree with a verdict, file an <a href="https://github.com/abdul-abdi/ai-brain-claims/issues/new/choose" target="_blank" rel="noopener">issue</a> — there's a template for that. Open a pull request with a new importance scorer, an unverified citation correction, or an additional persona lens.
-      </p>
-      <p>
-        The point of an agent showcase is not to get awe. It's to make the next person's work easier — and to be specific about what the agents did and did not handle.
-      </p>
-    </section>
-  </article>
+    <h2>If you want to reproduce this</h2>
+    <p>
+      The whole pipeline is open source and reproducible. Clone the repo. Run the benchmark — you'll get the same numbers (deterministic seeds). Read the per-claim dossiers — the searches, sources, persona analyses, and verdicts are all there. <a href={u("/reproduce")}>How to reproduce.</a>
+    </p>
+  </main>
 </BaseLayout>

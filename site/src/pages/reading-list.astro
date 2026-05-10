@@ -7,25 +7,25 @@ const verifiedCount = ALL_REFS.filter((r) => r.verification === "verified").leng
 const correctionCount = ALL_REFS.filter((r) => r.verification === "verified-with-correction").length;
 const byNameCount = ALL_REFS.filter((r) => r.verification === "verified-by-name").length;
 
-const VERIFICATION_LABEL: Record<VerificationStatus, { label: string; cls: string; title: string }> = {
+const STATUS_LABEL: Record<VerificationStatus, { label: string; color: string; title: string }> = {
   "verified": {
     label: "verified",
-    cls: "bg-verdict-vindicated/15 text-verdict-vindicated",
+    color: "var(--v-vindicated)",
     title: "Re-fetched from arXiv on 2026-05-10. Title and authors confirmed.",
   },
   "verified-with-correction": {
     label: "corrected",
-    cls: "bg-verdict-contested/15 text-verdict-contested",
+    color: "var(--v-contested)",
     title: "Re-fetched from arXiv. An earlier draft had a wrong title or attribution; corrected in place.",
   },
   "verified-by-name": {
     label: "by-name",
-    cls: "bg-verdict-plausible/15 text-verdict-plausible",
-    title: "Older / well-established work, not WebFetched but cited correctly enough to find via title and author search.",
+    color: "var(--v-plausible)",
+    title: "Older / well-established work, not WebFetched but cited by title and author search.",
   },
   "unverified": {
     label: "unverified",
-    cls: "bg-verdict-refuted/15 text-verdict-refuted",
+    color: "var(--v-refuted)",
     title: "Not yet checked.",
   },
 };
@@ -33,91 +33,77 @@ const VERIFICATION_LABEL: Record<VerificationStatus, { label: string; cls: strin
 
 <BaseLayout
   title="Reading list"
-  description="The 25 most load-bearing primary sources across all 10 dossiers, organized by thread. Read these and you'll have ground-truth on the empirical state of every claim."
+  description="The 25 most load-bearing primary sources across all 10 dossiers, organized by thread."
+  wave="research"
 >
-  <article class="mx-auto max-w-wide px-6 py-12 lg:px-12 lg:py-20">
-    <header class="mx-auto max-w-prose">
-      <p class="font-sans text-xs uppercase tracking-[0.18em] text-ink-500">
-        {ALL_REFS.length} primary sources · {loadBearingCount} load-bearing
-      </p>
-      <h1 class="mt-4 font-serif text-4xl font-medium leading-[1.1] tracking-[-0.01em] text-ink-900 lg:text-5xl">
-        Curated reading list
-      </h1>
-      <p class="mt-5 font-serif text-prose-lg leading-relaxed text-ink-700">
-        These are the primary sources that recurred across multiple dossiers — the load-bearing references for verifying every verdict in this package. Read these and you'll have ground-truth on the empirical state of the field. Each dossier additionally lists 5–10 sources specific to its claim.
-      </p>
-      <p class="mt-3 font-sans text-sm italic text-ink-500">
-        ★ marks the "read this before…" papers — papers cited often enough that a single misreading would distort the whole package.
-      </p>
-      <div class="mt-4 flex flex-wrap items-center gap-3 font-sans text-xs text-ink-600">
-        <span class="text-ink-500">Verification status (re-fetched 2026-05-10):</span>
-        <span class="rounded bg-verdict-vindicated/15 px-2 py-0.5 text-verdict-vindicated">verified · {verifiedCount}</span>
-        <span class="rounded bg-verdict-contested/15 px-2 py-0.5 text-verdict-contested">corrected · {correctionCount}</span>
-        <span class="rounded bg-verdict-plausible/15 px-2 py-0.5 text-verdict-plausible">by-name · {byNameCount}</span>
-      </div>
-    </header>
+  <main class="reading-list">
+    <div class="tracked">Reading list · {ALL_REFS.length} sources · {loadBearingCount} load-bearing</div>
+    <h1 style="margin-top:0.75rem;margin-bottom:1rem;">What the dossiers cited.</h1>
+    <p style="max-width:65ch;color:var(--ink-sub);">
+      Sorted by <em>provenance density</em> &mdash; how many of the ten dossiers cite the same paper. The load-bearing papers (★) are the structure of the entire session: where the dossiers agree on what to read, even when they disagree on what it means.
+    </p>
+    <p style="margin-top:1rem;font-family:var(--sans);font-size:.75rem;color:var(--ink-sub);display:flex;flex-wrap:wrap;gap:.6rem;">
+      <span style="color:var(--ink-mute);">Verification status (re-fetched 2026-05-10):</span>
+      <span style="color:var(--v-vindicated);">verified · {verifiedCount}</span>
+      <span style="color:var(--v-contested);">corrected · {correctionCount}</span>
+      <span style="color:var(--v-plausible);">by-name · {byNameCount}</span>
+    </p>
 
-    <div class="mx-auto mt-16 max-w-prose space-y-16">
-      {READING_LIST.map((thread) => (
-        <section>
-          <header class="mb-6">
-            <p class="font-sans text-xs uppercase tracking-[0.18em] text-accent-600">Thread</p>
-            <h2 class="mt-1 font-serif text-2xl font-medium text-ink-900">{thread.label}</h2>
-            <p class="mt-2 font-serif leading-relaxed text-ink-700">{thread.description}</p>
-          </header>
+    {READING_LIST.map((thread) => (
+      <section style="margin-top:3rem;">
+        <div class="tracked">Thread</div>
+        <h2 style="margin-top:.5rem;font-size:1.5rem;">{thread.label}</h2>
+        <p style="color:var(--ink-sub);margin-top:.5rem;max-width:65ch;">{thread.description}</p>
 
-          <ol class="space-y-5">
-            {thread.refs.map((ref, i) => {
-              const number = i + 1;
-              const href = ref.link
-                ? ref.link
-                : ref.arxiv
-                  ? `https://arxiv.org/abs/${ref.arxiv}`
-                  : ref.doi
-                    ? `https://doi.org/${ref.doi}`
-                    : null;
-              return (
-                <li class="flex gap-4">
-                  <span class="font-mono text-sm text-ink-400 pt-0.5">
-                    {String(number).padStart(2, "0")}
-                  </span>
-                  <div class="flex-1">
-                    <p class="font-serif text-ink-900">
-                      {ref.loadBearing && (
-                        <span aria-label="load-bearing" title="Load-bearing reference" class="mr-1.5 text-accent-600">★</span>
-                      )}
-                      <strong class="font-medium">{ref.authors}</strong>{" "}
-                      <span class="text-ink-500">({ref.year}).</span>{" "}
-                      {href ? (
-                        <a href={href} target="_blank" rel="noopener" class="italic">
-                          {ref.title}
-                        </a>
-                      ) : (
-                        <span class="italic">{ref.title}</span>
-                      )}{" "}
-                      <span class="text-ink-500">— {ref.venue}{ref.arxiv && `, arXiv:${ref.arxiv}`}.</span>
-                      <span class={`ml-2 inline-block rounded px-1.5 py-0.5 align-middle font-sans text-[0.65rem] font-medium tracking-wider ${VERIFICATION_LABEL[ref.verification].cls}`} title={VERIFICATION_LABEL[ref.verification].title}>
-                        {VERIFICATION_LABEL[ref.verification].label}
-                      </span>
-                    </p>
-                    <p class="mt-1.5 font-serif text-sm leading-relaxed text-ink-600">{ref.annotation}</p>
-                  </div>
-                </li>
-              );
-            })}
-          </ol>
-        </section>
-      ))}
-    </div>
+        <div style="margin-top:2rem;">
+          {thread.refs.map((ref) => {
+            const href = ref.link
+              ? ref.link
+              : ref.arxiv
+                ? `https://arxiv.org/abs/${ref.arxiv}`
+                : ref.doi
+                  ? `https://doi.org/${ref.doi}`
+                  : null;
+            const provLevel = ref.loadBearing ? 6 : 3;
+            const status = STATUS_LABEL[ref.verification];
+            return (
+              <div class="cite-row">
+                <span class="yr">{ref.year}</span>
+                <span class="ttl">
+                  {ref.loadBearing && <span style="color:var(--accent);margin-right:.3em;">★</span>}
+                  {href ? (
+                    <a href={href} target="_blank" rel="noopener" style="border-bottom:1px solid var(--accent);">
+                      <em>{ref.title}</em>
+                    </a>
+                  ) : (
+                    <em>{ref.title}</em>
+                  )}
+                  <small>{ref.authors} · {ref.venue}{ref.arxiv && ` · arXiv:${ref.arxiv}`}</small>
+                  <small style="color:var(--ink-mute);font-style:italic;">{ref.annotation}</small>
+                </span>
+                <span class="prov" aria-label={`provenance density: ${provLevel} of 6`}>
+                  {Array.from({ length: 6 }).map((_, j) => (
+                    <span class={"seg" + (j < provLevel ? " on" : "")} />
+                  ))}
+                </span>
+                <span class="verify" style={`color:${status.color};border-color:currentColor;`} title={status.title}>
+                  {status.label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+    ))}
 
-    <aside class="mx-auto mt-16 max-w-prose rounded-lg border border-ink-400/20 bg-bone-50 p-6">
-      <p class="font-sans text-xs uppercase tracking-[0.18em] text-accent-600">A note on citation verification</p>
-      <p class="mt-2 font-serif leading-relaxed text-ink-700">
-        Each citation tagged <strong>verified</strong> was re-fetched from arXiv on 2026-05-10 and the title and authors were confirmed against the site source. Tagged <strong>corrected</strong> means the re-fetch surfaced an attribution error in an earlier draft (wrong title shorthand, missing or inserted authors); the entry has been fixed in place. Tagged <strong>by-name</strong> are older, well-cited works (Miller 1956, McClelland et al. 1995) not WebFetched but uniquely identifiable by title and author search.
+    <section style="margin-top:4rem;border-top:1px solid var(--bone-line);padding-top:2rem;">
+      <div class="tracked">A note on verification</div>
+      <p style="color:var(--ink-sub);max-width:65ch;margin-top:.75rem;">
+        Each citation tagged <strong style="color:var(--ink);">verified</strong> was re-fetched from arXiv on 2026-05-10 and the title and authors were confirmed against the site source. Tagged <strong style="color:var(--ink);">corrected</strong> means the re-fetch surfaced an attribution error in an earlier draft; the entry has been fixed in place. Tagged <strong style="color:var(--ink);">by-name</strong> are older, well-cited works not WebFetched but uniquely identifiable by title + author search.
       </p>
-      <p class="mt-3 font-serif leading-relaxed text-ink-700">
-        Two corrections worth flagging: <strong>Granier &amp; Senn 2025</strong>'s actual title is "Multihead self-attention in cortico-thalamic circuits" (the earlier shorthand was misleading), and <strong>Butlin et al. 2023</strong> on consciousness in AI does not include David Chalmers as an author — it does include Yoshua Bengio, Jonathan Birch, Chris Frith, and others. Both items are now correct in place.
+      <p style="color:var(--ink-sub);max-width:65ch;margin-top:1rem;">
+        Two corrections worth flagging: <strong style="color:var(--ink);">Granier &amp; Senn 2025</strong>'s actual title is "Multihead self-attention in cortico-thalamic circuits", and <strong style="color:var(--ink);">Butlin et al. 2023</strong> on consciousness in AI does not include David Chalmers as an author — it does include Yoshua Bengio, Jonathan Birch, Chris Frith, and others.
       </p>
-    </aside>
-  </article>
+    </section>
+  </main>
 </BaseLayout>

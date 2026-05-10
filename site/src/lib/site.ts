@@ -24,14 +24,16 @@ export function u(path: string): string {
 }
 
 export const NAV = [
-  { label: "Read", href: "/" },
-  { label: "Paper", href: "/paper" },
-  { label: "How it was made", href: "/agents" },
-  { label: "Claims", href: "/#claims" },
-  { label: "Synthesis", href: "/synthesis" },
+  { label: "Index", href: "/" },
+  { label: "Dossiers", href: "/claims/claim-01" },
+  { label: "Roundtable", href: "/roundtable" },
   { label: "Observatory", href: "/observatory" },
-  { label: "Reading list", href: "/reading-list" },
+  { label: "Reading", href: "/reading-list" },
+  { label: "Synthesis", href: "/synthesis" },
+  { label: "Paper", href: "/paper" },
+  { label: "Agents", href: "/agents" },
   { label: "Reproduce", href: "/reproduce" },
-  { label: "Design notes", href: "/design-notes" },
-  { label: "GitHub", href: SITE.repo, external: true },
+  { label: "Methodology", href: "/methodology" },
+  { label: "Notes", href: "/design-notes" },
+  { label: "GitHub ↗", href: SITE.repo, external: true },
 ] as const;

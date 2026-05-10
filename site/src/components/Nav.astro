@@ -1,42 +1,33 @@
 ---
-import { NAV, SITE, u, BASE } from "../lib/site";
+import { NAV, BASE, u } from "../lib/site";
+
 const path = Astro.url.pathname;
+const stripped = path.replace(BASE, "") || "/";
+
+function isActive(href: string): boolean {
+  const linkPath = href.split("#")[0] || "/";
+  if (linkPath === "/") return stripped === "/";
+  if (linkPath.startsWith("/claims")) return stripped.startsWith("/claims");
+  return stripped === linkPath || stripped.startsWith(linkPath + "/");
+}
 ---
 
-<header class="border-b border-ink-400/20 bg-bone-100/85 backdrop-blur-sm sticky top-0 z-30">
-  <nav class="mx-auto flex max-w-wide items-center gap-3 px-4 py-3 sm:px-6 sm:py-4 lg:px-12 font-sans text-sm">
-    <a href={u("/")} class="flex flex-shrink-0 items-baseline gap-2 text-ink-900 no-underline">
-      <span class="font-serif text-base font-medium sm:text-lg">10 Claims</span>
-      <span class="hidden text-ink-500 md:inline">at the Frontier</span>
-    </a>
-
-    <ul class="ml-auto -mr-2 flex items-center gap-0.5 overflow-x-auto pr-2 sm:gap-1 lg:gap-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      {NAV.map((item) => {
-        const isExternal = "external" in item && item.external;
-        const resolvedHref = isExternal ? item.href : u(item.href);
-        const stripped = path.replace(BASE, "") || "/";
-        const linkPath = item.href.split("#")[0] || "/";
-        const active = !isExternal && (
-          stripped === linkPath ||
-          (linkPath !== "/" && stripped.startsWith(linkPath))
-        );
-        return (
-          <li class="flex-shrink-0">
-            <a
-              href={resolvedHref}
-              class={`rounded px-2.5 py-1.5 no-underline transition-colors sm:px-3 ${
-                active
-                  ? "bg-bone-200 text-ink-900"
-                  : "text-ink-600 hover:bg-bone-200 hover:text-ink-900"
-              }`}
-              {...(isExternal ? { target: "_blank", rel: "noopener" } : {})}
-            >
-              {item.label}
-              {isExternal && <span aria-hidden="true" class="ml-1 text-xs">↗</span>}
-            </a>
-          </li>
-        );
-      })}
-    </ul>
-  </nav>
-</header>
+<nav class="topnav" aria-label="Primary">
+  <a class="brand" href={u("/")}>
+    Ten Claims at the Frontier <em>· a working notebook</em>
+  </a>
+  {NAV.map((item) => {
+    const ext = "external" in item && item.external;
+    const href = ext ? item.href : u(item.href);
+    const active = !ext && isActive(item.href);
+    return (
+      <a
+        href={href}
+        class={active ? "active" : ""}
+        {...(ext ? { target: "_blank", rel: "noopener" } : {})}
+      >
+        {item.label}
+      </a>
+    );
+  })}
+</nav>

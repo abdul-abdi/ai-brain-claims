@@ -1,5 +1,5 @@
 ---
-import { VERDICTS, type Verdict } from "../lib/verdicts";
+import { VERDICTS, VERDICT_KEY, type Verdict } from "../lib/verdicts";
 
 interface Props {
   verdict: Verdict;
@@ -9,29 +9,23 @@ interface Props {
 
 const { verdict, size = "md", showDescription = false } = Astro.props;
 const v = VERDICTS[verdict];
+const key = VERDICT_KEY[verdict];
 
-const sizeClasses = {
-  sm: "text-[0.7rem] px-2 py-0.5 tracking-wider",
-  md: "text-xs px-2.5 py-1 tracking-wider",
-  lg: "text-sm px-3 py-1.5 tracking-wider",
+const padding = {
+  sm: "0.18rem 0.55rem",
+  md: "0.25rem 0.7rem 0.3rem",
+  lg: "0.32rem 0.85rem 0.36rem",
 }[size];
+const fs = { sm: "0.6875rem", md: "0.75rem", lg: "0.8125rem" }[size];
 ---
 
-<span class="inline-flex flex-col">
-  <span
-    class={`inline-flex items-center gap-1.5 rounded-full border font-sans font-medium uppercase ${sizeClasses} ${v.bg} ${v.color}`}
-  >
-    <span
-      class={`inline-block h-1.5 w-1.5 rounded-full ${v.color.replace("text-", "bg-")}`}
-      aria-hidden="true"
-    ></span>
+<span style="display:inline-flex;flex-direction:column;align-items:flex-start;gap:0.25rem;">
+  <span class="verdict-pill" data-v={key} style={`padding:${padding};font-size:${fs};`}>
     {v.label}
   </span>
-  {
-    showDescription && (
-      <span class="mt-1 font-sans text-xs italic text-ink-500">
-        {v.description}
-      </span>
-    )
-  }
+  {showDescription && (
+    <span class="ui" style="color:var(--ink-sub);font-style:italic;font-family:var(--serif);font-size:0.8125rem;">
+      {v.description}
+    </span>
+  )}
 </span>
