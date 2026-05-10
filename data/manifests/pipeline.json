@@ -1,0 +1,269 @@
+{
+  "schema": "pipeline-manifest-1",
+  "session_started": "2026-05-09",
+  "harness": "Claude Code (Anthropic CLI)",
+  "total_dispatches": 21,
+  "deeply_persona_loaded_dispatches": 9,
+  "prompt_shaped_dispatches": 12,
+  "waves": [
+    {
+      "wave": 1,
+      "label": "Claim research",
+      "date": "2026-05-09",
+      "model": "Sonnet",
+      "personas_loaded_via_skill": false,
+      "personas_via_prompt_primer": true,
+      "agents": [
+        {
+          "id": "claim-01",
+          "personas": ["Karpathy", "Joscha Bach"],
+          "thread": "memory",
+          "verdict": "CONTESTED"
+        },
+        {
+          "id": "claim-02",
+          "personas": ["Joscha Bach", "Bryan Cantrill"],
+          "thread": "architecture",
+          "verdict": "CONTESTED"
+        },
+        {
+          "id": "claim-03",
+          "personas": ["Karpathy", "Ayanokoji"],
+          "thread": "social",
+          "verdict": "CONTESTED"
+        },
+        {
+          "id": "claim-04",
+          "personas": ["Joscha Bach", "Hickey"],
+          "thread": "metacognition",
+          "verdict": "SPLIT"
+        },
+        {
+          "id": "claim-05",
+          "personas": ["Hickey", "Karpathy"],
+          "thread": "memory",
+          "verdict": "CONTESTED"
+        },
+        {
+          "id": "claim-06",
+          "personas": ["Joscha Bach", "Bret Victor"],
+          "thread": "metacognition",
+          "verdict": "SPLIT"
+        },
+        {
+          "id": "claim-07",
+          "personas": ["Karpathy", "Carmack"],
+          "thread": "social",
+          "verdict": "REFUTED"
+        },
+        {
+          "id": "claim-08",
+          "personas": ["Joscha Bach", "Carmack"],
+          "thread": "memory",
+          "verdict": "SPLIT"
+        },
+        {
+          "id": "claim-09",
+          "personas": ["Hickey", "Karpathy"],
+          "thread": "memory",
+          "verdict": "SPLIT"
+        },
+        {
+          "id": "claim-10",
+          "personas": ["Joscha Bach", "Bryan Cantrill"],
+          "thread": "architecture",
+          "verdict": "SPLIT"
+        }
+      ],
+      "prompt_template": "data/prompts/claim-research-template.md",
+      "lens_primers": "data/prompts/persona-lens-primers.md"
+    },
+    {
+      "wave": 2,
+      "label": "Idea research (Active Context Hygiene candidate)",
+      "date": "2026-05-09",
+      "model": "Haiku",
+      "personas_loaded_via_skill": false,
+      "personas_via_prompt_primer": false,
+      "agents": [
+        { "id": "idea-prior-art", "scope": "competitors / prior art" },
+        { "id": "idea-demand", "scope": "market / demand signals" },
+        { "id": "idea-feasibility", "scope": "technical feasibility / MVP" }
+      ],
+      "prompt_template": "data/prompts/idea-research-prompts.md"
+    },
+    {
+      "wave": 3,
+      "label": "Roundtable Round 1 (independent takes)",
+      "date": "2026-05-09",
+      "model": "Sonnet",
+      "personas_loaded_via_skill": true,
+      "personas_via_prompt_primer": false,
+      "agents": [
+        {
+          "id": "rt-r1-pg",
+          "persona": "pg",
+          "skill_loaded": true,
+          "verdict": "KILL"
+        },
+        {
+          "id": "rt-r1-carmack",
+          "persona": "carmack",
+          "skill_loaded": true,
+          "verdict": "KILL"
+        },
+        {
+          "id": "rt-r1-taleb",
+          "persona": "taleb",
+          "skill_loaded": true,
+          "verdict": "KILL"
+        },
+        {
+          "id": "rt-r1-hickey",
+          "persona": "hickey",
+          "skill_loaded": true,
+          "verdict": "RESTRUCTURE"
+        }
+      ],
+      "prompt_template": "data/prompts/roundtable-R1.md"
+    },
+    {
+      "wave": 4,
+      "label": "Roundtable Round 2 (cross-examination)",
+      "date": "2026-05-09",
+      "model": "Sonnet",
+      "personas_loaded_via_skill": true,
+      "personas_via_prompt_primer": false,
+      "agents": [
+        {
+          "id": "rt-r2-pg",
+          "persona": "pg",
+          "skill_loaded": true,
+          "shifted_position": false,
+          "steelmanned": "hickey"
+        },
+        {
+          "id": "rt-r2-carmack",
+          "persona": "carmack",
+          "skill_loaded": true,
+          "shifted_position": "partial",
+          "steelmanned": "hickey"
+        },
+        {
+          "id": "rt-r2-taleb",
+          "persona": "taleb",
+          "skill_loaded": true,
+          "shifted_position": false,
+          "steelmanned": "hickey"
+        },
+        {
+          "id": "rt-r2-hickey",
+          "persona": "hickey",
+          "skill_loaded": true,
+          "shifted_position": false,
+          "steelmanned": "taleb"
+        }
+      ],
+      "prompt_template": "data/prompts/roundtable-R2.md"
+    },
+    {
+      "wave": 5,
+      "label": "Angle deep-research (A / B / C)",
+      "date": "2026-05-09",
+      "model": "Sonnet",
+      "personas_loaded_via_skill": false,
+      "personas_via_prompt_primer": false,
+      "agents": [
+        { "id": "angle-A-library", "verdict": "CONFIRMS_KILL" },
+        { "id": "angle-B-protocol", "verdict": "CONDITIONAL" },
+        { "id": "angle-C-service", "verdict": "CONDITIONAL" }
+      ],
+      "prompt_template": "data/prompts/angle-research.md",
+      "note": "Wave 5 is bookkeeping under the 21-dispatch headline because the 3 agents were dispatched after the user pointed out the original idea-research wave hadn't given each angle dedicated treatment. Including them brings the literal count to 24, but the public framing groups them with the wave-2 idea-research since they cover the same product-validation arc."
+    },
+    {
+      "wave": 6,
+      "label": "Claim port (brain → site MDX)",
+      "date": "2026-05-09",
+      "model": "Haiku",
+      "personas_loaded_via_skill": false,
+      "personas_via_prompt_primer": false,
+      "agents": [
+        { "id": "port-01", "scope": "claim-01.md → claim-01.mdx" },
+        { "id": "port-02", "scope": "claim-02" },
+        { "id": "port-03", "scope": "claim-03" },
+        { "id": "port-04", "scope": "claim-04" },
+        { "id": "port-05", "scope": "claim-05" },
+        { "id": "port-06", "scope": "claim-06" },
+        { "id": "port-07", "scope": "claim-07" },
+        { "id": "port-08", "scope": "claim-08" },
+        { "id": "port-10", "scope": "claim-10" }
+      ],
+      "prompt_template": "data/prompts/claim-port.md",
+      "note": "Claim 09 was hand-ported earlier as the design exemplar. This wave is build-pipeline / not part of the headline 21-dispatch research count."
+    },
+    {
+      "wave": 7,
+      "label": "Citation verification",
+      "date": "2026-05-10",
+      "model": "Haiku",
+      "personas_loaded_via_skill": false,
+      "personas_via_prompt_primer": false,
+      "agents": [
+        {
+          "id": "verify-citations",
+          "scope": "14 cross-package arXiv references"
+        }
+      ],
+      "prompt_template": "data/prompts/citation-verification.md",
+      "output": "data/verifications/citation-pass-1.json",
+      "note": "Day-2 dispatch. Not part of the headline 21-dispatch research count."
+    },
+    {
+      "wave": 8,
+      "label": "Design pass (Bret Victor)",
+      "date": "2026-05-10",
+      "model": "Sonnet",
+      "personas_loaded_via_skill": true,
+      "personas_via_prompt_primer": false,
+      "agents": [
+        {
+          "id": "design-pass-bret-victor",
+          "persona": "bret-victor",
+          "skill_loaded": true,
+          "deliverables": [
+            "MultiSeedFigure seed-scrubber extension",
+            "ClaimsExplorer.tsx (new)",
+            "DesignNotesDemo.tsx (new)",
+            "/design-notes page"
+          ]
+        }
+      ],
+      "prompt_template": "data/prompts/design-pass.md",
+      "note": "Day-2 dispatch. Not part of the headline 21-dispatch research count, but is the 9th deeply-persona-loaded run in the project."
+    }
+  ],
+  "headline_dispatch_count": {
+    "value": 21,
+    "components": {
+      "claim_research": 10,
+      "idea_research": 3,
+      "roundtable_R1": 4,
+      "roundtable_R2": 4
+    },
+    "excluded_from_headline_count": {
+      "angle_research_3": "supplementary product-validation work after user feedback",
+      "claim_port_9": "build-pipeline mechanical translation",
+      "citation_verification_1": "day-2 fact-check",
+      "design_pass_1": "day-2 design implementation"
+    }
+  },
+  "deeply_persona_loaded_count": {
+    "value": 9,
+    "components": {
+      "roundtable_R1_full_skill_loads": 4,
+      "roundtable_R2_full_skill_loads": 4,
+      "design_pass_skill_load": 1
+    }
+  }
+}

@@ -1,0 +1,150 @@
+{
+  "schema": "citation-verification-1",
+  "performed_on": "2026-05-10",
+  "method": "WebFetch on arxiv.org abstract page; cross-check title and author list against site source",
+  "verifier": "Haiku agent dispatched with the prompt at data/prompts/citation-verification.md",
+  "verifications": [
+    {
+      "cited_arxiv": "2504.06354",
+      "cited_title": "From Cortico-Thalamic Circuits to Linear Attention",
+      "status": "TITLE_MISMATCH",
+      "actual_title": "Multihead self-attention in cortico-thalamic circuits",
+      "actual_authors": "Arno Granier, Walter Senn",
+      "submitted": "2025-04-08",
+      "note": "Title differs significantly from cited version. Cited is misleading. Site corrected 2026-05-10."
+    },
+    {
+      "cited_arxiv": "2406.10149",
+      "cited_title": "BABILong",
+      "status": "TITLE_MISMATCH",
+      "actual_title": "BABILong: Testing the Limits of LLMs with Long Context Reasoning-in-a-Haystack",
+      "actual_authors": "Yuri Kuratov, Aydar Bulatov, Petr Anokhin, Ivan Rodkin, Dmitry Sorokin, Artyom Sorokin, Mikhail Burtsev",
+      "submitted": "2024-06-14",
+      "note": "Cited as shorthand only; full title includes descriptive subtitle. Acceptable shorthand. Site updated to full title."
+    },
+    {
+      "cited_arxiv": "2404.06654",
+      "cited_title": "RULER",
+      "status": "TITLE_MISMATCH",
+      "actual_title": "RULER: What's the Real Context Size of Your Long-Context Language Models?",
+      "actual_authors": "Cheng-Ping Hsieh, Simeng Sun, Samuel Kriman, Shantanu Acharya, Dima Rekesh, Fei Jia, Yang Zhang, Boris Ginsburg",
+      "submitted": "2024-04-09",
+      "note": "Cited as shorthand only; full title is expanded."
+    },
+    {
+      "cited_arxiv": "2307.03172",
+      "cited_title": "Lost in the Middle",
+      "status": "TITLE_MISMATCH",
+      "actual_title": "Lost in the Middle: How Language Models Use Long Contexts",
+      "actual_authors": "Nelson F. Liu, Kevin Lin, John Hewitt, Ashwin Paranjape, Michele Bevilacqua, Fabio Petroni, Percy Liang",
+      "submitted": "2023-07-06",
+      "note": "Cited as shorthand only; full title includes subtitle."
+    },
+    {
+      "cited_arxiv": "2008.02217",
+      "cited_title": "Hopfield Networks Is All You Need",
+      "status": "EXISTS",
+      "actual_title": "Hopfield Networks is All You Need",
+      "actual_authors": "Hubert Ramsauer, Bernhard Schäfl, Johannes Lehner, Philipp Seidl, Michael Widrich, Thomas Adler, Lukas Gruber, Markus Holzleitner, Milena Pavlović, Geir Kjetil Sandve, Victor Greiff, David Kreil, Michael Kopp, Günter Klambauer, Johannes Brandstetter, Sepp Hochreiter",
+      "submitted": "2020-07-16",
+      "note": "Capitalization differs slightly ('is' vs 'Is'). No correction needed."
+    },
+    {
+      "cited_arxiv": "2207.05221",
+      "cited_title": "Language Models (Mostly) Know What They Know",
+      "status": "EXISTS",
+      "actual_title": "Language Models (Mostly) Know What They Know",
+      "actual_authors": "Saurav Kadavath, Tom Conerly, Amanda Askell, et al. (37 Anthropic authors)",
+      "submitted": "2022-07-11",
+      "note": "Clean."
+    },
+    {
+      "cited_arxiv": "2308.08708",
+      "cited_title": "Consciousness in Artificial Intelligence",
+      "status": "TITLE_MISMATCH",
+      "actual_title": "Consciousness in Artificial Intelligence: Insights from the Science of Consciousness",
+      "actual_authors": "Patrick Butlin, Robert Long, Eric Elmoznino, Yoshua Bengio, Jonathan Birch, Axel Constant, George Deane, Stephen M. Fleming, Chris Frith, Xu Ji, Ryota Kanai, Colin Klein, Grace Lindsay, Matthias Michel, Liad Mudrik, Megan A. K. Peters, Eric Schwitzgebel, Jonathan Simon, Rufin VanRullen",
+      "submitted": "2023-08-17",
+      "note": "ATTRIBUTION ERROR. Cited as 'Butlin, Long, Chalmers et al.' but David Chalmers is NOT an author. Bengio, Birch, Frith, Schwitzgebel are among the actual co-authors. Site corrected 2026-05-10."
+    },
+    {
+      "cited_arxiv": "2302.08399",
+      "cited_title": "Large Language Models Fail on Trivial Alterations to Theory-of-Mind Tasks",
+      "status": "EXISTS",
+      "actual_title": "Large Language Models Fail on Trivial Alterations to Theory-of-Mind Tasks",
+      "actual_authors": "Tomer Ullman",
+      "submitted": "2023-02-16",
+      "note": "Clean."
+    },
+    {
+      "cited_arxiv": "2307.00184",
+      "cited_title": "Personality Traits in Large Language Models",
+      "status": "EXISTS",
+      "actual_title": "Personality Traits in Large Language Models",
+      "actual_authors": "Greg Serapio-García, Mustafa Safdari, Clément Crepy, Luning Sun, Stephen Fitz, Peter Romero, Marwa Abdulhai, Aleksandra Faust, Maja Matarić",
+      "submitted": "2023-07-01",
+      "note": "Clean."
+    },
+    {
+      "cited_arxiv": "2212.03827",
+      "cited_title": "Discovering Latent Knowledge in Language Models Without Supervision",
+      "status": "EXISTS",
+      "actual_title": "Discovering Latent Knowledge in Language Models Without Supervision",
+      "actual_authors": "Collin Burns, Haotian Ye, Dan Klein, Jacob Steinhardt",
+      "submitted": "2022-12-07",
+      "note": "Clean."
+    },
+    {
+      "cited_arxiv": "2508.00031",
+      "cited_title": "Git Context Controller",
+      "status": "TITLE_MISMATCH",
+      "actual_title": "Git Context Controller: Manage the Context of LLM-based Agents like Git",
+      "actual_authors": "Junde Wu, Minhao Hu, Jiayuan Zhu, Jiazhen Pan, Yuyuan Liu, Min Xu, Yueming Jin",
+      "submitted": "2025-07-30",
+      "note": "Cited as shorthand only; full title includes descriptive subtitle."
+    },
+    {
+      "cited_arxiv": "2507.21509",
+      "cited_title": "Persona Vectors",
+      "status": "TITLE_MISMATCH",
+      "actual_title": "Persona Vectors: Monitoring and Controlling Character Traits in Language Models",
+      "actual_authors": "Runjin Chen, Andy Arditi, Henry Sleight, Owain Evans, Jack Lindsey",
+      "submitted": "2025-07-29",
+      "note": "ATTRIBUTION ERROR. Cited shorthand 'Anthropic Persona Vectors' is overbroad — only Lindsey is at Anthropic; Chen, Arditi, Sleight, Evans are not. Site corrected 2026-05-10."
+    },
+    {
+      "cited_arxiv": "1706.03762",
+      "cited_title": "Attention Is All You Need",
+      "status": "EXISTS",
+      "actual_title": "Attention Is All You Need",
+      "actual_authors": "Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, Illia Polosukhin",
+      "submitted": "2017-06-12",
+      "note": "Clean."
+    },
+    {
+      "cited_arxiv": "2304.15004",
+      "cited_title": "Are Emergent Abilities of Large Language Models a Mirage?",
+      "status": "EXISTS",
+      "actual_title": "Are Emergent Abilities of Large Language Models a Mirage?",
+      "actual_authors": "Rylan Schaeffer, Brando Miranda, Sanmi Koyejo",
+      "submitted": "2023-04-28",
+      "note": "Clean."
+    }
+  ],
+  "summary": {
+    "verified": 6,
+    "title_mismatch": 7,
+    "not_found": 0,
+    "unverified": 0,
+    "real_attribution_errors": 2,
+    "real_attribution_error_papers": [
+      "arxiv:2308.08708 (Butlin et al. — Chalmers wrongly cited as author)",
+      "arxiv:2507.21509 (Persona Vectors — wrongly attributed wholesale to Anthropic)"
+    ]
+  },
+  "scope_caveats": [
+    "This pass covered the cross-package reading list (14 references). It did NOT cover citations that appear only inside individual claim dossiers.",
+    "There are ~35 additional unique citations across the 10 dossiers that remain unverified.",
+    "Some dossiers (claim 7 in particular) reference arxiv IDs with future-plausible dates (2603.x = March 2026, 2604.x = April 2026); these were not on this verification list because they aren't in the cross-package reading list. They remain unverified."
+  ]
+}

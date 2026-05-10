@@ -57,12 +57,22 @@ cd site && npm run build`}</code></pre>
       The 25-paper <a href={u("/reading-list")}>reading list</a> shows verification status per item. Each <strong>verified</strong> entry was re-fetched from arXiv on 2026-05-10 and the title and authors were confirmed against the site source. <strong>verified-with-correction</strong> entries had attribution wrong in an earlier draft and have been fixed in place.
     </p>
 
-    <h2>Get the raw data</h2>
+    <h2>Get the raw data — the <code>data/</code> archive</h2>
+    <p>
+      The <a href="https://github.com/abdul-abdi/ai-brain-claims/tree/main/data" target="_blank" rel="noopener"><code>data/</code> directory</a> in the repo holds the prompts, transcripts, verification outputs, and pipeline manifest used to produce everything on this site. Every quantitative claim on the site is mapped to a file there in <a href="https://github.com/abdul-abdi/ai-brain-claims/blob/main/data/index.md" target="_blank" rel="noopener"><code>data/index.md</code></a>.
+    </p>
     <ul>
-      <li><a href={u("/sitemap.xml")}>sitemap.xml</a></li>
-      <li><a href="https://github.com/abdul-abdi/ai-brain-claims/blob/main/eval/results/needle-retention.json" target="_blank" rel="noopener">needle-retention.json</a></li>
-      <li><a href="https://github.com/abdul-abdi/ai-brain-claims/blob/main/eval/results/baseline-vs-hygiene.json" target="_blank" rel="noopener">baseline-vs-hygiene.json</a></li>
-      <li><a href="https://github.com/abdul-abdi/ai-brain-claims/tree/main/site/src/content/claims" target="_blank" rel="noopener">all 10 claim MDX dossiers</a></li>
+      <li><a href="https://github.com/abdul-abdi/ai-brain-claims/blob/main/data/manifests/pipeline.json" target="_blank" rel="noopener">data/manifests/pipeline.json</a> — every agent dispatch with model, wave, persona-loading status</li>
+      <li><a href="https://github.com/abdul-abdi/ai-brain-claims/tree/main/data/prompts" target="_blank" rel="noopener">data/prompts/</a> — every prompt template used (claim-research, idea-research, roundtable R1+R2, angle-research, citation-verification, claim-port, design-pass, super-prompt-redesign)</li>
+      <li><a href="https://github.com/abdul-abdi/ai-brain-claims/blob/main/data/prompts/persona-lens-primers.md" target="_blank" rel="noopener">data/prompts/persona-lens-primers.md</a> — the 50–80 word primers used by the 10 claim-research agents (NOT the full persona skills)</li>
+      <li><a href="https://github.com/abdul-abdi/ai-brain-claims/tree/main/data/transcripts" target="_blank" rel="noopener">data/transcripts/</a> — full roundtable transcript, idea doc, A/B/C angle dossiers</li>
+      <li><a href="https://github.com/abdul-abdi/ai-brain-claims/blob/main/data/verifications/citation-pass-1.json" target="_blank" rel="noopener">data/verifications/citation-pass-1.json</a> — 14-paper citation verification</li>
+      <li><a href="https://github.com/abdul-abdi/ai-brain-claims/blob/main/eval/results/needle-retention.json" target="_blank" rel="noopener">eval/results/needle-retention.json</a> — full benchmark output</li>
+      <li><a href="https://github.com/abdul-abdi/ai-brain-claims/blob/main/eval/results/baseline-vs-hygiene.json" target="_blank" rel="noopener">eval/results/baseline-vs-hygiene.json</a> — accuracy/latency JSON</li>
+      <li><a href="https://github.com/abdul-abdi/ai-brain-claims/tree/main/site/src/content/claims" target="_blank" rel="noopener">site/src/content/claims/</a> — all 10 claim MDX dossiers</li>
     </ul>
+    <p>
+      The standard the repo holds itself to: <strong>every number on the site should trace to a file in this archive</strong>. If you find one that doesn't, file an issue.
+    </p>
   </main>
 </BaseLayout>
