@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+title: "10 Claims at the Frontier: Adversarial Validation at the AI ↔ Brain Boundary"
+message: "If you cite this work, please use the metadata below."
+type: dataset
+authors:
+  - family-names: Abdi
+    given-names: Abdullahi
+    affiliation: Nethermind
+abstract: >-
+  Multi-agent adversarial validation of ten ambitious hypotheses spanning the
+  intersection of artificial intelligence, context engineering, computational
+  neuroscience, and human cognition. Each claim formulated with a strong form
+  (theory-grade equivalence) and an implicit weak form. Across all ten: zero
+  vindicated, zero cleanly refuted; all CONTESTED or SPLIT. The convergent
+  pattern — strong forms systematically fail, weak forms systematically hold —
+  is the headline finding. Ships with an observatory primitive (Python) that
+  implements the architecture surviving roundtable scrutiny: an immutable
+  event log with importance and confidence as pure functions over the log.
+keywords:
+  - artificial intelligence
+  - large language models
+  - context engineering
+  - working memory
+  - theory of mind
+  - sleep consolidation
+  - active forgetting
+  - cortical column
+  - thalamic gating
+  - chain of thought
+  - persona vectors
+  - metacognition
+  - adversarial validation
+  - multi-agent research
+license: MIT
+repository-code: "https://github.com/abdul-abdi/ai-brain-claims"
+url: "https://abdul-abdi.github.io/ai-brain-claims/"
+date-released: "2026-05-09"
+version: "0.1.0"
