@@ -1,9 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import ClaimCard from "../components/ClaimCard.astro";
 import VerdictPill from "../components/VerdictPill.astro";
+import { ClaimsExplorer } from "../components/ClaimsExplorer";
 import { CLAIMS, THREADS, VERDICTS } from "../lib/verdicts";
-import { SITE, u } from "../lib/site";
+import { SITE, u, BASE } from "../lib/site";
 
 const verdictCounts = CLAIMS.reduce<Record<string, number>>((acc, c) => {
   acc[c.verdict] = (acc[c.verdict] ?? 0) + 1;
@@ -54,19 +54,17 @@ const verdictCounts = CLAIMS.reduce<Record<string, number>>((acc, c) => {
     </div>
   </section>
 
-  <!-- The 10 Claims grid -->
+  <!-- The 10 Claims — filterable explorer (React island) -->
   <section id="claims" class="border-b border-ink-400/20">
     <div class="mx-auto max-w-wide px-6 py-20 lg:px-12">
       <header class="mb-10 max-w-2xl">
         <h2 class="font-serif text-3xl font-medium text-ink-900 lg:text-4xl">The Ten Claims</h2>
         <p class="mt-3 font-serif text-prose leading-relaxed text-ink-700">
-          Each claim has a dossier: 4–6 supporting and 4–6 contradicting sources, two analytical lenses applied, an explicit steelman, and a verdict with the conditions under which it would change.
+          Each claim has a dossier: 4–6 supporting and 4–6 contradicting sources, two analytical lenses applied, an explicit steelman, and a verdict with the conditions under which it would change. The matrix below shows the structure — every claim lands in CONTESTED or SPLIT. Click a cell or label to filter.
         </p>
       </header>
 
-      <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {CLAIMS.map((c) => <ClaimCard claim={c} />)}
-      </div>
+      <ClaimsExplorer claims={CLAIMS} base={BASE} client:load />
     </div>
   </section>
 

@@ -1,0 +1,147 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { DesignNotesDemo } from "../components/DesignNotesDemo";
+import { u } from "../lib/site";
+---
+
+<BaseLayout
+  title="Designer's Notes"
+  description="An interaction-design pass on this site, in the voice of Bret Victor. Why static numbers are a failure, and what was done about it."
+>
+  <article class="mx-auto max-w-wide px-6 py-12 lg:px-12 lg:py-20">
+    <header class="mx-auto max-w-prose">
+      <p class="font-sans text-xs uppercase tracking-[0.18em] text-ink-500">
+        Designer's notes · an additive pass
+      </p>
+      <h1
+        class="mt-4 font-serif text-4xl font-medium leading-[1.1] tracking-[-0.01em] text-ink-900 lg:text-5xl"
+      >
+        What the numbers were hiding
+      </h1>
+    </header>
+
+    <div class="mx-auto mt-14 max-w-prose prose-claim font-serif text-ink-800">
+      <p>
+        The <code>task_relevance</code> scorer achieves 65.0% ± 15.4% retention.
+        That sentence is true. It is also close to useless as a representation of
+        what the data contains.
+      </p>
+
+      <p>
+        The ± number tells you the spread is large. It doesn't show you that on
+        seed 4, <code>task_relevance</code> reached 87.5% — while
+        <code>recency+role</code>, the scorer that actively undermines itself,
+        bottomed at 12.5%. A 7× divergence. On the same stochastic
+        configuration. Both of those facts were sitting in
+        <code>retentions_per_seed</code> the entire time, invisible.
+      </p>
+
+      <p>
+        This is the diagnostic I apply to every piece of information shown as a
+        static number: <em>what is the reader being asked to feel, and can they
+        feel it?</em> A percentage with a standard deviation is an instruction to
+        imagine a distribution. Nobody actually imagines a distribution. They read
+        the number and move on.
+      </p>
+
+      <p>
+        Below is the same four-row slice of the benchmark data — just
+        <code>task_relevance</code>, <code>recency+role</code>,
+        <code>truncation</code>, and the oracle — rendered so that the seed
+        structure is directly manipulable. Click a seed. Watch the values update
+        across strategies. That 7× divergence is something you can
+        <em>find</em> for yourself.
+      </p>
+    </div>
+
+    <!-- Inline live demo — the design notes page itself demonstrates -->
+    <div class="mx-auto mt-8 max-w-wide">
+      <DesignNotesDemo client:load />
+    </div>
+
+    <div class="mx-auto mt-14 max-w-prose prose-claim font-serif text-ink-800">
+      <h2>Three moves</h2>
+
+      <p>
+        Three things were changed on this site. None of them touch the
+        typography, the palette, or the reading width. Those are deliberate and
+        they stay. These additions enrich without replacing.
+      </p>
+
+      <h3>1. The seed scrubber on the benchmark figure</h3>
+
+      <p>
+        The full <a href={u("/observatory")}>observatory benchmark figure</a> now
+        has a row of seed buttons above the bar chart. Click seed 4. The bars
+        fade to show aggregate context while an orange tick appears at each
+        strategy's actual value for that run. The right-hand column switches from
+        mean ± std to the live value with the mean shown as context.
+      </p>
+
+      <p>
+        Below each bar is a dot strip — ten dots, one per seed, positioned
+        proportionally to retention value. The dots are dim by default, lit when
+        a seed is selected. The aggregate and the instance are present
+        simultaneously. You can move between them without losing either.
+      </p>
+
+      <p>
+        This is the ladder of abstraction in a small space. The aggregate
+        (65.0% ± 15.4%) summarizes; the instance (seed 4: 87.5%) is concrete.
+        Most tools trap you at one level. The scrubber lets you move.
+      </p>
+
+      <h3>2. The thread × verdict matrix</h3>
+
+      <p>
+        The <a href={u("/#claims")}>home page</a> asserts that every claim lands
+        in CONTESTED or SPLIT. A sentence can assert that; a matrix makes it
+        undeniable. Four thread rows, the active verdict columns, claim counts in
+        each cell. Click a cell — the grid below filters. Click a column header —
+        filter by verdict. Click a row label — filter by thread. Click again to
+        clear.
+      </p>
+
+      <p>
+        The convergence pattern is the finding. The visual structure makes the
+        convergence palpable, not just legible.
+      </p>
+
+      <h3>3. This page</h3>
+
+      <p>
+        A design-notes page that only contains prose would be a failure of its
+        own argument. The demo above this text is the same seed-scrubber
+        mechanism applied to a four-strategy subset of the real benchmark data.
+        It is not illustrative; it is operational. The text claims something
+        about representations; the page demonstrates it in the same breath.
+      </p>
+
+      <h2>What was not done</h2>
+
+      <p>
+        The constraints rule out fabricated data, so there is no slider for
+        working window or noise event count — that would require either lying
+        about measurements or re-implementing the Python scorer in JavaScript and
+        verifying it produces identical output at the reference seed. The seed
+        scrubber is honest: it shows you the data that was actually measured,
+        seed by seed. Honesty about what is measured and what is modeled is
+        itself a design choice.
+      </p>
+
+      <p>
+        No 3D. No scroll-jacking. No motion that doesn't carry information.
+        Engelbart's 1968 demo used a mouse, a chord keyset, a shared display,
+        and collaborative editing — and it was the most consequential
+        demonstration of computing in history. The tools were spare. The
+        capability was profound. These additions aspire to something much smaller,
+        but in the same direction: immediacy, manipulability, mutual visibility
+        of reader and work.
+      </p>
+
+      <p class="font-sans text-sm" style="color: #5A524A;">
+        — Applied by a Bret Victor persona agent, May 2026.
+      </p>
+    </div>
+  </article>
+</BaseLayout>
