@@ -333,6 +333,42 @@ hr.rule {
   .verdict-pill { outline: 1.5px solid var(--ink); outline-offset: 0; }
 }
 
+/* ----- Lead paragraph (works inside or outside .hero) ----- */
+.lede {
+  max-width: 60ch;
+  font-size: 1.125rem;
+  line-height: 1.55;
+  color: var(--ink-sub);
+  font-variation-settings: "opsz" 14;
+  margin-top: 1.5rem;
+}
+.hero .lede { margin-top: 2.25rem; }
+
+/* Default reading measure for body paragraphs across all pages.
+   Inline max-width on a paragraph wins automatically (specificity).
+   Opt out with .full-width on a wrapping element. */
+main p,
+main ul,
+main ol,
+main blockquote {
+  max-width: var(--col-prose);
+}
+main .full-width p,
+main .full-width ul,
+main .full-width ol,
+main .obs-fig .caption,
+main .rt-card,
+main .cite-row,
+main .obs-controls,
+main .obs-fig {
+  max-width: none;
+}
+/* Restore measure on direct paragraphs inside opt-out containers if any */
+main .obs-fig > p:not(.caption),
+main .obs-fig > section > p {
+  max-width: var(--col-prose);
+}
+
 /* ----- Hero ----- */
 .hero {
   padding: clamp(3rem, 8vh, 7rem) clamp(1rem, 4vw, 3rem) clamp(3rem, 6vh, 5rem);
