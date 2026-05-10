@@ -128,7 +128,14 @@ hr.rule {
 }
 
 /* ----- App shell ----- */
-#app, main.shell { min-height: 100vh; }
+#app, main.shell {
+  min-height: 100vh;
+  /* Cap the working notebook at a comfortable width on big screens.
+     Timeline strip, top nav, and footer remain edge-to-edge — only the
+     content centers, like a paper laid on the bone background. */
+  max-width: 1400px;
+  margin: 0 auto;
+}
 
 /* Ambient timeline at very top */
 .timeline-strip {
