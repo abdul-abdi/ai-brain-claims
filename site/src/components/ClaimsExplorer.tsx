@@ -1,28 +1,36 @@
 /**
- * ClaimsExplorer — filterable grid + thread×verdict matrix.
+ * Linked-instrument home — hero / matrix / constellation / scatter
+ * all share a focus state via context. Hover anywhere; everything else
+ * on the page answers. The hero scrubbers actually filter shown counts.
  *
- * The matrix makes visible what the home page only states: every claim
- * lands in CONTESTED or SPLIT. When you can see the structure, the
- * convergence becomes undeniable. Clicking a cell filters the grid below.
- *
- * This is the difference between reading a finding and seeing it.
+ * Mirrors the second iteration of the "Ten Claims at the Frontier" design.
  */
-import { useState, useMemo } from "react";
+
+import {
+  Fragment,
+  createContext,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import type { ClaimSummary, Verdict } from "../lib/verdicts";
-import { VERDICTS, THREADS } from "../lib/verdicts";
+import { VERDICT_KEY } from "../lib/verdicts";
+import {
+  PERSONAS,
+  PERSONAS_BY_ID,
+  personaIdFromName,
+  type PersonaId,
+} from "../lib/personas";
+import { Sigil } from "./Sigil";
 
 interface Props {
   claims: ClaimSummary[];
-  base: string; // BASE URL prefix for links
+  base: string;
 }
 
-const THREAD_ORDER = [
-  "memory",
-  "architecture",
-  "metacognition",
-  "social",
-] as const;
-const VERDICT_ORDER: Verdict[] = [
+const THREADS = ["memory", "architecture", "metacognition", "social"] as const;
+const ALL_VERDICTS: Verdict[] = [
   "VINDICATED",
   "PLAUSIBLE",
   "CONTESTED",
@@ -31,440 +39,667 @@ const VERDICT_ORDER: Verdict[] = [
   "UNFALSIFIABLE",
 ];
 
-const THREAD_LABELS: Record<string, string> = {
-  memory: "Memory & Context",
-  architecture: "Architecture",
-  metacognition: "Metacognition",
-  social: "Social & Identity",
-};
+interface Focus {
+  verdict?: Verdict;
+  thread?: string;
+  persona?: PersonaId;
+  claim?: string; // claim id (slug)
+}
 
-const TEXT_INK = "#1A1714";
-const TEXT_MUTED = "#5A524A";
-const ACCENT = "#CC785C";
-const BG_CARD = "#FDFCF9";
+const FocusCtx = createContext<{
+  focus: Focus;
+  setFocus: (f: Focus) => void;
+}>({ focus: {}, setFocus: () => {} });
 
-// Tailwind-based verdict colors (must match tailwind.config)
-const VERDICT_HEX: Record<Verdict, { fill: string; bg: string; text: string }> =
-  {
-    VINDICATED: { fill: "#587C5A", bg: "#EDF4EC", text: "#3A5E3C" },
-    PLAUSIBLE: { fill: "#4A7A8A", bg: "#EAF3F5", text: "#2E5E6A" },
-    CONTESTED: { fill: "#B07D2C", bg: "#FBF3E4", text: "#8A5F1A" },
-    SPLIT: { fill: "#8B5E3C", bg: "#F7EDE3", text: "#6B3E1C" },
-    REFUTED: { fill: "#9C4943", bg: "#F5DDDA", text: "#7A2E28" },
-    UNFALSIFIABLE: { fill: "#5A4E8A", bg: "#EDEAF5", text: "#3A2E6A" },
-  };
+const useFocus = () => useContext(FocusCtx);
 
-function VerdictBadge({
-  verdict,
-  small = false,
-  muted = false,
+/** Augment each claim with its lens persona ids (as a tuple). */
+function lensesOf(c: ClaimSummary): PersonaId[] {
+  return c.personas
+    .map((n) => personaIdFromName(n))
+    .filter((x): x is PersonaId => x != null);
+}
+
+/* ---------- Scrub primitive ---------- */
+function ScrubNum({
+  value,
+  min,
+  max,
+  onChange,
+  format,
+  ariaLabel,
 }: {
-  verdict: Verdict;
-  small?: boolean;
-  muted?: boolean;
+  value: number;
+  min: number;
+  max: number;
+  onChange: (v: number) => void;
+  format?: (v: number) => string | number;
+  ariaLabel: string;
 }) {
-  const { bg, text, fill } = VERDICT_HEX[verdict];
+  const ref = useRef<HTMLSpanElement | null>(null);
+  const drag = useRef({ active: false, startY: 0, startV: value });
+  function down(e: React.PointerEvent<HTMLSpanElement>) {
+    e.preventDefault();
+    drag.current = { active: true, startY: e.clientY, startV: value };
+    ref.current?.setPointerCapture?.(e.pointerId);
+  }
+  function move(e: React.PointerEvent<HTMLSpanElement>) {
+    if (!drag.current.active) return;
+    const dy = drag.current.startY - e.clientY;
+    const next = Math.round(drag.current.startV + dy / 6);
+    onChange(Math.max(min, Math.min(max, next)));
+  }
+  function up(e: React.PointerEvent<HTMLSpanElement>) {
+    drag.current.active = false;
+    ref.current?.releasePointerCapture?.(e.pointerId);
+  }
+  function key(e: React.KeyboardEvent<HTMLSpanElement>) {
+    if (e.key === "ArrowUp" || e.key === "ArrowRight") {
+      onChange(Math.min(max, value + 1));
+      e.preventDefault();
+    }
+    if (e.key === "ArrowDown" || e.key === "ArrowLeft") {
+      onChange(Math.max(min, value - 1));
+      e.preventDefault();
+    }
+  }
   return (
     <span
-      className="inline-flex items-center rounded-full font-sans font-medium"
-      style={{
-        background: muted ? "transparent" : bg,
-        color: muted ? TEXT_MUTED : text,
-        border: `1px solid ${muted ? "rgba(168,156,136,0.3)" : fill + "55"}`,
-        fontSize: small ? "0.6rem" : "0.7rem",
-        letterSpacing: "0.12em",
-        textTransform: "uppercase",
-        padding: small ? "0.1rem 0.45rem" : "0.15rem 0.6rem",
-        opacity: muted ? 0.6 : 1,
-      }}
+      ref={ref}
+      className="num"
+      role="slider"
+      tabIndex={0}
+      aria-label={ariaLabel}
+      aria-valuemin={min}
+      aria-valuemax={max}
+      aria-valuenow={value}
+      onPointerDown={down}
+      onPointerMove={move}
+      onPointerUp={up}
+      onKeyDown={key}
+      title="Drag vertically or use arrow keys. The page below answers."
     >
-      {VERDICTS[verdict].label}
+      {format ? format(value) : value}
     </span>
   );
 }
 
-export function ClaimsExplorer({ claims, base }: Props) {
-  const [filterVerdict, setFilterVerdict] = useState<Verdict | null>(null);
-  const [filterThread, setFilterThread] = useState<string | null>(null);
-
-  // Build matrix: thread × verdict → claims[]
-  const matrix = useMemo(() => {
-    const m: Record<string, Record<Verdict, ClaimSummary[]>> = {};
-    for (const t of THREAD_ORDER) {
-      m[t] = {} as Record<Verdict, ClaimSummary[]>;
-      for (const v of VERDICT_ORDER) {
-        m[t][v] = [];
-      }
-    }
-    for (const c of claims) {
-      if (m[c.thread] && m[c.thread][c.verdict] !== undefined) {
-        m[c.thread][c.verdict].push(c);
-      }
-    }
-    return m;
-  }, [claims]);
-
-  // Verdicts that actually appear
-  const activeVerdicts = useMemo(
-    () => VERDICT_ORDER.filter((v) => claims.some((c) => c.verdict === v)),
-    [claims],
+/* ---------- Hero ---------- */
+function Hero({
+  shownClaims,
+  setShownClaims,
+  shownPersonas,
+  setShownPersonas,
+}: {
+  shownClaims: number;
+  setShownClaims: (n: number) => void;
+  shownPersonas: number;
+  setShownPersonas: (n: number) => void;
+}) {
+  return (
+    <section className="hero" aria-labelledby="hero-h">
+      <div className="eyebrow">
+        A research notebook · Session 04 · Personas as analytical lenses
+      </div>
+      <h1 id="hero-h">
+        We tested{" "}
+        <ScrubNum
+          value={shownClaims}
+          min={1}
+          max={10}
+          onChange={setShownClaims}
+          ariaLabel="claim count"
+        />{" "}
+        claims about AI ↔ brain at the frontier, ran them through{" "}
+        <ScrubNum
+          value={shownPersonas}
+          min={1}
+          max={9}
+          onChange={setShownPersonas}
+          ariaLabel="persona count"
+        />{" "}
+        persona lenses, and produced{" "}
+        <span className="num" tabIndex={-1} style={{ cursor: "default" }}>
+          zero
+        </span>{" "}
+        clean verdicts.
+      </h1>
+      <p className="lede">
+        Strong forms systematically failed. Weak forms systematically held. The
+        interesting object isn't the table of results &mdash; it's the shape of
+        the disagreement. The page below is the agents' working notebook, with
+        handles. Drag a numeral above; the page beneath rearranges. Reading is
+        doing.
+      </p>
+      <div className="meta">
+        <span>
+          <b>{shownClaims}</b> claim dossiers
+        </span>
+        <span>
+          <b>{shownPersonas}</b> persona lenses
+        </span>
+        <span>
+          <b>4</b>-persona roundtable, 2 rounds
+        </span>
+        <span>
+          <b>1</b> primitive shipped
+        </span>
+        <span>
+          <b>21</b> autonomous research dispatches
+        </span>
+      </div>
+    </section>
   );
+}
 
-  const filtered = useMemo(() => {
-    return claims.filter((c) => {
-      if (filterVerdict && c.verdict !== filterVerdict) return false;
-      if (filterThread && c.thread !== filterThread) return false;
-      return true;
-    });
-  }, [claims, filterVerdict, filterThread]);
+/* ---------- Matrix + FocusReadout ---------- */
+function Matrix({
+  shownClaims,
+  claims,
+  base,
+}: {
+  shownClaims: number;
+  claims: ClaimSummary[];
+  base: string;
+}) {
+  const { focus, setFocus } = useFocus();
+  const visible = claims.slice(0, shownClaims);
 
-  const hasFilter = filterVerdict !== null || filterThread !== null;
+  const grid = useMemo(() => {
+    const g: Record<string, ClaimSummary[]> = {};
+    for (const t of THREADS) for (const v of ALL_VERDICTS) g[`${t}|${v}`] = [];
+    for (const c of visible) g[`${c.thread}|${c.verdict}`].push(c);
+    return g;
+  }, [shownClaims, claims]);
 
-  function handleCellClick(thread: string, verdict: Verdict) {
-    const cellClaims = matrix[thread][verdict];
-    if (cellClaims.length === 0) return;
-    if (filterThread === thread && filterVerdict === verdict) {
-      // same cell → clear
-      setFilterThread(null);
-      setFilterVerdict(null);
-    } else {
-      setFilterThread(thread);
-      setFilterVerdict(verdict);
-    }
-  }
-
-  function clearFilters() {
-    setFilterThread(null);
-    setFilterVerdict(null);
-  }
+  const personaClaims = focus.persona
+    ? new Set(
+        visible
+          .filter((c) => lensesOf(c).includes(focus.persona!))
+          .map((c) => c.id),
+      )
+    : null;
 
   return (
-    <div>
-      {/* The matrix — thread rows × verdict columns */}
-      <div className="mb-8">
-        <p
-          className="mb-3 font-sans text-xs uppercase tracking-[0.18em]"
-          style={{ color: TEXT_MUTED }}
-        >
-          Claims by thread × verdict — click any cell to filter
-        </p>
-        <div className="overflow-x-auto">
-          <table
-            className="w-full text-left font-sans text-xs"
-            style={{ borderCollapse: "separate", borderSpacing: 0 }}
-          >
-            <thead>
-              <tr>
-                <th
-                  className="pb-2 pr-4 font-medium"
-                  style={{ color: TEXT_MUTED, minWidth: "9rem" }}
-                >
-                  Thread
-                </th>
-                {activeVerdicts.map((v) => (
-                  <th
-                    key={v}
-                    className="pb-2 pr-2 text-center font-medium"
-                    style={{ color: TEXT_MUTED, minWidth: "6rem" }}
-                  >
-                    <button
-                      className="transition-opacity hover:opacity-80"
-                      style={{
-                        background: "none",
-                        border: "none",
-                        padding: 0,
-                        cursor: "pointer",
-                        opacity: filterVerdict && filterVerdict !== v ? 0.4 : 1,
-                      }}
-                      onClick={() =>
-                        setFilterVerdict((prev) => (prev === v ? null : v))
-                      }
-                      aria-pressed={filterVerdict === v}
-                      aria-label={`Filter by verdict: ${VERDICTS[v].label}`}
-                    >
-                      <VerdictBadge verdict={v} small />
-                    </button>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {THREAD_ORDER.map((thread) => (
-                <tr key={thread}>
-                  <td
-                    className="pr-4 py-1.5 align-middle"
-                    style={{
-                      color:
-                        filterThread && filterThread !== thread
-                          ? TEXT_MUTED
-                          : TEXT_INK,
-                      opacity:
-                        filterThread && filterThread !== thread ? 0.4 : 1,
-                      fontWeight: 500,
-                    }}
-                  >
-                    <button
-                      style={{
-                        background: "none",
-                        border: "none",
-                        padding: 0,
-                        cursor: "pointer",
-                        textAlign: "left",
-                        color: "inherit",
-                        font: "inherit",
-                        opacity: 1,
-                      }}
-                      onClick={() =>
-                        setFilterThread((prev) =>
-                          prev === thread ? null : thread,
-                        )
-                      }
-                      aria-pressed={filterThread === thread}
-                      aria-label={`Filter by thread: ${THREAD_LABELS[thread]}`}
-                    >
-                      {THREAD_LABELS[thread]}
-                    </button>
-                  </td>
-                  {activeVerdicts.map((v) => {
-                    const cell = matrix[thread][v];
-                    const isEmpty = cell.length === 0;
-                    const isActive =
-                      filterThread === thread && filterVerdict === v;
-                    const isDimmed =
-                      hasFilter &&
-                      !isActive &&
-                      (filterThread !== null
-                        ? filterThread !== thread
-                        : true) &&
-                      (filterVerdict !== null ? filterVerdict !== v : true);
-
-                    const { fill, bg } = VERDICT_HEX[v];
-
-                    return (
-                      <td
-                        key={v}
-                        className="py-1.5 pr-2 align-middle text-center"
-                      >
-                        {isEmpty ? (
-                          <span
-                            className="inline-block rounded"
-                            style={{
-                              width: "2.5rem",
-                              height: "1.5rem",
-                              background: "rgba(168,156,136,0.08)",
-                              verticalAlign: "middle",
-                            }}
-                          />
-                        ) : (
-                          <button
-                            onClick={() => handleCellClick(thread, v)}
-                            aria-pressed={isActive}
-                            aria-label={`${THREAD_LABELS[thread]}, ${VERDICTS[v].label}: ${cell.length} claim${cell.length > 1 ? "s" : ""}`}
-                            className="rounded transition-all duration-150"
-                            style={{
-                              background: isActive ? fill : bg,
-                              color: isActive ? "#FDFCF9" : fill,
-                              border: `1.5px solid ${isActive ? fill : fill + "60"}`,
-                              padding: "0.2rem 0.55rem",
-                              cursor: "pointer",
-                              fontWeight: 600,
-                              fontSize: "0.8rem",
-                              fontVariantNumeric: "tabular-nums",
-                              opacity: isDimmed ? 0.3 : 1,
-                              transition:
-                                "background 0.15s, color 0.15s, opacity 0.15s",
-                              minWidth: "2.5rem",
-                            }}
-                          >
-                            {cell.length}
-                          </button>
-                        )}
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Filter status + clear */}
+    <section className="matrix-section" aria-label="Claim verdict matrix">
+      <h2>The shape of the disagreement.</h2>
+      <p className="sub">
+        Each cell counts claims (rows) by verdict (columns). The empty{" "}
+        <em>vindicated</em> column is the headline. Hover a cell, a chip, a
+        persona &mdash; everything else on this page answers.
+      </p>
       <div
-        className="mb-6 flex items-center gap-3 font-sans text-sm"
-        style={{ minHeight: "2rem" }}
+        className="matrix"
+        role="grid"
+        style={{
+          gridTemplateColumns: `minmax(7rem, max-content) repeat(${ALL_VERDICTS.length}, 1fr)`,
+        }}
       >
-        {hasFilter ? (
-          <>
-            <span style={{ color: TEXT_MUTED }}>
-              Showing {filtered.length} of {claims.length} claims
-              {filterThread && (
-                <>
-                  {" "}
-                  ·{" "}
-                  <strong style={{ color: TEXT_INK }}>
-                    {THREAD_LABELS[filterThread]}
-                  </strong>
-                </>
-              )}
-              {filterVerdict && (
-                <>
-                  {" "}
-                  ·{" "}
-                  <strong style={{ color: VERDICT_HEX[filterVerdict].text }}>
-                    {VERDICTS[filterVerdict].label}
-                  </strong>
-                </>
-              )}
-            </span>
-            <button
-              onClick={clearFilters}
-              className="rounded border px-3 py-1 text-xs transition-colors"
-              style={{
-                background: "transparent",
-                border: "1px solid rgba(168,156,136,0.4)",
-                color: TEXT_MUTED,
-                cursor: "pointer",
-              }}
+        <div className="row-label">&nbsp;</div>
+        {ALL_VERDICTS.map((v) => (
+          <div
+            className="h"
+            key={v}
+            data-active={focus.verdict === v ? "1" : "0"}
+          >
+            {VERDICT_KEY[v]}
+          </div>
+        ))}
+        {THREADS.map((t) => (
+          <Fragment key={t}>
+            <div
+              className="row-label"
+              data-active={focus.thread === t ? "1" : "0"}
             >
-              Clear ×
-            </button>
-          </>
-        ) : (
-          <span style={{ color: TEXT_MUTED, fontSize: "0.8rem" }}>
-            All {claims.length} claims
-          </span>
-        )}
+              {t}
+            </div>
+            {ALL_VERDICTS.map((v) => {
+              const k = `${t}|${v}`;
+              const cClaims = grid[k];
+              const n = cClaims.length;
+              const max = 4;
+              const intensity = n ? 0.25 + (n / max) * 0.75 : 0;
+              const cellHasFocused =
+                personaClaims && cClaims.some((c) => personaClaims.has(c.id));
+              const active =
+                (focus.verdict === v && focus.thread === t) || cellHasFocused;
+              return (
+                <button
+                  key={v}
+                  className="cell"
+                  data-active={active ? "1" : "0"}
+                  data-haloed={cellHasFocused ? "1" : "0"}
+                  style={
+                    {
+                      "--bg": `var(--v-${VERDICT_KEY[v]})`,
+                      "--int": intensity,
+                    } as React.CSSProperties
+                  }
+                  onMouseEnter={() => setFocus({ verdict: v, thread: t })}
+                  onFocus={() => setFocus({ verdict: v, thread: t })}
+                  onMouseLeave={() => setFocus({})}
+                  onBlur={() => setFocus({})}
+                  aria-label={`${t} × ${VERDICT_KEY[v]}: ${n} claim${n !== 1 ? "s" : ""}`}
+                >
+                  <span className="n">{n || "·"}</span>
+                  <span className="bar" />
+                </button>
+              );
+            })}
+          </Fragment>
+        ))}
       </div>
 
-      {/* Claims grid */}
-      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((c) => {
-          const numStr = String(c.number).padStart(2, "0");
-          const { bg, text, fill } = VERDICT_HEX[c.verdict];
-          const href = `${base}/claims/${c.id}`;
+      <FocusReadout claims={visible} base={base} />
+    </section>
+  );
+}
+
+function FocusReadout({
+  claims,
+  base,
+}: {
+  claims: ClaimSummary[];
+  base: string;
+}) {
+  const { focus, setFocus } = useFocus();
+  let matched: ClaimSummary[] = [];
+  let label = "Hover anything; the matched dossiers appear here.";
+  if (focus.persona) {
+    const p = PERSONAS_BY_ID[focus.persona];
+    matched = claims.filter((c) => lensesOf(c).includes(focus.persona!));
+    label = `Researched under ${p?.name}:`;
+  } else if (focus.verdict && focus.thread) {
+    matched = claims.filter(
+      (c) => c.verdict === focus.verdict && c.thread === focus.thread,
+    );
+    label = `${focus.thread} × ${VERDICT_KEY[focus.verdict]}:`;
+  } else if (focus.verdict) {
+    matched = claims.filter((c) => c.verdict === focus.verdict);
+    label = `Verdict: ${VERDICT_KEY[focus.verdict]}`;
+  } else if (focus.claim) {
+    matched = claims.filter((c) => c.id === focus.claim);
+    label = `Claim ${focus.claim}:`;
+  }
+  return (
+    <div className="readout">
+      <div className="readout-head">
+        <span className="tracked">{label}</span>
+        <span className="tracked" style={{ color: "var(--ink-mute)" }}>
+          {matched.length || "—"}{" "}
+          {matched.length === 1 ? "match" : "matches"}
+        </span>
+      </div>
+      <div className="claim-strip" role="list" aria-live="polite">
+        {claims.map((c) => {
+          const haloed = matched.includes(c);
+          const dim = matched.length > 0 && !haloed;
           return (
             <a
               key={c.id}
-              href={href}
-              className="group block rounded-lg border no-underline transition-all duration-200"
-              style={{
-                background: BG_CARD,
-                borderColor: "rgba(168,156,136,0.2)",
-                padding: "1.5rem",
-                textDecoration: "none",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.borderColor =
-                  ACCENT + "80";
-                (e.currentTarget as HTMLElement).style.transform =
-                  "translateY(-2px)";
-                (e.currentTarget as HTMLElement).style.boxShadow =
-                  "0 8px 30px -12px rgba(204,120,92,0.18)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.borderColor =
-                  "rgba(168,156,136,0.2)";
-                (e.currentTarget as HTMLElement).style.transform = "";
-                (e.currentTarget as HTMLElement).style.boxShadow = "";
-              }}
+              className={
+                "claim-chip" +
+                (haloed ? " haloed" : "") +
+                (dim ? " dimmed" : "")
+              }
+              href={`${base}/claims/${c.id}`}
+              style={
+                {
+                  "--bg": `var(--v-${VERDICT_KEY[c.verdict]})`,
+                } as React.CSSProperties
+              }
+              role="listitem"
+              onMouseEnter={() => setFocus({ claim: c.id })}
+              onMouseLeave={() => setFocus({})}
             >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "baseline",
-                  justifyContent: "space-between",
-                  gap: "0.75rem",
-                }}
-              >
-                <span
-                  className="font-mono text-sm"
-                  style={{ color: TEXT_MUTED }}
-                >
-                  Claim {numStr}
-                </span>
-                <VerdictBadge verdict={c.verdict} small />
-              </div>
-
-              <h3
-                className="mt-3 font-serif text-xl font-medium leading-snug"
-                style={{ color: TEXT_INK }}
-              >
-                {c.title}
-              </h3>
-
-              <div
-                className="mt-4 space-y-3 text-sm leading-relaxed"
-                style={{ color: TEXT_MUTED }}
-              >
-                <p>
-                  <span
-                    className="font-sans font-medium uppercase"
-                    style={{
-                      fontSize: "0.7rem",
-                      letterSpacing: "0.1em",
-                      color: VERDICT_HEX["VINDICATED"].fill,
-                    }}
-                  >
-                    For
-                  </span>
-                  <span className="ml-2" style={{ color: "#3A3530" }}>
-                    {c.oneLineFor}
-                  </span>
-                </p>
-                <p>
-                  <span
-                    className="font-sans font-medium uppercase"
-                    style={{
-                      fontSize: "0.7rem",
-                      letterSpacing: "0.1em",
-                      color: VERDICT_HEX["REFUTED"].fill,
-                    }}
-                  >
-                    Against
-                  </span>
-                  <span className="ml-2" style={{ color: "#3A3530" }}>
-                    {c.oneLineAgainst}
-                  </span>
-                </p>
-              </div>
-
-              <div
-                className="mt-5 flex items-center justify-between border-t pt-4 font-sans text-xs"
-                style={{
-                  borderColor: "rgba(168,156,136,0.15)",
-                  color: TEXT_MUTED,
-                }}
-              >
-                <span>Lenses: {c.personas.join(" + ")}</span>
-                <span className="capitalize">{c.thread}</span>
-              </div>
+              <span className="num">{String(c.number).padStart(2, "0")}</span>
+              <span className="dot" />
+              <span>{c.shortTitle}</span>
             </a>
           );
         })}
       </div>
-
-      {filtered.length === 0 && (
-        <div
-          className="py-16 text-center font-serif"
-          style={{ color: TEXT_MUTED }}
-        >
-          No claims match this filter combination.
-          <button
-            onClick={clearFilters}
-            className="ml-3 underline"
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              color: ACCENT,
-              font: "inherit",
-            }}
-          >
-            Clear
-          </button>
-        </div>
-      )}
     </div>
   );
 }
+
+/* ---------- Constellation (real graph: persona nodes + paired-claim edges) ---------- */
+function Constellation({
+  shownPersonas,
+  shownClaims,
+  claims,
+}: {
+  shownPersonas: number;
+  shownClaims: number;
+  claims: ClaimSummary[];
+}) {
+  const { focus, setFocus } = useFocus();
+  const visiblePersonas = PERSONAS.slice(0, shownPersonas);
+  const visiblePersonaIds = new Set(visiblePersonas.map((p) => p.id));
+  const visibleClaims = claims.slice(0, shownClaims);
+
+  const edges = useMemo(() => {
+    const map: Record<
+      string,
+      { a: PersonaId; b: PersonaId; claims: ClaimSummary[] }
+    > = {};
+    for (const c of visibleClaims) {
+      const ls = lensesOf(c);
+      if (ls.length < 2) continue;
+      const [a, b] = ls;
+      if (a === b) continue;
+      if (!visiblePersonaIds.has(a) || !visiblePersonaIds.has(b)) continue;
+      const k = [a, b].sort().join("|");
+      if (!map[k])
+        map[k] = {
+          a: k.split("|")[0] as PersonaId,
+          b: k.split("|")[1] as PersonaId,
+          claims: [],
+        };
+      map[k].claims.push(c);
+    }
+    return Object.values(map);
+  }, [shownClaims, shownPersonas, claims]);
+
+  const N = visiblePersonas.length;
+  const RAD = 42;
+  const positions = visiblePersonas.map((p, i) => {
+    const angle = (i / Math.max(N, 1)) * Math.PI * 2 - Math.PI / 2;
+    return {
+      id: p.id,
+      x: 50 + Math.cos(angle) * RAD,
+      y: 50 + Math.sin(angle) * RAD,
+    };
+  });
+  const posOf = (id: PersonaId) => positions.find((q) => q.id === id);
+
+  const focusedEdges = focus.claim
+    ? edges.filter((e) => e.claims.some((c) => c.id === focus.claim))
+    : focus.persona
+      ? edges.filter((e) => e.a === focus.persona || e.b === focus.persona)
+      : focus.verdict || focus.thread
+        ? edges.filter((e) =>
+            e.claims.some(
+              (c) =>
+                (!focus.verdict || c.verdict === focus.verdict) &&
+                (!focus.thread || c.thread === focus.thread),
+            ),
+          )
+        : [];
+
+  function isFocusedEdge(e: { a: PersonaId; b: PersonaId }) {
+    return focusedEdges.some((fe) => fe.a === e.a && fe.b === e.b);
+  }
+
+  // Center text adapts to focus
+  let center: React.ReactNode = (
+    <span>Each claim picked two of these to argue with itself.</span>
+  );
+  if (focus.persona) {
+    const p = PERSONAS_BY_ID[focus.persona];
+    center = (
+      <span>
+        <em>{p?.name}</em>
+        <br />
+        co-researched <b>{focusedEdges.length}</b> claim
+        {focusedEdges.length !== 1 && "s"}
+      </span>
+    );
+  } else if (focus.claim) {
+    center = (
+      <span>
+        <em>Claim {focus.claim.replace("claim-", "")}</em>
+        <br />
+        two lenses light up
+      </span>
+    );
+  } else if (focus.verdict || focus.thread) {
+    center = (
+      <span>
+        <em>
+          {focus.thread ?? ""}
+          {focus.thread && focus.verdict ? " × " : ""}
+          {focus.verdict ? VERDICT_KEY[focus.verdict] : ""}
+        </em>
+        <br />
+        <b>{focusedEdges.length}</b> persona pair
+        {focusedEdges.length !== 1 && "s"}
+      </span>
+    );
+  }
+
+  return (
+    <section
+      className="constellation-section"
+      aria-label="Persona co-research graph"
+    >
+      <h2>The roster, as a network.</h2>
+      <p className="sub">
+        Nine analytical lenses. An edge runs between two personas whenever they
+        were paired on a claim &mdash; thicker for more papers in that dossier.
+        Hover a persona to see what it touched; hover a verdict cell above to
+        see which pairs produced that verdict.
+      </p>
+
+      <div className="constellation">
+        <svg
+          className="const-edges"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          {edges.map((e, i) => {
+            const pa = posOf(e.a);
+            const pb = posOf(e.b);
+            if (!pa || !pb) return null;
+            const mx = (pa.x + pb.x) / 2;
+            const my = (pa.y + pb.y) / 2;
+            const cx = 50 + (mx - 50) * 0.35;
+            const cy = 50 + (my - 50) * 0.35;
+            const weight = e.claims.reduce(
+              (s, c) => s + (c.papersCount ?? 5),
+              0,
+            );
+            const focused = isFocusedEdge(e);
+            const dimmed = focusedEdges.length > 0 && !focused;
+            return (
+              <path
+                key={i}
+                d={`M ${pa.x} ${pa.y} Q ${cx} ${cy} ${pb.x} ${pb.y}`}
+                stroke="currentColor"
+                strokeWidth={(0.3 + weight / 60).toFixed(2)}
+                fill="none"
+                opacity={focused ? 0.9 : dimmed ? 0.06 : 0.22}
+                style={{ transition: "opacity 200ms ease" }}
+              />
+            );
+          })}
+        </svg>
+
+        <div className="center">{center}</div>
+
+        {positions.map(({ id, x, y }) => {
+          const p = PERSONAS_BY_ID[id];
+          const isFocus = focus.persona === id;
+          const inEdge = focusedEdges.some(
+            (e) => e.a === id || e.b === id,
+          );
+          const dimmed =
+            (focus.persona && !isFocus && !inEdge) ||
+            (focus.claim && !inEdge) ||
+            ((focus.verdict || focus.thread) &&
+              focusedEdges.length > 0 &&
+              !inEdge);
+          return (
+            <button
+              key={id}
+              className={
+                "node" +
+                (isFocus ? " focused" : "") +
+                (dimmed ? " dimmed" : "")
+              }
+              style={{ left: `${x}%`, top: `${y}%` }}
+              onMouseEnter={() => setFocus({ persona: id })}
+              onMouseLeave={() => setFocus({})}
+              onFocus={() => setFocus({ persona: id })}
+              onBlur={() => setFocus({})}
+              aria-label={`${p.name}: ${p.blurb}`}
+            >
+              <Sigil id={id} size={28} />
+              <span className="nm">{p.name}</span>
+              {isFocus && (
+                <span className="tip" role="tooltip">
+                  &ldquo;{p.quote}&rdquo;
+                </span>
+              )}
+            </button>
+          );
+        })}
+
+        {/* Personas hidden by the scrubber render as faint ghosts */}
+        {PERSONAS.slice(shownPersonas).map((p, i) => {
+          const angle =
+            ((shownPersonas + i) / PERSONAS.length) * Math.PI * 2 - Math.PI / 2;
+          const x = 50 + Math.cos(angle) * RAD;
+          const y = 50 + Math.sin(angle) * RAD;
+          return (
+            <span
+              key={p.id}
+              className="node ghost"
+              style={{ left: `${x}%`, top: `${y}%` }}
+              aria-hidden="true"
+            >
+              <Sigil id={p.id} size={28} />
+              <span className="nm">{p.name}</span>
+            </span>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+/* ---------- Scatter ---------- */
+function Scatter({
+  shownClaims,
+  claims,
+  base,
+}: {
+  shownClaims: number;
+  claims: ClaimSummary[];
+  base: string;
+}) {
+  const { focus, setFocus } = useFocus();
+  const visible = claims.slice(0, shownClaims);
+  return (
+    <section
+      className="scatter-section"
+      aria-label="Claim scatter: thread vs verdict"
+    >
+      <h2>Every claim, plotted.</h2>
+      <p className="sub">
+        x: research thread &nbsp;·&nbsp; y: verdict &nbsp;·&nbsp; size: papers
+        cited &nbsp;·&nbsp; color: verdict. Click to read the dossier; hover to
+        light up its lenses above.
+      </p>
+      <div className="scatter">
+        <div className="y-axis-label">
+          {[...ALL_VERDICTS].reverse().map((v) => (
+            <span key={v} data-active={focus.verdict === v ? "1" : "0"}>
+              {VERDICT_KEY[v]}
+            </span>
+          ))}
+        </div>
+        <div className="grid" />
+        <div className="x-axis-label">
+          {THREADS.map((t) => (
+            <span key={t} data-active={focus.thread === t ? "1" : "0"}>
+              {t}
+            </span>
+          ))}
+        </div>
+        <div className="pts">
+          {visible.map((c) => {
+            const tx = THREADS.indexOf(c.thread as typeof THREADS[number]);
+            const vy = ALL_VERDICTS.indexOf(c.verdict);
+            const sameCell = visible.filter(
+              (o) => o.thread === c.thread && o.verdict === c.verdict,
+            );
+            const idx = sameCell.indexOf(c);
+            const j = (idx - (sameCell.length - 1) / 2) * 14;
+            const x = ((tx + 0.5) / THREADS.length) * 100;
+            const y = ((vy + 0.5) / ALL_VERDICTS.length) * 100;
+            const size = 14 + (c.papersCount ?? 5) * 1.6;
+            const isFocus = focus.claim === c.id;
+            const haloByPersona =
+              focus.persona && lensesOf(c).includes(focus.persona);
+            const haloByCell =
+              focus.verdict === c.verdict && focus.thread === c.thread;
+            const halo = isFocus || haloByPersona || haloByCell;
+            const dim =
+              (focus.persona ||
+                focus.claim ||
+                (focus.verdict && focus.thread)) &&
+              !halo;
+            return (
+              <a
+                key={c.id}
+                className={"pt" + (halo ? " halo" : "") + (dim ? " dim" : "")}
+                href={`${base}/claims/${c.id}`}
+                style={
+                  {
+                    left: `calc(${x}% + ${j}px)`,
+                    top: `${y}%`,
+                    width: `${size}px`,
+                    height: `${size}px`,
+                    "--bg": `var(--v-${VERDICT_KEY[c.verdict]})`,
+                  } as React.CSSProperties
+                }
+                onMouseEnter={() => setFocus({ claim: c.id })}
+                onMouseLeave={() => setFocus({})}
+                onFocus={() => setFocus({ claim: c.id })}
+                onBlur={() => setFocus({})}
+                aria-label={`Claim ${c.number}: ${c.title} (${c.verdict})`}
+              >
+                {String(c.number).padStart(2, "0")}
+                {isFocus && (
+                  <span className="pt-tip">
+                    {String(c.number).padStart(2, "0")} · {c.shortTitle} ·{" "}
+                    <em>{VERDICT_KEY[c.verdict]}</em>
+                  </span>
+                )}
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- Top-level: the linked instrument ---------- */
+export function ClaimsExplorer({ claims, base }: Props) {
+  const [focus, setFocus] = useState<Focus>({});
+  const [shownClaims, setShownClaims] = useState(claims.length);
+  const [shownPersonas, setShownPersonas] = useState(PERSONAS.length);
+
+  return (
+    <FocusCtx.Provider value={{ focus, setFocus }}>
+      <Hero
+        shownClaims={shownClaims}
+        setShownClaims={setShownClaims}
+        shownPersonas={shownPersonas}
+        setShownPersonas={setShownPersonas}
+      />
+      <Matrix shownClaims={shownClaims} claims={claims} base={base} />
+      <Constellation
+        shownPersonas={shownPersonas}
+        shownClaims={shownClaims}
+        claims={claims}
+      />
+      <Scatter shownClaims={shownClaims} claims={claims} base={base} />
+    </FocusCtx.Provider>
+  );
+}
+
+export default ClaimsExplorer;

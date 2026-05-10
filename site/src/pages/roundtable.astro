@@ -1,0 +1,25 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { RoundtableTree } from "../components/RoundtableTree";
+import { ROUNDTABLE } from "../lib/personas";
+import { u } from "../lib/site";
+---
+
+<BaseLayout
+  title="Roundtable"
+  description="Four personas, two rounds, one product question. The v1 product was killed and rebuilt by the cross-examination."
+  wave="roundtable"
+>
+  <main class="roundtable">
+    <div class="tracked">Wave 2 · The Roundtable</div>
+    <h1 style="margin-top:0.75rem;">Four personas, two rounds, one product question.</h1>
+    <p style="max-width:65ch;color:var(--ink-sub);margin-top:1rem;">
+      <em>Topic.</em> {ROUNDTABLE.topic} The orchestrator selected four lenses with the largest expected disagreement on this question, ran an opening round, then forced each persona to address one other persona's R1 take in a second round &mdash; either to dismantle it, steelman it, or move toward it.
+    </p>
+    <p style="max-width:65ch;color:var(--ink-sub);margin-top:1rem;">
+      Of all the agents in this session, the four roundtable personas (and their R2 doubles) are the only ones that loaded the full persona-skill profile rather than a prompt-level primer. <a href={u("/agents")}>How that worked.</a>
+    </p>
+
+    <RoundtableTree client:load />
+  </main>
+</BaseLayout>

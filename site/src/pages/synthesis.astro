@@ -1,114 +1,99 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import VerdictPill from "../components/VerdictPill.astro";
-import { CLAIMS, THREADS } from "../lib/verdicts";
+import { CLAIMS, THREADS, VERDICT_KEY } from "../lib/verdicts";
 import { u } from "../lib/site";
 ---
 
 <BaseLayout
   title="Synthesis"
   description="Cross-cutting verdicts and engineering recommendations from the 10-claim adversarial validation."
+  wave="research"
 >
-  <article class="mx-auto max-w-wide px-6 py-12 lg:px-12 lg:py-20">
-    <header class="mx-auto max-w-prose">
-      <p class="font-sans text-xs uppercase tracking-[0.18em] text-ink-500">Cross-cutting analysis</p>
-      <h1 class="mt-4 font-serif text-4xl font-medium leading-[1.1] tracking-[-0.01em] text-ink-900 lg:text-5xl">
-        The convergent pattern is the finding.
-      </h1>
-      <p class="mt-5 font-serif text-prose-lg leading-relaxed text-ink-700">
-        Zero claims were vindicated; zero were cleanly refuted. All ten landed in CONTESTED or SPLIT. Strong forms — formulated with overspecified language ("homologous", "spontaneously emerged", "phenomenally conscious", "the missing mechanism") — systematically fail. Weak forms — algorithmic-level analogies productive on a restricted subspace — systematically survive.
-      </p>
-    </header>
+  <main class="prose-col" style="max-width:calc(75ch + 6rem);">
+    <div class="tracked">Cross-cutting analysis</div>
+    <h1 style="margin-top:.5rem;">The convergent pattern is the finding.</h1>
+    <p class="lede" style="margin-top:1.25rem;color:var(--ink-sub);">
+      Zero claims were vindicated; zero were cleanly refuted. All ten landed in CONTESTED or SPLIT. Strong forms — formulated with overspecified language — systematically fail. Weak forms — algorithmic-level analogies productive on a restricted subspace — systematically survive.
+    </p>
 
-    <!-- Verdict matrix -->
-    <section class="mx-auto mt-16 max-w-prose">
-      <h2 class="font-serif text-2xl font-medium text-ink-900">Verdict Matrix</h2>
-      <div class="mt-6 overflow-x-auto">
-        <table class="w-full text-sm">
-          <thead>
+    <h2>Verdict matrix</h2>
+    <div style="margin-top:1rem;overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Claim</th>
+            <th>Verdict</th>
+            <th>What defeats the strong form</th>
+          </tr>
+        </thead>
+        <tbody>
+          {CLAIMS.map((c) => (
             <tr>
-              <th class="w-12">#</th>
-              <th>Claim</th>
-              <th class="w-32">Verdict</th>
-              <th>Strong form</th>
-              <th>Weak form</th>
+              <td style="font-family:var(--mono);color:var(--ink-mute);">{String(c.number).padStart(2, "0")}</td>
+              <td>
+                <a href={u(`/claims/${c.id}`)} style="font-style:italic;">{c.shortTitle}</a>
+              </td>
+              <td><VerdictPill verdict={c.verdict} size="sm" /></td>
+              <td style="color:var(--ink-sub);">{c.oneLineAgainst}</td>
             </tr>
-          </thead>
-          <tbody>
-            {CLAIMS.map((c) => (
-              <tr>
-                <td class="font-mono text-ink-500">{String(c.number).padStart(2, "0")}</td>
-                <td>
-                  <a href={u(`/claims/${c.id}`)} class="font-medium">{c.shortTitle}</a>
-                </td>
-                <td><VerdictPill verdict={c.verdict} size="sm" /></td>
-                <td class="text-ink-600">{c.oneLineAgainst}</td>
-                <td class="text-ink-600">{c.oneLineFor}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </section>
+          ))}
+        </tbody>
+      </table>
+    </div>
 
-    <!-- Why each strong form fails -->
-    <section class="mx-auto mt-16 max-w-prose prose-claim font-serif text-ink-800">
-      <h2>Why every strong form fails — five recurring failure modes</h2>
+    <h2>Five recurring failure modes</h2>
 
-      <h3>1. Marr-level confusion</h3>
-      <p>Six of ten claims confuse Marr's [implementation, algorithmic, computational] levels. Brain ↔ transformer mappings hold at the algorithmic level (sometimes computational), and break catastrophically when smuggled to implementation (claim 2's burst/tonic firing, claim 10's cell-type heterogeneity, claim 1's binding mechanism). The honest framing across the package: <em>algorithmic-level analogy, productive for design intuition, not implementation-level identity.</em></p>
+    <h3>1. Marr-level confusion</h3>
+    <p>Six of ten claims confuse Marr's [implementation, algorithmic, computational] levels. Brain ↔ transformer mappings hold at the algorithmic level (sometimes computational), and break catastrophically when smuggled to implementation.</p>
 
-      <h3>2. Strong words that smuggle in unstated equivalences</h3>
-      <p>"Homologous" (claim 2) is an evolutionary/structural term, not algorithmic. "Spontaneously emerged" (claim 7) implies novel capability, not eliciting pretraining. "Phenomenally conscious" (claim 6) collapses Block's phenomenal/access distinction. "Threshold" (claims 1, 4) implies phase transitions where the data shows smooth scaling. Every strong form has a load-bearing word doing too much work.</p>
+    <h3>2. Strong words that smuggle in unstated equivalences</h3>
+    <p>"Homologous" is evolutionary/structural, not algorithmic. "Spontaneously emerged" implies novel capability, not eliciting pretraining. "Phenomenally conscious" collapses Block's distinction. "Threshold" implies phase transitions where the data shows smooth scaling.</p>
 
-      <h3>3. Confirmation-bias trap in methodology choice</h3>
-      <p>Claim 1's strongest finding: studies citing 7-entity setups as "evidence" for Miller's law had <em>picked</em> 7 as a methodological convenience. The number was an experimenter choice, not a measured ceiling. The same pattern appears in claim 7 (multi-agent papers cite ToM "emergence" without comparing against frozen-baseline ToM) and claim 8 (replay studies report relative gains over no-replay baselines, not absolute deltas to joint-training upper bounds).</p>
+    <h3>3. Confirmation-bias trap</h3>
+    <p>Studies citing 7-entity setups as "evidence" for Miller's law had picked 7 as a methodological convenience. The number was an experimenter choice, not a measured ceiling.</p>
 
-      <h3>4. Confounded causal channels</h3>
-      <p>Claim 7 surfaces this most cleanly: "spontaneous ToM" conflates pretraining-derived ToM (real, well-documented) with interaction-emergent ToM (frozen-weight loops cannot produce new capability via gradient). The same conflation appears in claim 4 (calibration-from-RLHF vs calibration-from-scale) and claim 3 (persona-as-prompted-distribution-region vs persona-as-trained-trait).</p>
+    <h3>4. Confounded causal channels</h3>
+    <p>"Spontaneous ToM" conflates pretraining-derived ToM (real, well-documented) with interaction-emergent ToM (frozen-weight loops cannot produce new capability via gradient).</p>
 
-      <h3>5. Partial unfalsifiability under current operationalization</h3>
-      <p>Claims 6, 8, and the mechanistic part of 4 end up <strong>partially unfalsifiable</strong>. CoT phenomenology depends on which consciousness theory you accept (IIT vs GWT vs illusionism). Sleep consolidation — every failed implementation is blamed on biological infidelity, leaving no clean discriminator. Mechanistic metacognition — the ~20% concept-injection number is striking but brittle and we don't agree on what would count as a clean test.</p>
-    </section>
+    <h3>5. Partial unfalsifiability under current operationalization</h3>
+    <p>Claims 6, 8, and the mechanistic part of 4 end up partially unfalsifiable. The right move is to admit it and propose discriminators; the wrong move is to ride the analogy.</p>
 
-    <!-- Cross-cutting threads -->
-    <section class="mx-auto mt-16 max-w-prose">
-      <h2 class="font-serif text-2xl font-medium text-ink-900">Cross-cutting threads</h2>
-      <div class="mt-6 space-y-4">
-        {Object.entries(THREADS).map(([key, t]) => (
-          <article class="rounded-lg border border-ink-400/20 bg-bone-50 p-6">
-            <p class="font-sans text-xs uppercase tracking-[0.18em] text-accent-600">Thread</p>
-            <h3 class="mt-1 font-serif text-xl font-medium text-ink-900">{t.label}</h3>
-            <p class="mt-2 font-serif leading-relaxed text-ink-700">{t.description}</p>
-            <div class="mt-3 flex flex-wrap gap-2 font-sans text-sm">
-              {t.claims.map((n) => {
-                const c = CLAIMS.find((x) => x.number === n)!;
-                return (
-                  <a href={u(`/claims/${c.id}`)} class="rounded border border-ink-400/30 bg-bone-100 px-2.5 py-1 text-ink-800 no-underline">
-                    {String(n).padStart(2, "0")} {c.shortTitle}
-                  </a>
-                );
-              })}
-            </div>
-          </article>
-        ))}
-      </div>
-    </section>
+    <h2>Cross-cutting threads</h2>
+    <div style="display:grid;gap:1.25rem;margin-top:1.5rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
+      {Object.entries(THREADS).map(([key, t]) => (
+        <article class="note-card">
+          <div class="tracked">Thread · {key}</div>
+          <h3 style="margin-top:.5rem;">{t.label}</h3>
+          <p style="color:var(--ink-sub);margin-top:.5rem;">{t.description}</p>
+          <div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1rem;">
+            {t.claims.map((n) => {
+              const c = CLAIMS.find((x) => x.number === n)!;
+              return (
+                <a href={u(`/claims/${c.id}`)} class="claim-chip" style={`--bg:var(--v-${VERDICT_KEY[c.verdict]});`}>
+                  <span class="num">{String(n).padStart(2, "0")}</span>
+                  <span class="dot"></span>
+                  <span>{c.shortTitle}</span>
+                </a>
+              );
+            })}
+          </div>
+        </article>
+      ))}
+    </div>
 
-    <!-- Engineering recommendations -->
-    <section class="mx-auto mt-16 max-w-prose prose-claim font-serif text-ink-800">
-      <h2>Engineering recommendations</h2>
-      <p>Distilled across all ten dossiers — eight load-bearing recommendations for engineers building agent systems:</p>
-      <ol>
-        <li><strong>Architect for ~4–8 reliably-tracked entities</strong> in active context, regardless of nominal window size. (Claim 1)</li>
-        <li><strong>Track retrieval-confidence and generation-confidence as separate signals.</strong> Overconfidence on wrong-context is the dominant RAG failure mode. (Claim 5)</li>
-        <li><strong>Don't trust intrinsic self-correction.</strong> Close monitoring loops with external verifiers, sampling-based uncertainty, oracle feedback. (Claims 4, 6)</li>
-        <li><strong>Build active forgetting into context-management pipelines.</strong> Strategic summarization + targeted deletion of stale context is the one place "active forgetting as capability" actually pays out. (Claim 9)</li>
-        <li><strong>Implement CLS-inspired dual-store architectures with replay; explore REM-analog generative recomposition</strong> — the entirely-unexplored direction in continual learning. (Claim 8)</li>
-        <li><strong>Design multi-agent loops to elicit pretraining-derived ToM, not generate new capability.</strong> Explicit belief scaffolding {">"} raw interaction pressure. (Claim 7)</li>
-        <li><strong>Persona safety analysis must cover both semantic and activation-space pathways.</strong> They diverge architecturally; one-pathway analysis misses real failure modes. (Claim 3)</li>
-        <li><strong>Use neuroscience as inspiration for new architectures, not as validation of current ones.</strong> Brain ↔ transformer mappings hold on restricted subspaces; productive but not proof-of-correctness. (Claims 2, 10)</li>
-      </ol>
-    </section>
-  </article>
+    <h2>Engineering recommendations</h2>
+    <p>Distilled across all ten dossiers — eight load-bearing recommendations for engineers building agent systems:</p>
+    <ol>
+      <li><strong>Architect for ~4–8 reliably-tracked entities</strong> in active context, regardless of nominal window size. (Claim 1)</li>
+      <li><strong>Track retrieval-confidence and generation-confidence as separate signals.</strong> (Claim 5)</li>
+      <li><strong>Don't trust intrinsic self-correction.</strong> Close monitoring loops with external verifiers. (Claims 4, 6)</li>
+      <li><strong>Build active forgetting into context-management pipelines.</strong> (Claim 9)</li>
+      <li><strong>Implement CLS-inspired dual-store architectures with replay.</strong> (Claim 8)</li>
+      <li><strong>Design multi-agent loops to elicit pretraining-derived ToM, not generate new capability.</strong> (Claim 7)</li>
+      <li><strong>Persona safety analysis must cover both semantic and activation-space pathways.</strong> (Claim 3)</li>
+      <li><strong>Use neuroscience as inspiration for new architectures, not as validation of current ones.</strong> (Claims 2, 10)</li>
+    </ol>
+  </main>
 </BaseLayout>

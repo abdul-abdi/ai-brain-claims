@@ -9,6 +9,10 @@ interface Props {
   description?: string;
   ogImage?: string;
   type?: "article" | "website";
+  /** Which timeline-strip wave is active for this route. */
+  wave?: "home" | "research" | "roundtable" | "build";
+  /** Hide the timeline strip + topnav (rare, e.g. print-only views). */
+  bare?: boolean;
 }
 
 const {
@@ -16,17 +20,26 @@ const {
   description = SITE.description,
   ogImage = "/og-default.png",
   type = "website",
+  wave = "home",
+  bare = false,
 } = Astro.props;
 
 const fullTitle = title === SITE.title ? title : `${title} — ${SITE.title}`;
 const canonical = new URL(Astro.url.pathname, SITE.url).toString();
+
+const segments = [
+  { id: "research", w: 0.55, color: "var(--wave-research)", label: "Research wave · 10 dossiers" },
+  { id: "roundtable", w: 0.20, color: "var(--wave-roundtable)", label: "Roundtable · 4 personas × 2 rounds" },
+  { id: "build", w: 0.25, color: "var(--wave-build)", label: "Build wave · benchmark" },
+] as const;
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
 
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
@@ -45,29 +58,37 @@ const canonical = new URL(Astro.url.pathname, SITE.url).toString();
 
     <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/favicon.svg`} />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap"
-    />
-
     <slot name="head" />
   </head>
 
-  <body class="flex min-h-dvh flex-col">
+  <body>
     <a
       href="#main"
-      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-accent focus:px-3 focus:py-2 focus:text-bone-100"
-      >Skip to content</a
-    >
+      class="sr-only"
+      style="position:absolute;left:1rem;top:1rem;z-index:60;background:var(--accent);color:var(--bone);padding:.5rem .75rem;border-radius:2px;"
+      onfocus="this.classList.remove('sr-only')"
+      onblur="this.classList.add('sr-only')"
+    >Skip to content</a>
 
-    <Nav />
+    {!bare && (
+      <>
+        <div class="timeline-strip" role="navigation" aria-label="Session timeline">
+          {segments.map((s) => (
+            <div
+              class={"seg" + (s.id === wave ? " active" : "")}
+              style={`width:${s.w * 100}%;--seg:${s.color};`}
+              title={s.label}
+            />
+          ))}
+        </div>
+        <Nav />
+      </>
+    )}
 
-    <main id="main" class="flex-1 anim-fade">
+    <main id="main" class="shell">
       <slot />
     </main>
 
-    <Footer />
+    {!bare && <Footer />}
   </body>
 </html>

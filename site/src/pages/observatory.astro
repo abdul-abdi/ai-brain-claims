@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { ObservatoryFigure } from "../components/ObservatoryDesign";
 import { CompareFigure } from "../components/CompareFigure";
 import { MultiSeedFigure } from "../components/MultiSeedFigure";
 import compareData from "../data/baseline-vs-hygiene.json";
@@ -10,72 +11,34 @@ import { SITE, u } from "../lib/site";
 <BaseLayout
   title="The Observatory"
   description="An immutable event log + pure-function views — the working primitive that survived a 4-persona roundtable + 3-angle deep research."
+  wave="build"
 >
-  <article class="mx-auto max-w-wide px-6 py-12 lg:px-12 lg:py-20">
-    <header class="mx-auto max-w-prose">
-      <p class="font-sans text-xs uppercase tracking-[0.18em] text-ink-500">The working primitive</p>
-      <h1 class="mt-4 font-serif text-4xl font-medium leading-[1.1] tracking-[-0.01em] text-ink-900 lg:text-5xl">
-        The Observatory
-      </h1>
-      <p class="mt-5 font-serif text-prose-lg leading-relaxed text-ink-700">
-        An <strong>immutable event log</strong> with <strong>importance and confidence as pure functions over the log</strong>. Tier membership is a query concern, not a stored place. The architecture survived a 4-persona roundtable plus 3 dedicated angle-research agents.
-      </p>
-    </header>
+  <main class="observatory">
+    <div class="tracked">Wave 3 · The Observatory</div>
+    <h1 style="margin-top:0.75rem;margin-bottom:1rem;">The benchmark, with handles.</h1>
+    <p style="max-width:65ch;color:var(--ink-sub);">
+      We built one primitive — an importance scorer with an exponential recency half-life — and measured it on a needle-in-haystack task across windows, needle counts, and seeds. The verdict on Claim 10 is a function of these knobs. Move them; watch it move with you.
+    </p>
 
-    <section class="mx-auto mt-14 max-w-prose prose-claim font-serif text-ink-800">
-      <h2>Why this shape</h2>
-      <p>The proposed two-tier <em>mutable</em> storage architecture is structurally wrong. Tier promotion is a <strong>point of ruin</strong>: if your importance scorer makes a wrong promotion at step 47 of a 200-step run, that error is baked into "consolidated" state and propagates forward. You convert a recoverable error into a structural one.</p>
-      <p>The append-only log doesn't have this property. Wrong signals are isolated events, not architectural state. Pure scoring functions over the log mean different scorers can be A/B'd against the same historical events — <strong>deterministically replayable</strong>, debuggable, and amenable to retrospective analysis after new evals or new models ship.</p>
-      <p>The "git for agent context" framing is the wrong metaphor. Git models <em>diff intention</em>; an agent log is a <em>fact stream</em>. Don't inherit git's complexity model. The append-only structure is right; the mental model is closer to Datomic than to git.</p>
+    <ObservatoryFigure client:load />
 
-      <h2>Empirical proof — needle-retention benchmark</h2>
-      <p>
-        The figure below is real. It is the output of <code>python -m eval.benchmarks.needle_retention</code> at the default config — 8 needles randomly placed among 56 noise events (64 total), working window 16, 10 seeds. The script is committed at <code>eval/benchmarks/needle_retention.py</code>; the JSON it writes is consumed directly by this page at build time.
-      </p>
-      <p>
-        <strong>Three pre-registered hypotheses are tested.</strong>
-      </p>
-      <ol>
-        <li><strong>H1 — needle-aware oracle &gt; 95% retention.</strong> Tests the upper bound of importance-weighted views.</li>
-        <li><strong>H2 — query-anchored task_relevance approaches the oracle.</strong> Tests whether a non-privileged scorer can recover information without the marker role.</li>
-        <li><strong>H3 — replay determinism = 100% across all strategies.</strong> Tests the architectural premise that the same (log, scorer, window) tuple yields a byte-identical working set on every recomputation.</li>
-      </ol>
-    </section>
+    <hr class="rule" style="margin:3rem 0;" />
 
-    <div class="mx-auto max-w-wide">
-      <MultiSeedFigure data={benchmarkData} client:load />
-    </div>
-
-    <section class="mx-auto mt-4 max-w-prose prose-claim font-serif text-ink-800">
-      <h3>What the numbers say</h3>
-      <ul>
-        <li>
-          <strong>H1 vindicated.</strong> The <code>needle_aware (oracle)</code> scorer returns 100.0% ± 0.0% retention across all 10 seeds. The architecture's upper bound is provably reachable when the importance signal is correct.
-        </li>
-        <li>
-          <strong>H2 partially vindicated.</strong> A query-anchored <code>task_relevance</code> scorer that <em>does not</em> know about the privileged "needle" role still achieves 65.0% ± 15.4% retention — 2.4× the truncation baseline. The intuition that importance is context-relative shows up as measurable lift.
-        </li>
-        <li>
-          <strong>H3 vindicated.</strong> All five strategies returned 100% replay-consistent working sets across three replays per seed.
-        </li>
-        <li>
-          <strong>An unexpected finding.</strong> <code>recency+role</code> (21.2%) underperforms naive truncation (27.5%). The default role-weight table does not include the "needle" role, so the composite scorer actively <em>deprioritizes</em> the marker. This is a real failure mode of imperfect importance signals — and the architecture surfaces it cleanly because the scorer is a pure function over the log, not a baked-in policy.
-        </li>
-      </ul>
-
-      <h2>Latency comparison (baseline vs. hygiene)</h2>
-      <p>
-        For completeness, the simpler accuracy / latency pair from the original eval — Carmack's "missing number" cleanly answered: importance scoring adds &lt; 1 ms per view at 50 events.
-      </p>
-    </section>
-
-    <div class="mx-auto max-w-prose">
-      <CompareFigure data={compareData} client:load />
-    </div>
-
-    <section class="mx-auto mt-10 max-w-prose prose-claim font-serif text-ink-800">
-      <h2>The shape</h2>
-      <pre class="mt-4"><code>{`from observatory import EventLog, view, importance, confidence
+    <div class="tracked">Architecture</div>
+    <h2 style="margin-top:.6rem;max-width:36ch;">Why an immutable event log.</h2>
+    <div style="margin-top:1.5rem;display:grid;gap:2rem;grid-template-columns:1fr;align-items:start;" class="obs-prose">
+      <div>
+        <p style="color:var(--ink-sub);max-width:60ch;">
+          The proposed two-tier <em>mutable</em> storage architecture is structurally wrong. Tier promotion is a <strong style="color:var(--ink);">point of ruin</strong>: if your importance scorer makes a wrong promotion at step 47 of a 200-step run, that error is baked into "consolidated" state and propagates forward.
+        </p>
+        <p style="color:var(--ink-sub);max-width:60ch;">
+          The append-only log doesn't have this property. Wrong signals are isolated events, not architectural state. Pure scoring functions over the log mean different scorers can be A/B'd against the same historical events — <strong style="color:var(--ink);">deterministically replayable</strong>, debuggable, and amenable to retrospective analysis after new evals or new models ship.
+        </p>
+        <p style="color:var(--ink-sub);max-width:60ch;">
+          The "git for agent context" framing is the wrong metaphor. Git models <em>diff intention</em>; an agent log is a <em>fact stream</em>. The mental model is closer to Datomic than to git.
+        </p>
+      </div>
+      <pre style="margin:0;"><code>{`from observatory import EventLog, view, importance, confidence
 
 log = EventLog()
 log.append({"role": "user", "content": "..."})
@@ -85,47 +48,62 @@ log.append({"role": "tool", "name": "search", "content": "..."})
 # Working memory is a derived view, not stored state
 working = view(
     log,
-    scorer=importance.recency_attention(),  # pure function
+    scorer=importance.recency_attention(),
     window=4096,
 )
 
-# Track retrieval and generation confidence separately
 sig = confidence.dissociation(retrieval_score=0.92, generation_score=0.41)
 if sig.diverged():
-    # The dominant RAG failure mode: overconfidence on wrong context.
     log.append({"role": "verifier", "action": "re-query", "trigger": sig})
 
-# A/B test scorers against the same log — replay-deterministic
 alt = view(log, scorer=importance.task_relevance(query="..."), window=4096)
 delta = compare(working, alt)`}</code></pre>
+    </div>
 
-      <h2>What ships in v0.1</h2>
-      <ul>
-        <li><code>EventLog</code> — immutable append-only event log with stable IDs and timestamps</li>
-        <li><code>view()</code> — pure function over <code>(log, scorer, window)</code> returning the working set</li>
-        <li><code>importance.recency_attention()</code> — composable scorer combining recency and (where available) attention norms</li>
-        <li><code>importance.task_relevance(query=...)</code> — query-anchored scorer (importance is context-relative)</li>
-        <li><code>confidence.dissociation()</code> — separate retrieval / generation confidence tracking</li>
-        <li><code>eval.ruler_extended()</code> — RULER tasks instrumented with hygiene-aware metrics (v0.1 ships a placeholder; real RULER integration in v0.2)</li>
-      </ul>
+    <hr class="rule" style="margin:3rem 0;" />
 
-      <h2>What's measured</h2>
-      <p>The eval harness extends NVIDIA RULER. Two questions in v0.1:</p>
-      <ol>
-        <li>Does importance-weighted active pruning preserve accuracy better than naive truncation on a 5-step agent loop, and at what latency cost? (Carmack's missing number.)</li>
-        <li>Does pure-function scoring over an immutable log give the same or better accuracy as a mutable two-tier system, while being deterministically replayable? (The Hickey-Carmack convergence.)</li>
-      </ol>
+    <div class="tracked">Empirical proof — needle-retention</div>
+    <h2 style="margin-top:.6rem;max-width:36ch;">What the numbers say.</h2>
+    <p style="color:var(--ink-sub);max-width:65ch;margin-top:1rem;">
+      The figure below is real. It is the output of <code>python -m eval.benchmarks.needle_retention</code> at the default config — 8 needles randomly placed among 56 noise events, working window 16, 10 seeds. The script is committed at <code>eval/benchmarks/needle_retention.py</code>; the JSON is consumed at build time.
+    </p>
 
-      <h2>What does NOT ship in v0.1</h2>
-      <ul>
-        <li>Real-time attention-pattern hooks into proprietary models (only available where the model exposes them — open weights primarily)</li>
-        <li>Branch / merge semantics for divergent agent context (intentionally deferred — single-branch first)</li>
-        <li>Cross-provider client SDKs (Python + Anthropic SDK first; OpenAI / Google later)</li>
-        <li>A managed service (deliberately not — see the <a href={u("/synthesis")}>angle research</a>)</li>
-      </ul>
+    <div style="margin-top:2rem;border:1px solid var(--bone-line);background:var(--bone);padding:1.5rem;">
+      <MultiSeedFigure data={benchmarkData} client:load />
+    </div>
 
-      <h2>Install</h2>
-      <pre><code>{`pip install claim-observatory     # PyPI distribution name
+    <ul style="margin-top:1.5rem;color:var(--ink-sub);max-width:65ch;">
+      <li><strong style="color:var(--ink);">H1 vindicated.</strong> The <code>needle_aware (oracle)</code> scorer returns 100.0% ± 0.0% retention across all 10 seeds.</li>
+      <li><strong style="color:var(--ink);">H2 partially vindicated.</strong> A query-anchored <code>task_relevance</code> scorer that does <em>not</em> know about the privileged "needle" role still achieves 65.0% ± 15.4% retention — 2.4× truncation baseline.</li>
+      <li><strong style="color:var(--ink);">H3 vindicated.</strong> All five strategies returned 100% replay-consistent working sets across three replays per seed.</li>
+      <li><strong style="color:var(--ink);">An unexpected finding.</strong> <code>recency+role</code> (21.2%) underperforms naive truncation (27.5%). The default role-weight table does not include the "needle" role, so the composite scorer actively <em>deprioritizes</em> the marker. The architecture surfaces it cleanly.</li>
+    </ul>
+
+    <hr class="rule" style="margin:3rem 0;" />
+
+    <div class="tracked">Latency · Carmack's missing number</div>
+    <h2 style="margin-top:.6rem;">Importance scoring is cheap.</h2>
+    <p style="color:var(--ink-sub);max-width:65ch;margin-top:1rem;">
+      Importance scoring adds &lt; 1 ms per view at 50 events. The simpler accuracy/latency comparison from the original eval:
+    </p>
+    <div style="margin-top:1.5rem;border:1px solid var(--bone-line);background:var(--bone);padding:1.5rem;max-width:780px;">
+      <CompareFigure data={compareData} client:load />
+    </div>
+
+    <hr class="rule" style="margin:3rem 0;" />
+
+    <div class="tracked">Install + ship</div>
+    <h2 style="margin-top:.6rem;">v0.1 surface area.</h2>
+    <ul style="margin-top:1rem;color:var(--ink-sub);max-width:65ch;">
+      <li><code>EventLog</code> — immutable append-only event log with stable IDs and timestamps</li>
+      <li><code>view()</code> — pure function over <code>(log, scorer, window)</code></li>
+      <li><code>importance.recency_attention()</code> — composable recency + attention-norm scorer</li>
+      <li><code>importance.task_relevance(query=...)</code> — query-anchored scorer</li>
+      <li><code>confidence.dissociation()</code> — separate retrieval / generation confidence tracking</li>
+      <li><code>eval.ruler_extended()</code> — RULER tasks instrumented with hygiene-aware metrics</li>
+    </ul>
+
+    <pre style="margin-top:1.5rem;"><code>{`pip install claim-observatory     # PyPI distribution name
 # imports as:
 from observatory import EventLog, view, importance, confidence
 
@@ -135,8 +113,12 @@ cd ai-brain-claims/observatory
 pip install -e .
 pytest                            # 22 passing tests`}</code></pre>
 
-      <h2>License & contributions</h2>
-      <p>MIT. Issues and PRs welcome. The <code>eval/</code> directory accepts new benchmarks. The importance and confidence scorers are designed for community contribution.</p>
-    </section>
-  </article>
+    <p style="color:var(--ink-sub);margin-top:2rem;max-width:65ch;">MIT. Issues and PRs welcome — <a href={u("/reproduce")}>reproduce instructions</a> and the <a href={SITE.repo} target="_blank" rel="noopener">repo</a>.</p>
+  </main>
+
+  <style>
+    @media (min-width: 980px) {
+      .obs-prose { grid-template-columns: 1fr 1.2fr !important; }
+    }
+  </style>
 </BaseLayout>

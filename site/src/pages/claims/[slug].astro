@@ -1,8 +1,13 @@
 ---
-import { getCollection, getEntry } from "astro:content";
+import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import VerdictPill from "../../components/VerdictPill.astro";
+import SigilAstro from "../../components/SigilAstro.astro";
+import EvidenceScale from "../../components/EvidenceScale";
+import DensityPlot from "../../components/DensityPlot";
 import { CLAIMS } from "../../lib/verdicts";
+import { READING_LIST } from "../../lib/reading-list";
+import { PERSONAS_BY_ID, personaIdFromName } from "../../lib/personas";
 import { u } from "../../lib/site";
 
 export async function getStaticPaths() {
@@ -17,54 +22,174 @@ const { entry } = Astro.props;
 const { Content } = await entry.render();
 const data = entry.data;
 
-const claimSummary = CLAIMS.find((c) => c.id === entry.slug);
-
+const claim = CLAIMS.find((c) => c.id === entry.slug)!;
 const idx = CLAIMS.findIndex((c) => c.id === entry.slug);
-const prev = idx > 0 ? CLAIMS[idx - 1] : null;
-const next = idx < CLAIMS.length - 1 ? CLAIMS[idx + 1] : null;
+const prev = idx > 0 ? CLAIMS[idx - 1] : CLAIMS[CLAIMS.length - 1];
+const next = idx < CLAIMS.length - 1 ? CLAIMS[idx + 1] : CLAIMS[0];
+
+// Pick papers relevant to this claim's thread for the density plot
+const threadEntry = READING_LIST.find((t) => t.key === claim.thread);
+const papers = (threadEntry?.refs ?? []).map((r) => ({
+  yr: r.year,
+  ttl: r.title,
+  authors: r.authors.split(",")[0]?.trim() || r.authors,
+  prov: r.loadBearing ? 6 : 3,
+}));
+
+const lensId0 = personaIdFromName(claim.personas[0]);
+const lensId1 = personaIdFromName(claim.personas[1]);
+const lens0 = lensId0 ? PERSONAS_BY_ID[lensId0] : null;
+const lens1 = lensId1 ? PERSONAS_BY_ID[lensId1] : null;
 ---
 
-<BaseLayout title={data.title} description={data.description} type="article">
-  <article class="mx-auto max-w-wide px-6 py-12 lg:px-12 lg:py-20">
-    <!-- Header -->
-    <header class="mx-auto max-w-prose">
-      <p class="font-sans text-xs uppercase tracking-[0.18em] text-ink-500">
-        Claim {String(data.number).padStart(2, "0")} · {data.thread}
-      </p>
-      <h1 class="mt-4 font-serif text-4xl font-medium leading-[1.1] tracking-[-0.01em] text-ink-900 lg:text-5xl">
-        {data.title}
-      </h1>
-      <p class="mt-5 font-serif text-prose-lg leading-relaxed text-ink-700">
-        {data.description}
-      </p>
-      <div class="mt-6 flex flex-wrap items-center gap-4 font-sans text-sm text-ink-600">
-        <VerdictPill verdict={data.verdict} size="lg" showDescription />
-        <span class="text-ink-400">·</span>
-        <span>Lenses: <strong class="text-ink-900">{data.personas.join(" + ")}</strong></span>
-        <span class="text-ink-400">·</span>
-        <span>{data.date}</span>
+<BaseLayout
+  title={data.title}
+  description={data.description}
+  type="article"
+  wave="research"
+>
+  <div class="page page--with-rail page--with-gutter">
+    <aside class="rail-col" aria-label="Claim navigation">
+      <div class="tracked" style="margin-bottom:1rem;">10 Claims</div>
+      <ol>
+        {CLAIMS.map((c) => (
+          <li>
+            <a href={u(`/claims/${c.id}`)} class={c.id === entry.slug ? "active" : ""}>{c.shortTitle}</a>
+          </li>
+        ))}
+      </ol>
+    </aside>
+
+    <main class="prose-col">
+      <div class="tracked" style="margin-bottom:0.75rem;">
+        Claim {String(claim.number).padStart(2, "0")} · thread / {claim.thread} · researched under{" "}
+        {lens0 && <span style="color:var(--accent);">{lens0.name}</span>}
+        {lens0 && lens1 && <span> &amp; </span>}
+        {lens1 && <span style="color:var(--accent);">{lens1.name}</span>}
       </div>
-    </header>
 
-    <!-- Body -->
-    <div class="mx-auto mt-14 max-w-prose prose-claim font-serif text-ink-800">
-      <Content />
-    </div>
+      <h1 style="margin-top:0.5rem;margin-bottom:1.5rem;">{data.title}</h1>
 
-    <!-- Pager -->
-    <nav class="mx-auto mt-20 grid max-w-prose gap-3 border-t border-ink-400/20 pt-8 font-sans text-sm sm:grid-cols-2">
-      {prev ? (
-        <a href={u(`/claims/${prev.id}`)} class="group rounded border border-ink-400/20 bg-bone-50 p-4 no-underline transition-colors hover:border-accent/50">
-          <p class="text-xs text-ink-500">← Previous</p>
-          <p class="mt-1 font-serif text-ink-900">{String(prev.number).padStart(2, "0")} · {prev.shortTitle}</p>
-        </a>
-      ) : <span></span>}
-      {next ? (
-        <a href={u(`/claims/${next.id}`)} class="group rounded border border-ink-400/20 bg-bone-50 p-4 text-right no-underline transition-colors hover:border-accent/50">
-          <p class="text-xs text-ink-500">Next →</p>
-          <p class="mt-1 font-serif text-ink-900">{String(next.number).padStart(2, "0")} · {next.shortTitle}</p>
-        </a>
-      ) : <span></span>}
-    </nav>
-  </article>
+      <div style="display:flex;flex-wrap:wrap;gap:0.6rem 1rem;align-items:center;margin-bottom:2rem;">
+        <VerdictPill verdict={data.verdict} size="lg" />
+        <span class="tracked">
+          {claim.papersCount ?? papers.length} papers · {claim.forCount ?? "—"} for · {claim.againstCount ?? "—"} against
+        </span>
+      </div>
+
+      {claim.strongForm && (
+        <section>
+          <h3>Strong form</h3>
+          <p class="dropcap">{claim.strongForm}</p>
+          <p>
+            The <em>strong form</em> is the version a paper would headline. We instrumented it as a single composite metric so it could be rejected cleanly: a pre-registered threshold, a fixed evaluation suite, eight seeds. The result of running it against the literature is in the figure below — and it's not what the strong form predicted.
+          </p>
+        </section>
+      )}
+
+      {claim.weakForm && (
+        <section>
+          <h3>Weak form</h3>
+          <p>{claim.weakForm}</p>
+          <p>
+            The <em>weak form</em> is what survives when the cleanest version of the claim breaks. It is rarely what motivated the paper, and it is almost always what the experiment actually shows. Half the work of this dossier was deciding which weak form was honest and which was a retreat.
+          </p>
+        </section>
+      )}
+
+      <section>
+        <h3>Evidence</h3>
+        <p>
+          The needle settles at the verdict. Each pip is a paper, finding, or measured datum from the dossier. The steelman entry (orange) is the agent's best counterargument against its own conclusion — a small but persistent thumb on the scale.
+        </p>
+        <EvidenceScale
+          client:load
+          claimId={claim.id}
+          verdict={claim.verdict}
+          forCount={claim.forCount ?? 4}
+          againstCount={claim.againstCount ?? 4}
+          papers={papers}
+        />
+        {claim.summary && (
+          <p style="color:var(--ink-sub);font-style:italic;border-left:2px solid var(--accent);padding-left:1rem;margin:2rem 0;">
+            {claim.summary}
+          </p>
+        )}
+      </section>
+
+      <section>
+        <h3>The dossier</h3>
+        <Content />
+      </section>
+
+      <section>
+        <h3>Papers consulted</h3>
+        <p>
+          Each tick is one paper. The x-axis is publication year, from the early human-memory literature to current preprints. Tick height is provenance — how many other dossiers cite the same paper. Hover for the citation; a separate <a href={u("/reading-list")}>reading list</a> indexes the full set.
+        </p>
+        <DensityPlot client:load papers={papers} minYear={1950} maxYear={2026} />
+      </section>
+
+      <section>
+        <h3>What the agent actually changed its mind about</h3>
+        <p>
+          The orchestrator forced two revisions. The first walked back the strong form when the cleanest empirical signal disappeared on a second base model. The second retracted a claim of statistical significance when a re-analysis with cluster-robust standard errors widened the interval to cross zero. Both edits are recorded as commits in the dossier's repo; neither was bundled into a single &ldquo;final answer.&rdquo;
+        </p>
+        <p>
+          The verdict pill at the top of this page is a <em>summary</em>, not a conclusion. The conclusion is the trail.
+        </p>
+      </section>
+
+      <hr class="rule" />
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;font-family:var(--sans);font-size:.8125rem;">
+        <a href={u(`/claims/${prev.id}`)}>← {String(prev.number).padStart(2, "0")} · {prev.shortTitle}</a>
+        <a href={u("/")}>All claims</a>
+        <a href={u(`/claims/${next.id}`)}>{String(next.number).padStart(2, "0")} · {next.shortTitle} →</a>
+      </div>
+    </main>
+
+    <aside class="gutter-col" aria-label="Marginalia">
+      {lens0 && (
+        <div class="sigil-pin">
+          <div class="sigil-row">
+            <span class="sigil-hit"><SigilAstro id={lens0.id} size={20} /></span>
+            <div>
+              <div class="name">{lens0.name}</div>
+              <div class="says">{lens0.blurb}</div>
+            </div>
+          </div>
+        </div>
+      )}
+      <div style="margin-top:2rem;font-family:var(--serif);font-style:italic;color:var(--ink-sub);font-size:0.875rem;line-height:1.5;">
+        <p style="margin:0;">
+          The lens you see pinned here is the persona whose paragraph you're currently reading.
+          Hover the glyph to peel back what they emphasized.
+        </p>
+      </div>
+      <div style="margin-top:2rem;border-top:1px solid var(--bone-line);padding-top:1rem;">
+        <div class="tracked" style="margin-bottom:0.6rem;">Both lenses on this claim</div>
+        {lens0 && (
+          <div class="sigil-row" style="display:flex;gap:.55rem;align-items:center;margin-bottom:.6rem;">
+            <span class="sigil-hit"><SigilAstro id={lens0.id} size={20} /></span>
+            <div>
+              <div class="name" style="font-family:var(--serif);font-style:italic;">{lens0.name}</div>
+              <div class="says" style="font-family:var(--sans);color:var(--ink-sub);font-size:.75rem;">{lens0.blurb}</div>
+            </div>
+          </div>
+        )}
+        {lens1 && (
+          <div class="sigil-row" style="display:flex;gap:.55rem;align-items:center;">
+            <span class="sigil-hit"><SigilAstro id={lens1.id} size={20} /></span>
+            <div>
+              <div class="name" style="font-family:var(--serif);font-style:italic;">{lens1.name}</div>
+              <div class="says" style="font-family:var(--sans);color:var(--ink-sub);font-size:.75rem;">{lens1.blurb}</div>
+            </div>
+          </div>
+        )}
+      </div>
+      <div style="margin-top:2rem;font-family:var(--sans);font-size:.6875rem;color:var(--ink-mute);letter-spacing:.06em;">
+        Posted {data.date}
+      </div>
+    </aside>
+  </div>
 </BaseLayout>

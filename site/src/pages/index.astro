@@ -1,132 +1,65 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import VerdictPill from "../components/VerdictPill.astro";
 import { ClaimsExplorer } from "../components/ClaimsExplorer";
-import { CLAIMS, THREADS, VERDICTS } from "../lib/verdicts";
-import { SITE, u, BASE } from "../lib/site";
-
-const verdictCounts = CLAIMS.reduce<Record<string, number>>((acc, c) => {
-  acc[c.verdict] = (acc[c.verdict] ?? 0) + 1;
-  return acc;
-}, {});
+import { CLAIMS, THREADS, VERDICT_KEY } from "../lib/verdicts";
+import { SITE, BASE, u } from "../lib/site";
 ---
 
-<BaseLayout>
-  <!-- Hero -->
-  <section class="border-b border-ink-400/20">
-    <div class="mx-auto max-w-wide px-5 py-14 sm:px-6 sm:py-20 lg:px-12 lg:py-32">
-      <p class="font-sans text-xs uppercase tracking-[0.18em] text-ink-500">
-        An open research showcase · {SITE.date}
-      </p>
-      <h1 class="mt-3 max-w-4xl font-serif text-[2.25rem] font-medium leading-[1.1] tracking-[-0.01em] text-ink-900 sm:mt-4 sm:text-5xl sm:leading-[1.05] lg:text-6xl">
-        What happens when you dispatch <span class="italic text-accent-700">21 research agents</span> with persona-style lenses and let them argue.
-      </h1>
-      <p class="mt-5 max-w-2xl font-serif text-base leading-relaxed text-ink-700 sm:mt-6 sm:text-prose-lg">
-        Ten ambitious hypotheses at the AI / context / brain frontier. Ten claim-research agents argued through pairs of <a href={u("/agents")}>persona lenses</a> primed in their prompts (Karpathy, Joscha Bach, Hickey…); a four-persona <a href={u("/agents")}>roundtable</a> with full persona-skill loading killed the proposed product; the agents proposed a sharper architecture, and a <a href={u("/observatory")}>multi-seed benchmark</a> measured whether it actually works. Persona deployment was uneven — Joscha Bach 6 times, Karpathy 5, Bret Victor and Ayanokoji once each. Everything below is what the agents produced. Nothing was hand-edited for the verdict.
-      </p>
-      <div class="mt-7 flex flex-wrap gap-3 font-sans text-sm">
-        <a href={u("/agents")} class="inline-flex items-center gap-2 rounded-md bg-ink-900 px-5 py-2.5 text-bone-100 no-underline transition-colors hover:bg-ink-800">
-          How this was made →
-        </a>
-        <a href={u("/paper")} class="inline-flex items-center gap-2 rounded-md border border-ink-400/30 bg-bone-100 px-5 py-2.5 text-ink-900 no-underline transition-colors hover:border-accent/50">
-          Read the paper
-        </a>
-      </div>
-
-      <!-- Headline finding -->
-      <div class="verdict-block mt-10 max-w-3xl">
-        <p class="font-sans text-xs uppercase tracking-[0.18em] text-accent-700">Headline finding</p>
-        <p class="mt-2 font-serif text-prose leading-relaxed text-ink-900">
-          Across all ten hypotheses: <strong>0 returned VINDICATED, 0 returned cleanly REFUTED.</strong> Every claim landed in CONTESTED or SPLIT — strong forms systematically fail, weak forms systematically hold. The convergent pattern is the finding.
-        </p>
-      </div>
-
-      <!-- Verdict distribution strip -->
-      <div class="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 font-sans text-sm text-ink-600">
-        <span class="text-ink-500">Verdict distribution:</span>
-        {Object.entries(verdictCounts).sort().map(([v, n]) => (
-          <span class="inline-flex items-center gap-2">
-            <VerdictPill verdict={v as keyof typeof VERDICTS} size="sm" />
-            <span class="font-mono text-ink-700">×{n}</span>
-          </span>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- The 10 Claims — filterable explorer (React island) -->
-  <section id="claims" class="border-b border-ink-400/20">
-    <div class="mx-auto max-w-wide px-6 py-20 lg:px-12">
-      <header class="mb-10 max-w-2xl">
-        <h2 class="font-serif text-3xl font-medium text-ink-900 lg:text-4xl">The Ten Claims</h2>
-        <p class="mt-3 font-serif text-prose leading-relaxed text-ink-700">
-          Each claim has a dossier: 4–6 supporting and 4–6 contradicting sources, two analytical lenses applied, an explicit steelman, and a verdict with the conditions under which it would change. The matrix below shows the structure — every claim lands in CONTESTED or SPLIT. Click a cell or label to filter.
-        </p>
-      </header>
-
-      <ClaimsExplorer claims={CLAIMS} base={BASE} client:load />
-    </div>
-  </section>
+<BaseLayout wave="home">
+  <ClaimsExplorer claims={CLAIMS} base={BASE} client:load />
 
   <!-- Cross-cutting threads -->
-  <section class="border-b border-ink-400/20 bg-bone-200/40">
-    <div class="mx-auto max-w-wide px-6 py-20 lg:px-12">
-      <header class="mb-10 max-w-2xl">
-        <h2 class="font-serif text-3xl font-medium text-ink-900 lg:text-4xl">Cross-Cutting Threads</h2>
-        <p class="mt-3 font-serif text-prose leading-relaxed text-ink-700">
-          The ten claims sort into four convergent threads. Each thread carries an engineering recommendation that survived the adversarial review.
-        </p>
-      </header>
-
-      <div class="grid gap-6 md:grid-cols-2">
-        {Object.entries(THREADS).map(([key, thread]) => (
-          <article class="rounded-lg border border-ink-400/20 bg-bone-50 p-6">
-            <p class="font-sans text-xs uppercase tracking-[0.18em] text-ink-500">Thread</p>
-            <h3 class="mt-1 font-serif text-2xl font-medium text-ink-900">{thread.label}</h3>
-            <p class="mt-3 font-serif text-prose leading-relaxed text-ink-700">{thread.description}</p>
-            <div class="mt-4 flex flex-wrap gap-2 font-sans text-sm">
-              {thread.claims.map((n) => {
-                const c = CLAIMS.find((x) => x.number === n)!;
-                return (
-                  <a
-                    href={u(`/claims/${c.id}`)}
-                    class="rounded border border-ink-400/30 bg-bone-100 px-3 py-1 text-ink-800 no-underline transition-colors hover:border-accent/50 hover:bg-accent/5"
-                  >
-                    {String(n).padStart(2, "0")} · {c.shortTitle}
-                  </a>
-                );
-              })}
-            </div>
-          </article>
-        ))}
-      </div>
+  <section style="padding:clamp(3rem,6vh,5rem) clamp(1rem,4vw,3rem);border-bottom:1px solid var(--bone-line);">
+    <div class="tracked">Threads</div>
+    <h2 style="margin-top:.6rem;max-width:36ch;">Four convergent threads.</h2>
+    <p class="sub" style="color:var(--ink-sub);max-width:65ch;margin-top:.5rem;">
+      The ten claims sort into four convergent threads. Each thread carries an engineering recommendation that survived adversarial review.
+    </p>
+    <div style="display:grid;gap:1.25rem;margin-top:2.25rem;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));">
+      {Object.entries(THREADS).map(([key, thread]) => (
+        <article class="note-card">
+          <div class="tracked">Thread · {key}</div>
+          <h3 style="margin:.5rem 0 .5rem 0;">{thread.label}</h3>
+          <p style="color:var(--ink-sub);margin-bottom:1rem;">{thread.description}</p>
+          <div style="display:flex;flex-wrap:wrap;gap:.4rem;">
+            {thread.claims.map((n) => {
+              const c = CLAIMS.find((x) => x.number === n)!;
+              return (
+                <a
+                  href={u(`/claims/${c.id}`)}
+                  class="claim-chip"
+                  style={`--bg:var(--v-${VERDICT_KEY[c.verdict]});`}
+                >
+                  <span class="num">{String(n).padStart(2, "0")}</span>
+                  <span class="dot"></span>
+                  <span>{c.shortTitle}</span>
+                </a>
+              );
+            })}
+          </div>
+        </article>
+      ))}
     </div>
   </section>
 
   <!-- Observatory pitch -->
-  <section class="border-b border-ink-400/20">
-    <div class="mx-auto max-w-wide px-6 py-20 lg:grid lg:grid-cols-[1fr_1.2fr] lg:gap-12 lg:px-12">
+  <section style="padding:clamp(3rem,6vh,5rem) clamp(1rem,4vw,3rem);border-bottom:1px solid var(--bone-line);">
+    <div class="tracked">Wave 3 · The Observatory</div>
+    <h2 style="margin-top:.5rem;">The benchmark, with handles.</h2>
+    <div style="display:grid;gap:2rem;grid-template-columns:1fr;margin-top:2rem;align-items:start;" class="obs-pitch">
       <div>
-        <p class="font-sans text-xs uppercase tracking-[0.18em] text-ink-500">The working primitive</p>
-        <h2 class="mt-3 font-serif text-3xl font-medium text-ink-900 lg:text-4xl">The Observatory</h2>
-        <p class="mt-4 font-serif text-prose leading-relaxed text-ink-700">
+        <p style="color:var(--ink-sub);max-width:60ch;">
           The research's strongest engineering surface — agent context as an immutable event log with importance and confidence as pure functions over the log — packaged as a Python primitive you can install and run.
         </p>
-        <p class="mt-4 font-serif text-prose leading-relaxed text-ink-700">
-          Different scorers can be A/B'd against the same historical log. Failure modes become deterministically replayable. The eval harness extends NVIDIA RULER with hygiene-aware metrics so the field has something to measure against.
+        <p style="color:var(--ink-sub);max-width:60ch;">
+          Different scorers can be A/B'd against the same historical log. Failure modes become deterministically replayable. The eval harness extends NVIDIA RULER with hygiene-aware metrics.
         </p>
-        <div class="mt-8 flex flex-wrap gap-3">
-          <a href={u("/observatory")} class="inline-flex items-center gap-2 rounded-md bg-ink-900 px-5 py-2.5 font-sans text-sm text-bone-100 no-underline transition-colors hover:bg-ink-800">
-            Read the design →
-          </a>
-          <a href={SITE.repo} target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-md border border-ink-400/30 bg-bone-100 px-5 py-2.5 font-sans text-sm text-ink-900 no-underline transition-colors hover:border-accent/50">
-            GitHub ↗
-          </a>
+        <div style="margin-top:1.5rem;display:flex;flex-wrap:wrap;gap:.6rem;font-family:var(--sans);font-size:.8125rem;">
+          <a href={u("/observatory")} style="border:1px solid var(--ink);padding:.45rem .8rem;color:var(--ink);">Read the design →</a>
+          <a href={SITE.repo} target="_blank" rel="noopener" style="border:1px solid var(--bone-line);padding:.45rem .8rem;">GitHub ↗</a>
         </div>
       </div>
-
-      <div class="mt-10 lg:mt-0">
-        <pre class="rounded-lg border border-ink-700 bg-ink-900 p-5 text-sm leading-relaxed"><code>{`# install
+      <pre style="margin:0;"><code>{`# install
 pip install claim-observatory
 
 # usage
@@ -148,28 +81,32 @@ working = view(
 alt = view(log, scorer=importance.task_relevance(query="..."), window=4096)
 delta = compare(working, alt)
 `}</code></pre>
-      </div>
     </div>
   </section>
 
   <!-- How to read -->
-  <section>
-    <div class="mx-auto max-w-wide px-6 py-20 lg:px-12">
-      <h2 class="font-serif text-3xl font-medium text-ink-900 lg:text-4xl">How to read this package</h2>
-      <div class="mt-8 grid gap-5 md:grid-cols-3">
-        {[
-          { time: "10 min", who: "Read the synthesis only.", href: "/synthesis", tag: "Skim" },
-          { time: "1 hour", who: "Synthesis + the 3–4 claims most relevant to your work.", href: "/#claims", tag: "Survey" },
-          { time: "3 hours", who: "All ten dossiers in order, plus the curated reading list.", href: "/reading-list", tag: "Deep" },
-        ].map(({ time, who, href, tag }) => (
-          <a href={u(href)} class="group rounded-lg border border-ink-400/20 bg-bone-50 p-6 no-underline transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/50">
-            <p class="font-sans text-xs uppercase tracking-[0.18em] text-accent-600">{tag}</p>
-            <p class="mt-2 font-serif text-3xl font-medium text-ink-900">{time}</p>
-            <p class="mt-3 font-serif leading-relaxed text-ink-700">{who}</p>
-            <p class="mt-4 font-sans text-sm text-accent-600 transition-colors group-hover:text-accent-700">Continue →</p>
-          </a>
-        ))}
-      </div>
+  <section style="padding:clamp(3rem,6vh,5rem) clamp(1rem,4vw,3rem);">
+    <div class="tracked">Three ways in</div>
+    <h2 style="margin-top:.5rem;">How to read this notebook.</h2>
+    <div style="display:grid;gap:1.25rem;margin-top:2rem;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));">
+      {[
+        { time: "10 min", who: "Read the synthesis only.", href: "/synthesis", tag: "Skim" },
+        { time: "1 hour", who: "Synthesis + the 3–4 claims most relevant to your work.", href: "/", tag: "Survey" },
+        { time: "3 hours", who: "All ten dossiers in order, plus the curated reading list.", href: "/reading-list", tag: "Deep" },
+      ].map(({ time, who, href, tag }) => (
+        <a href={u(href)} class="note-card" style="display:block;color:var(--ink);border-bottom:1px solid var(--bone-line);">
+          <div class="tracked" style="color:var(--accent);">{tag}</div>
+          <p style="font-family:var(--serif);font-size:1.875rem;margin:.5rem 0 .5rem 0;font-weight:450;">{time}</p>
+          <p style="color:var(--ink-sub);margin-bottom:1rem;">{who}</p>
+          <span style="font-family:var(--sans);font-size:.8125rem;color:var(--accent);">Continue →</span>
+        </a>
+      ))}
     </div>
   </section>
+
+  <style>
+    @media (min-width: 980px) {
+      .obs-pitch { grid-template-columns: 1fr 1.2fr !important; }
+    }
+  </style>
 </BaseLayout>
