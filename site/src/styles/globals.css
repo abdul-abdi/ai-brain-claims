@@ -206,6 +206,12 @@ hr.rule {
   margin: 0 auto;
   container-type: inline-size;
 }
+/* For prose pages that contain wide content (tables, charts, abstract
+   blocks) — the container widens to ~1100px while body paragraphs stay
+   at the 65ch reading measure thanks to the global `main p` rule. */
+.prose-col.prose-col--wide {
+  max-width: 1100px;
+}
 .prose-col p,
 .prose-col li {
   max-width: var(--col-prose);
