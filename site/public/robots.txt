@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://abdul-abdi.github.io/ai-brain-claims/sitemap.xml

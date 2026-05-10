@@ -1,0 +1,40 @@
+name: New scorer or benchmark
+description: Propose a new importance scorer or eval benchmark for the observatory.
+title: "[scorer/bench] short title"
+labels: ["enhancement"]
+body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What are you proposing?
+      options:
+        - Importance scorer (in `observatory.importance`)
+        - Confidence tracker (in `observatory.confidence`)
+        - Eval benchmark (in `eval/benchmarks/`)
+        - View / query helper (in `observatory.views`)
+    validations:
+      required: true
+  - type: textarea
+    id: shape
+    attributes:
+      label: Function signature / shape
+      description: |
+        Importance scorers must be pure functions `(snapshot, event) -> [0, 1]`.
+        Eval benchmarks must produce a JSON result consumable by the site's CompareFigure (or a new figure).
+      render: python
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: What property does this surface?
+      placeholder: e.g. "attention-norm scoring captures binding fidelity that recency alone misses"
+    validations:
+      required: true
+  - type: checkboxes
+    id: pure
+    attributes:
+      label: Confirm
+      options:
+        - label: My scorer is a pure function over the log snapshot — no I/O, no global state.
+        - label: I will include a deterministic test case demonstrating replay invariance.

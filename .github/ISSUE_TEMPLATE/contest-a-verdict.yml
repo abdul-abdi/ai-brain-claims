@@ -1,0 +1,54 @@
+name: Contest a verdict
+description: Argue against a verdict on one of the 10 claims with primary-source evidence.
+title: "[verdict] claim-NN — short title"
+labels: ["verdict-contest"]
+body:
+  - type: dropdown
+    id: claim
+    attributes:
+      label: Which claim?
+      options:
+        - "01 — Magical Number Seven for LLMs"
+        - "02 — Thalamic-Cortical Equivalence"
+        - "03 — Persona-Induced State Differentiation"
+        - "04 — Emergent Metacognition Threshold"
+        - "05 — RAG Tip-of-the-Tongue Phenomenon"
+        - "06 — Chain-of-Thought Phenomenology"
+        - "07 — Spontaneous ToM in Multi-Agent Loops"
+        - "08 — Sleep-Consolidation Is the Missing Mechanism"
+        - "09 — Active Forgetting as Capability"
+        - "10 — Cortical Column ≈ Transformer Block"
+    validations:
+      required: true
+  - type: dropdown
+    id: direction
+    attributes:
+      label: What's your contest?
+      options:
+        - The verdict is too strong (should be weaker)
+        - The verdict is too weak (should be stronger)
+        - The strong/weak split misses a third form
+        - A cited paper says something different from what we claim
+        - A new paper changes the picture
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Primary-source evidence
+      description: |
+        At minimum: title, authors, venue, year, and either an arXiv ID or DOI. Quote the specific passage if relevant. Citations without source links will be closed.
+      placeholder: |
+        e.g.
+        - Smith et al. (2025). "X." NeurIPS. arXiv:2501.XXXXX
+        - Quote: "..."
+        - Why this matters for the current verdict: ...
+    validations:
+      required: true
+  - type: textarea
+    id: revised
+    attributes:
+      label: Proposed revision
+      description: How would the dossier change if you're right? (One paragraph is fine.)
+    validations:
+      required: false

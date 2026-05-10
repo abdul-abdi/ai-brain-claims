@@ -14,14 +14,14 @@ const verdictCounts = CLAIMS.reduce<Record<string, number>>((acc, c) => {
 <BaseLayout>
   <!-- Hero -->
   <section class="border-b border-ink-400/20">
-    <div class="mx-auto max-w-wide px-6 py-20 lg:px-12 lg:py-32">
+    <div class="mx-auto max-w-wide px-5 py-14 sm:px-6 sm:py-20 lg:px-12 lg:py-32">
       <p class="font-sans text-xs uppercase tracking-[0.18em] text-ink-500">
         Adversarial validation · {SITE.date}
       </p>
-      <h1 class="mt-4 max-w-4xl font-serif text-5xl font-medium leading-[1.05] tracking-[-0.01em] text-ink-900 lg:text-6xl">
+      <h1 class="mt-3 max-w-4xl font-serif text-[2.25rem] font-medium leading-[1.1] tracking-[-0.01em] text-ink-900 sm:mt-4 sm:text-5xl sm:leading-[1.05] lg:text-6xl">
         Ten claims at the frontier of <span class="italic text-accent-700">artificial</span> and <span class="italic text-accent-700">human</span> minds.
       </h1>
-      <p class="mt-6 max-w-2xl font-serif text-prose-lg leading-relaxed text-ink-700">
+      <p class="mt-5 max-w-2xl font-serif text-base leading-relaxed text-ink-700 sm:mt-6 sm:text-prose-lg">
         Working memory, attention, metacognition, theory of mind, sleep consolidation, forgetting, and the architecture of cognition — stress-tested across the AI / context / brain frontier. Each claim formulated with a strong form (theory-grade equivalence) and an implicit weak form, then adjudicated.
       </p>
 
@@ -121,7 +121,7 @@ const verdictCounts = CLAIMS.reduce<Record<string, number>>((acc, c) => {
 
       <div class="mt-10 lg:mt-0">
         <pre class="rounded-lg border border-ink-700 bg-ink-900 p-5 text-sm leading-relaxed"><code>{`# install
-pip install observatory
+pip install claim-observatory
 
 # usage
 from observatory import EventLog, view, importance

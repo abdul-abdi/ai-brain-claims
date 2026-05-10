@@ -40,5 +40,6 @@ export const NAV = [
   { label: "Synthesis", href: "/synthesis" },
   { label: "Observatory", href: "/observatory" },
   { label: "Reading list", href: "/reading-list" },
+  { label: "Search", href: "/search" },
   { label: "GitHub", href: SITE.repo, external: true },
 ] as const;

@@ -1,0 +1,38 @@
+name: Observatory bug
+description: Bug, regression, or unexpected behavior in the observatory Python lib.
+title: "[bug] short summary"
+labels: ["bug", "observatory"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Observatory version
+      description: Output of `python -c "import observatory; print(observatory.__version__)"`
+    validations:
+      required: true
+  - type: input
+    id: python
+    attributes:
+      label: Python version
+      placeholder: "3.12.x"
+    validations:
+      required: true
+  - type: textarea
+    id: minimal-repro
+    attributes:
+      label: Minimal repro
+      description: A 5-15 line script that triggers the bug.
+      render: python
+    validations:
+      required: true
+  - type: textarea
+    id: actual-vs-expected
+    attributes:
+      label: What happened vs. what you expected
+    validations:
+      required: true
+  - type: textarea
+    id: traceback
+    attributes:
+      label: Traceback (if any)
+      render: shell

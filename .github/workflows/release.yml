@@ -1,0 +1,44 @@
+name: Release (PyPI)
+
+on:
+  push:
+    tags:
+      - "observatory-v*"   # e.g. observatory-v0.1.0
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write          # required for PyPI Trusted Publishing
+
+jobs:
+  build-and-publish:
+    name: Build wheel + publish to PyPI
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/claim-observatory
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install build
+        run: |
+          python -m pip install --upgrade pip
+          pip install build
+      - name: Build sdist + wheel
+        working-directory: observatory
+        run: python -m build
+      - name: List artifacts
+        run: ls -la observatory/dist/
+      - name: Publish to PyPI (Trusted Publisher)
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: observatory/dist/
+          # No token needed: PyPI Trusted Publishing reads OIDC from id-token: write.
+          # One-time PyPI setup: pypi.org → Manage project → Publishing → Add a new
+          # GitHub publisher with:
+          #   owner = abdul-abdi
+          #   repository = ai-brain-claims
+          #   workflow = release.yml
+          #   environment = pypi

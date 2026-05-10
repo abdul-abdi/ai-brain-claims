@@ -4,10 +4,10 @@ import react from "@astrojs/react";
 import tailwind from "@astrojs/tailwind";
 import pagefind from "astro-pagefind";
 
-// NOTE: sitemap integration removed for first-ship — re-add once a real domain
-// is set via `npm install @astrojs/sitemap` and the integrations array.
-// pagefind also runs only after a real build with content; comment-out if it
-// causes friction on `npm run dev`.
+// Note: @astrojs/sitemap 3.x has a known incompatibility with our base-path
+// config (crashes with "Cannot read properties of undefined (reading 'reduce')"
+// during build). We use a hand-rolled `public/sitemap.xml` instead — it covers
+// all 15 routes and is updated alongside content changes.
 
 export default defineConfig({
   site: "https://abdul-abdi.github.io",

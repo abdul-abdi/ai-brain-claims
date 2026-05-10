@@ -86,12 +86,15 @@ delta = compare(working, alt)`}</code></pre>
       </ul>
 
       <h2>Install</h2>
-      <pre><code>{`pip install observatory      # once published to PyPI
-# or:
+      <pre><code>{`pip install claim-observatory     # PyPI distribution name
+# imports as:
+from observatory import EventLog, view, importance, confidence
+
+# or from a clone:
 git clone ${SITE.repo}
 cd ai-brain-claims/observatory
 pip install -e .
-pytest                       # 22 passing tests`}</code></pre>
+pytest                            # 22 passing tests`}</code></pre>
 
       <h2>License & contributions</h2>
       <p>MIT. Issues and PRs welcome. The <code>eval/</code> directory accepts new benchmarks. The importance and confidence scorers are designed for community contribution.</p>

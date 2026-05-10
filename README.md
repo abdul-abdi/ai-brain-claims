@@ -11,7 +11,8 @@ This repository ships two surfaces:
 2. **The observatory** — a working Python primitive implementing the post-roundtable architecture: an append-only event log, pure-function views over the log, importance scoring, retrieval/generation confidence dissociation tracking, and a RULER-extending eval harness. Designed to be `pip install`-able and run against any agent loop.
 
 ```bash
-pip install observatory
+pip install claim-observatory
+# imports as `from observatory import ...`
 ```
 
 ```python

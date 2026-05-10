@@ -1,110 +1,140 @@
 # Status
 
-Last updated: 2026-05-09 (post first-ship + claim ports + live figure + methodology + reading list + clean build).
+Last updated: 2026-05-10 — full first-class repo + GitHub Pages deploy + PyPI release pipeline.
+
+## Live
+
+- **Site**: https://abdul-abdi.github.io/ai-brain-claims/
+- **Repo**: https://github.com/abdul-abdi/ai-brain-claims
+- **Discussions**: https://github.com/abdul-abdi/ai-brain-claims/discussions
+- **CI/CD**: GitHub Actions on every push to `main`; deploys to Pages on green
 
 ## Shipped
 
-### Repo
+### Repo + governance
 
-- [x] `README.md` — research + observatory pitch + citation
-- [x] `LICENSE` (MIT), `.gitignore`
-- [x] `STATUS.md` (this file)
-- [x] `scripts/sync-from-brain.sh` — mirrors brain dossiers to `site/src/content/drafts/`
+- [x] Public GitHub repo at `abdul-abdi/ai-brain-claims` with topics, homepage, MIT license
+- [x] `README.md`, `LICENSE`, `CONTRIBUTING.md`, `STATUS.md`, `.gitignore`
+- [x] Issue templates: contest-a-verdict, observatory-bug, scorer-or-benchmark + config (blank disabled, links to Discussions)
+- [x] GitHub Discussions enabled
+- [x] `scripts/sync-from-brain.sh` — mirrors brain dossiers into `site/src/content/drafts/`
+
+### CI/CD
+
+- [x] `.github/workflows/ci.yml` — three jobs:
+  - **observatory** — pip install, pytest (22 cases), ruff, eval smoke test
+  - **site** — npm ci, astro build (16 pages), pagefind index, upload artifact
+  - **deploy** — GitHub Pages on push to main
+- [x] `.github/workflows/release.yml` — PyPI Trusted Publisher on `observatory-v*` tag
+- [x] CI green at HEAD; Pages serving HTTP 200 globally
 
 ### Site (Astro + Tailwind + MDX)
 
-- [x] Build passes cleanly: `npm run build` → 15 static pages in 3.67s, pagefind index over all content
-- [x] Design system: warm bone palette, Source Serif 4 + Inter + JetBrains Mono, 65ch reading width with sidenote gutter, restrained motion, accessible skip-link
-- [x] Single source of truth files: `lib/site.ts`, `lib/verdicts.ts`, `lib/reading-list.ts`
-- [x] Layout + components: `BaseLayout`, `Nav`, `Footer`, `VerdictPill`, `ClaimCard`, `Sidenote`, `CompareFigure` (React island)
+- [x] **16 static pages**: home, synthesis, observatory, reading-list, methodology, search, 10 claim dossiers
+- [x] Anthropic-aesthetic design system: Source Serif 4 + Inter + JetBrains Mono, warm bone palette, 65ch reading width with sidenote gutter
+- [x] Components: `BaseLayout`, `Nav` (responsive, horizontal-scroll fallback at narrow widths), `Footer`, `VerdictPill`, `ClaimCard`, `Sidenote`, `CompareFigure` (React island)
 - [x] Pages:
-  - [x] `/` (home) — hero, headline finding, verdict-distribution strip, 10-claim grid, cross-cutting threads, observatory pitch with code preview, "how to read" 3-tier guide
-  - [x] `/synthesis` — full meta-analysis with verdict matrix, five recurring failure modes, threads, 8 engineering recommendations
-  - [x] `/observatory` — full design narrative + **live comparison figure** consuming the eval JSON
-  - [x] `/reading-list` — 25 curated primary sources organized by thread, ★ load-bearing markers, citation-verification disclaimer
-  - [x] `/methodology` — process documentation + honest caveats
-  - [x] `/claims/[slug]` — dynamic route rendering all 10 dossiers
-- [x] All 10 claim MDX pages (`claim-01` through `claim-10`) with valid frontmatter and full body content (~1,595 lines total, 80–95% of original brain dossier word count)
-- [x] Pagefind search wired (auto-indexes content at build)
-- [x] Claim-page pager (prev/next navigation)
+  - `/` home — hero, headline finding, verdict-distribution strip, 10-claim grid, cross-cutting threads, observatory pitch with code preview, "how to read" 3-tier guide
+  - `/synthesis` — verdict matrix, 5 recurring failure modes, threads, 8 engineering recommendations
+  - `/observatory` — design narrative + **live CompareFigure** consuming the eval JSON
+  - `/reading-list` — 25 curated primary sources, ★ load-bearing markers
+  - `/methodology` — process documentation + honest caveats
+  - `/search` — Pagefind UI with the warm-bone palette tones
+  - `/claims/[slug]` — 10 dossiers with prev/next pager
+- [x] All 10 claim MDX pages rendered with full body (1,595 lines, 80-95% of brain dossier word count)
+- [x] **Pagefind search** wired (auto-builds index over all 16 pages)
+- [x] **Sitemap** at `/sitemap.xml` (hand-rolled — `@astrojs/sitemap` 3.x has a known bug with our base-path config)
+- [x] **robots.txt** with sitemap declaration
 - [x] OpenGraph metadata in BaseLayout
-- [x] Favicon (custom SVG)
+- [x] Custom favicon (SVG)
+- [x] Subpath-aware URLs via `u()` helper in `lib/site.ts` — works at `/ai-brain-claims/` on Pages and at `/` if moved to a custom domain (just remove the `base` config)
+- [x] Mobile breakpoints: nav scrolls horizontally on narrow, hero typography scales, all reading layouts collapse cleanly to single column
 
-### Observatory (Python lib)
+### Observatory (Python lib, MIT)
 
-- [x] `pyproject.toml` (hatchling, Python 3.10+, optional `[dev]` and `[eval]` extras)
+- [x] PyPI distribution: `claim-observatory` (import name stays `observatory`)
+- [x] `pyproject.toml` (hatchling, Python 3.10+, dev/eval extras)
+- [x] **Wheel + sdist build cleanly** locally (`python -m build`)
 - [x] `EventLog` — immutable append-only log with content-addressable IDs and `replay(at=...)`
-- [x] `view()` + `compare()` — pure-function views over the log; A/B-test-friendly
-- [x] `importance` module — `recency()`, `role_priority()`, `task_relevance()`, `recency_attention()` (composite default), `compose()` for arbitrary linear combinations
-- [x] `confidence` module — `dissociation()` and `Signal` with `diverged()` + `overconfident_on_wrong()` checks
-- [x] `eval` module — CLI for baseline / hygiene / compare runs producing real result JSON
-- [x] `cli` module — `observatory <command>` console entry
-- [x] **22 passing pytest cases** across `test_log.py` (11) and `test_views.py` (11)
-- [x] Sample eval result JSON in both `eval/results/` and `site/src/data/`
+- [x] `view()` + `compare()` — pure-function views; A/B-test scorers against the same log
+- [x] `importance` — `recency()`, `role_priority()`, `task_relevance()`, `recency_attention()` composite default, `compose()` for arbitrary linear combinations
+- [x] `confidence.dissociation()` — separate retrieval / generation confidence, `diverged()` and `overconfident_on_wrong()` checks
+- [x] `eval` CLI — baseline / hygiene / compare; produces real result JSON
+- [x] `cli` console entry point
+- [x] **22 passing pytest cases**, ruff clean
 
 ### Eval
 
-- [x] `eval/results/baseline-vs-hygiene.json` — real output of `python -m observatory.eval compare`, mirrored to `site/src/data/` for consumption by the site
+- [x] `eval/results/baseline-vs-hygiene.json` — real output, mirrored to `site/src/data/` for consumption by the site
 
-## Next (toward "strikingly amazing")
-
-### Site polish
-
-- [ ] Real OG image (`/public/og-default.png`) — currently a 404 fallback
-- [ ] Search UI on a `/search` page using Pagefind's pre-built index
-- [ ] Mobile breakpoints — desktop-first for now
-- [ ] Sidenote integration into the claim MDX pages (component exists; not yet wired into the rendered prose)
-- [ ] Better in-MDX figure components (verdict matrix, mini comparison cards)
-- [ ] Re-add `@astrojs/sitemap` integration once a real domain is set (currently removed because sitemap crashed on the placeholder URL)
-- [ ] Custom syntax highlighting tweaks for the Anthropic palette
+## Next (incremental, not blocking)
 
 ### Observatory v0.2
 
-- [ ] Real RULER integration — replace placeholder accuracies with measured ones (the harness is in place; only the task wiring is missing)
-- [ ] `importance.attention_norm()` scorer — requires hooking into model attention; works on open-weights first
-- [ ] Replay determinism property tests with hypothesis
-- [ ] Optional `numpy` accelerated paths for large logs (>10K events)
-- [ ] PyPI publish as soon as the canonical name is chosen (rename out of `observatory` if the slug is taken on PyPI)
+- [ ] Real **NVIDIA RULER** integration — currently a placeholder accuracy; harness shape is right; needs task wiring
+- [ ] `importance.attention_norm()` scorer for open-weights models
+- [ ] Replay determinism property tests via Hypothesis
+- [ ] Optional numpy-accelerated paths for >10K-event logs
+- [ ] First PyPI release: tag `observatory-v0.1.0` after the one-time PyPI Trusted Publisher setup (instructions in `release.yml`)
+
+### Site polish
+
+- [ ] OG images per page (currently a 404 fallback) — `astro-og-canvas` or static SVG-to-PNG
+- [ ] Sidenote component wired into 1-2 dossiers as exemplar (currently exists but unused)
+- [ ] Real `@astrojs/sitemap` once the upstream bug is fixed
+- [ ] Footer/header dark-mode toggle
+- [ ] Better in-MDX figure components (verdict spectrum widget, bar comparisons)
+- [ ] Bump GitHub Actions to Node 24 (deprecation warnings on Node 20 ahead of June 2026)
 
 ### Distribution
 
-- [ ] `gh repo create abdul-abdi/ai-brain-claims --public` (manual — needs your auth)
-- [ ] Push initial scaffold + first ship
-- [ ] Cloudflare Pages or GitHub Pages deployment with the real domain
-- [ ] Show HN / Twitter / arXiv-companion-paper once the v0.2 RULER eval has real numbers
+- [ ] Custom domain (CNAME via `gh repo edit --homepage` + DNS) once chosen
+- [ ] Show HN / arXiv-companion-paper once v0.2 RULER eval has real numbers
+- [ ] Citation file (`CITATION.cff`)
 
-### Decisions still open
-
-- [ ] **PyPI library name** — `observatory` is likely taken; candidates: `agent-observatory`, `ctx-observatory`, `claim-observatory`, `ach-observatory`. Rename in `pyproject.toml`, `__init__.py`, and the README/site code samples.
-- [ ] **Site title / project brand** — working title is "10 Claims at the Frontier"; rename in `site/src/lib/site.ts` (single source of truth).
-- [ ] **Domain** — working assumption is GitHub Pages at `<owner>.github.io/ai-brain-claims` for first ship; consider a custom domain at v1.
-
-## Verification commands
+## Dev workflow
 
 ```bash
-# Run library tests
-cd observatory
-PYTHONPATH=src python -m pytest -q
-# 22 passed
+# Site
+cd site
+npm install              # first time only
+npm run dev              # http://localhost:4321/ai-brain-claims/
+npm run build            # static export to dist/
 
-# Re-run the eval (writes JSON to ../eval/results/)
-PYTHONPATH=src python -m observatory.eval compare --steps 50 --window 16 --out ../eval/results
-# Then mirror into the site:
-cp ../eval/results/baseline-vs-hygiene.json ../site/src/data/baseline-vs-hygiene.json
+# Observatory
+cd ../observatory
+pip install -e ".[dev]"
+pytest -q                # 22 passing
+ruff check .
+python -m observatory.eval compare --out ../eval/results
 
-# Build the site
-cd ../site
-npm install         # first time only
-npm run build       # → dist/, 15 pages, pagefind index
-npm run dev         # http://localhost:4321
+# Refresh the eval figure on the site
+cp ../eval/results/baseline-vs-hygiene.json ../site/src/data/
+
+# Push and CI takes care of the rest
+git push                 # CI runs ~50s, deploys to Pages on green
 ```
 
-## MDX gotchas (for future content authors)
+## MDX gotchas
 
-When writing claim MDX prose, the following patterns break the MDX parser and must be wrapped in backticks or escaped:
+The MDX parser treats `<` followed by a letter, digit, or `.` as a JSX tag opener. Inline statistical notation breaks builds. Wrap in inline code:
 
-- `<` followed by a digit or `.` (e.g. `p<.001`, `<5%`, `<200ms`) — MDX tries to parse as JSX. Wrap in inline code: `` `p<.001` ``.
-- `<` followed by a letter that doesn't form a valid HTML tag — same fix.
-- Curly braces `{}` containing JS-like expressions in prose. Either escape (`\{`) or wrap in code.
+- ❌ `For p<.001 we observed...`
+- ✅ ``For `p<.001` we observed...``
 
-Two such instances were caught and fixed in the first ship (claim-03 and claim-05 had `p<.001` / `p < 0.01` literals).
+Two such instances were caught and fixed during the first ship (claim-03 had `p<.001`, claim-05 had `p < 0.01`).
+
+## PyPI publish (one-time setup the user must do)
+
+PyPI Trusted Publishing requires a one-time configuration on the PyPI side. After that, tagging the repo (`git tag observatory-v0.1.0 && git push --tags`) auto-publishes via the workflow.
+
+1. Create a PyPI account if needed.
+2. Visit https://pypi.org/manage/account/publishing/
+3. Add a new pending publisher with:
+   - **PyPI Project Name**: `claim-observatory`
+   - **Owner**: `abdul-abdi`
+   - **Repository name**: `ai-brain-claims`
+   - **Workflow name**: `release.yml`
+   - **Environment name**: `pypi`
+4. Tag the first release: `git tag observatory-v0.1.0 && git push --tags`
+5. The release workflow runs, builds wheel + sdist, publishes via OIDC — no token needed.

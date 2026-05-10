@@ -33,10 +33,12 @@ The architecture survived a 4-persona roundtable (pg + carmack + taleb + hickey)
 ## Install
 
 ```bash
-pip install observatory                 # once published to PyPI
-# or:
-pip install -e .                        # from a clone
+pip install claim-observatory   # PyPI distribution name
+# imports as:
+from observatory import EventLog, view, importance, confidence
 ```
+
+Or from a clone: `cd observatory && pip install -e .`
 
 ## API
 

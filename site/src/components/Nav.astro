@@ -4,13 +4,13 @@ const path = Astro.url.pathname;
 ---
 
 <header class="border-b border-ink-400/20 bg-bone-100/85 backdrop-blur-sm sticky top-0 z-30">
-  <nav class="mx-auto flex max-w-wide items-center justify-between px-6 py-4 lg:px-12 font-sans text-sm">
-    <a href={u("/")} class="flex items-baseline gap-2 text-ink-900 no-underline">
-      <span class="font-serif text-lg font-medium">10 Claims</span>
-      <span class="hidden text-ink-500 sm:inline">at the Frontier</span>
+  <nav class="mx-auto flex max-w-wide items-center gap-3 px-4 py-3 sm:px-6 sm:py-4 lg:px-12 font-sans text-sm">
+    <a href={u("/")} class="flex flex-shrink-0 items-baseline gap-2 text-ink-900 no-underline">
+      <span class="font-serif text-base font-medium sm:text-lg">10 Claims</span>
+      <span class="hidden text-ink-500 md:inline">at the Frontier</span>
     </a>
 
-    <ul class="flex items-center gap-1 sm:gap-2">
+    <ul class="ml-auto -mr-2 flex items-center gap-0.5 overflow-x-auto pr-2 sm:gap-1 lg:gap-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {NAV.map((item) => {
         const isExternal = "external" in item && item.external;
         const resolvedHref = isExternal ? item.href : u(item.href);
@@ -21,10 +21,10 @@ const path = Astro.url.pathname;
           (linkPath !== "/" && stripped.startsWith(linkPath))
         );
         return (
-          <li>
+          <li class="flex-shrink-0">
             <a
               href={resolvedHref}
-              class={`rounded px-3 py-1.5 no-underline transition-colors ${
+              class={`rounded px-2.5 py-1.5 no-underline transition-colors sm:px-3 ${
                 active
                   ? "bg-bone-200 text-ink-900"
                   : "text-ink-600 hover:bg-bone-200 hover:text-ink-900"
