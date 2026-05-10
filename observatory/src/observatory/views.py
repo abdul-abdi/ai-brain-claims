@@ -95,7 +95,7 @@ def view(
         used += cost
 
     # Restore original log order for the kept events (chronology matters for context).
-    kept_pairs = sorted(zip(kept, kept_scores), key=lambda p: p[0].id.step)
+    kept_pairs = sorted(zip(kept, kept_scores, strict=True), key=lambda p: p[0].id.step)
     kept_events = tuple(e for e, _ in kept_pairs)
     kept_score_tuple = tuple(s for _, s in kept_pairs)
 

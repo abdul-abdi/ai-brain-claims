@@ -117,7 +117,7 @@ def compose(
         weight_list = [w / total for w in weight_list]
 
     def _score(snapshot: tuple[Event, ...], e: Event) -> float:
-        s = sum(w * sc(snapshot, e) for w, sc in zip(weight_list, scorer_list))
+        s = sum(w * sc(snapshot, e) for w, sc in zip(weight_list, scorer_list, strict=True))
         return max(0.0, min(1.0, s))
 
     _score.__name__ = name
