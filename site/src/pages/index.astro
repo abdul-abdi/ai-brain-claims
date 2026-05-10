@@ -1,40 +1,11 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { ClaimsExplorer } from "../components/ClaimsExplorer";
-import { HeroHeadline } from "../components/Hero";
 import { CLAIMS, THREADS, VERDICT_KEY } from "../lib/verdicts";
 import { SITE, BASE, u } from "../lib/site";
-
-const verdictCounts = CLAIMS.reduce<Record<string, number>>((acc, c) => {
-  acc[c.verdict] = (acc[c.verdict] ?? 0) + 1;
-  return acc;
-}, {});
 ---
 
 <BaseLayout wave="home">
-  <section class="hero" aria-labelledby="hero-h">
-    <div class="eyebrow">A research notebook · Session 04 · Personas as analytical lenses</div>
-    <HeroHeadline client:load />
-    <p class="lede">
-      Strong forms systematically failed. Weak forms systematically held. The interesting object isn't the table of results &mdash; it's the shape of the disagreement. The page below is the agents' working notebook, with handles. Drag a parameter; the conclusion wobbles. That's the point.
-    </p>
-    <div class="meta">
-      <span><b>10</b> claim dossiers</span>
-      <span><b>9</b> persona lenses</span>
-      <span><b>4</b>-persona roundtable, 2 rounds</span>
-      <span><b>1</b> primitive shipped</span>
-      <span><b>21</b> autonomous research dispatches</span>
-    </div>
-    <div style="margin-top:2.5rem;display:flex;flex-wrap:wrap;gap:.5rem .75rem;font-family:var(--sans);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-sub);">
-      <span style="color:var(--ink-mute);">Verdict distribution:</span>
-      {Object.entries(verdictCounts).sort().map(([v, n]) => (
-        <span class="verdict-pill" data-v={VERDICT_KEY[v as keyof typeof VERDICT_KEY]} style="font-size:.6875rem;padding:.18rem .55rem;">
-          {v.toLowerCase()} ×{n}
-        </span>
-      ))}
-    </div>
-  </section>
-
   <ClaimsExplorer claims={CLAIMS} base={BASE} client:load />
 
   <!-- Cross-cutting threads -->
