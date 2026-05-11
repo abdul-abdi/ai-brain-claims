@@ -201,75 +201,28 @@ hr.rule {
 
 .prose-col {
   padding: 3rem clamp(1rem, 4vw, 3rem) 6rem;
-  /* Wide notebook page. Text-flow children center at the 65ch reading
-     measure (see the :is() rule below); wide content (charts, tables,
-     cards, sections) bleeds to the full container width. */
-  max-width: 1100px;
+  /* One consistent notebook-page width. Text wraps naturally inside the
+     container at ~75ch; tables, charts, cards, and code blocks fill
+     the same column — no width-jumping between elements. */
+  max-width: 880px;
   width: 100%;
   margin: 0 auto;
   container-type: inline-size;
 }
-.prose-col.prose-col--wide { max-width: 1100px; }
+.prose-col.prose-col--wide { max-width: 820px; }
 
-/* === Notebook-page text centering ===
-   Inside any page container, body text flows centered at the 65ch
-   reading measure so prose pages don't look lopsided when the container
-   is wide. Wide elements (figures, tables, cards, grids) stay full
-   container width by not appearing in the selector list. */
-
-/* Direct text-flow children of any page container */
-:is(.prose-col, .observatory, .roundtable, .reading-list, .notebook)
-  > :is(h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, .tracked, .lede, hr),
-/* Same for one-level-nested text inside a <section> wrapper — covers
-   reading-list thread sections, paper sections, etc. */
-:is(.prose-col, .observatory, .roundtable, .reading-list, .notebook)
-  > section
-  > :is(h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, .tracked, .lede, hr) {
-  max-width: var(--col-prose);
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Lede paragraph keeps a slightly narrower measure */
-:is(.prose-col, .observatory, .roundtable, .reading-list, .notebook) > .lede,
-:is(.prose-col, .observatory, .roundtable, .reading-list, .notebook) > section > .lede {
-  max-width: 60ch;
-}
-
-/* Home matrix/constellation/scatter section headers center too — match
-   the centered visualization below. */
-:is(.matrix-section, .constellation-section, .scatter-section)
-  > :is(h1, h2, h3, p, .sub, .tracked) {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Dossier exception: inside .page (rail+gutter grid), the rail and gutter
-   already balance the layout — prose flows left-aligned. */
-.page > .prose-col > :is(h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, .tracked, .lede, hr) {
-  margin-left: 0;
-  margin-right: 0;
-}
-
-/* Inside known wide-content cards, paragraphs fill the card instead of
-   being constrained by the global `main p { max-width: 65ch }` rule. */
-.note-card p,
-.note-card ul,
-.note-card ol,
-.note-card blockquote {
+/* Inside .prose-col, paragraphs and lists fill the column. (The global
+   `main p` rule below caps them at 65ch which would create a narrow text
+   block inside a wider container — we don't want that here.) */
+.prose-col p,
+.prose-col ul,
+.prose-col ol,
+.prose-col blockquote {
   max-width: none;
 }
 
-/* The "muted" note-card is the paper abstract / lede block — keep at
-   comfortable reading width and centered in the 1100px prose column. */
-.note-card.muted {
-  max-width: calc(var(--col-prose) + 3rem);
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Generic home-page section — used for Threads, Observatory pitch,
-   How-to-read on the index. Centers heading + description, lets card
+/* Generic home-page section — used by Threads, Observatory pitch, and
+   How-to-read on the index. Centers heading + description; lets card
    grids span the section's full padded width. */
 .home-section {
   padding: clamp(3rem, 6vh, 5rem) clamp(1rem, 4vw, 3rem);
