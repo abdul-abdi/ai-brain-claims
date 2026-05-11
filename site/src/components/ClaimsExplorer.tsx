@@ -19,6 +19,7 @@ import { VERDICT_KEY } from "../lib/verdicts";
 import {
   PERSONAS,
   PERSONAS_BY_ID,
+  ROUNDTABLE,
   personaIdFromName,
   type PersonaId,
 } from "../lib/personas";
@@ -435,25 +436,45 @@ function Constellation({
   const edges = useMemo(() => {
     const map: Record<
       string,
-      { a: PersonaId; b: PersonaId; claims: ClaimSummary[] }
+      {
+        a: PersonaId;
+        b: PersonaId;
+        claims: ClaimSummary[];
+        roundtable: boolean;
+      }
     > = {};
-    for (const c of visibleClaims) {
-      const ls = lensesOf(c);
-      if (ls.length < 2) continue;
-      const [a, b] = ls;
-      if (a === b) continue;
-      if (!visiblePersonaIds.has(a) || !visiblePersonaIds.has(b)) continue;
+    function touch(a: PersonaId, b: PersonaId) {
+      if (a === b) return null;
+      if (!visiblePersonaIds.has(a) || !visiblePersonaIds.has(b)) return null;
       const k = [a, b].sort().join("|");
       if (!map[k])
         map[k] = {
           a: k.split("|")[0] as PersonaId,
           b: k.split("|")[1] as PersonaId,
           claims: [],
+          roundtable: false,
         };
-      map[k].claims.push(c);
+      return map[k];
+    }
+    // (1) Claim-research edges — one per claim that paired two lenses.
+    for (const c of visibleClaims) {
+      const ls = lensesOf(c);
+      if (ls.length < 2) continue;
+      const e = touch(ls[0], ls[1]);
+      if (e) e.claims.push(c);
+    }
+    // (2) Roundtable edges — every pair of R1 personas connected as a clique,
+    //     so Taleb and pg (which never anchored a claim) are still part of the
+    //     network. Lighter weight; renders thinner.
+    const rtIds = ROUNDTABLE.r1.map((c) => c.p);
+    for (let i = 0; i < rtIds.length; i++) {
+      for (let j = i + 1; j < rtIds.length; j++) {
+        const e = touch(rtIds[i], rtIds[j]);
+        if (e) e.roundtable = true;
+      }
     }
     return Object.values(map);
-  }, [shownClaims, shownPersonas, claims]);
+  }, [shownClaims, shownPersonas, claims, visiblePersonaIds]);
 
   const N = visiblePersonas.length;
   const RAD = 42;
@@ -529,10 +550,11 @@ function Constellation({
     >
       <h2>The roster, as a network.</h2>
       <p className="sub">
-        Nine analytical lenses. An edge runs between two personas whenever they
-        were paired on a claim &mdash; thicker for more papers in that dossier.
-        Hover a persona to see what it touched; hover a verdict cell above to
-        see which pairs produced that verdict.
+        Nine analytical lenses. Solid edges connect personas paired on a
+        claim &mdash; thicker for more papers in that dossier. Dashed edges
+        connect the four roundtable personas. Hover a node to see what it
+        touched; hover a verdict cell above to see which pairs produced that
+        verdict.
       </p>
 
       <div className="constellation">
@@ -556,14 +578,21 @@ function Constellation({
             );
             const focused = isFocusedEdge(e);
             const dimmed = focusedEdges.length > 0 && !focused;
+            // Roundtable-only edges render thinner and dashed — different
+            // relationship, different line.
+            const isRTOnly = e.roundtable && e.claims.length === 0;
+            const strokeWidth = isRTOnly
+              ? 0.35
+              : 0.3 + weight / 60;
             return (
               <path
                 key={i}
                 d={`M ${pa.x} ${pa.y} Q ${cx} ${cy} ${pb.x} ${pb.y}`}
                 stroke="currentColor"
-                strokeWidth={(0.3 + weight / 60).toFixed(2)}
+                strokeWidth={strokeWidth.toFixed(2)}
+                strokeDasharray={isRTOnly ? "1.4 1.2" : undefined}
                 fill="none"
-                opacity={focused ? 0.9 : dimmed ? 0.06 : 0.22}
+                opacity={focused ? 0.9 : dimmed ? 0.06 : isRTOnly ? 0.32 : 0.42}
                 style={{ transition: "opacity 200ms ease" }}
               />
             );

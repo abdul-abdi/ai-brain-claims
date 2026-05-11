@@ -9,13 +9,13 @@ import { SITE, BASE, u } from "../lib/site";
   <ClaimsExplorer claims={CLAIMS} base={BASE} client:load />
 
   <!-- Cross-cutting threads -->
-  <section style="padding:clamp(3rem,6vh,5rem) clamp(1rem,4vw,3rem);border-bottom:1px solid var(--bone-line);">
+  <section class="home-section">
     <div class="tracked">Threads</div>
-    <h2 style="margin-top:.6rem;max-width:36ch;">Four convergent threads.</h2>
-    <p class="sub" style="color:var(--ink-sub);max-width:65ch;margin-top:.5rem;">
+    <h2>Four convergent threads.</h2>
+    <p class="sub" style="color:var(--ink-sub);">
       The ten claims sort into four convergent threads. Each thread carries an engineering recommendation that survived adversarial review.
     </p>
-    <div style="display:grid;gap:1.25rem;margin-top:2.25rem;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));">
+    <div class="home-grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr));">
       {Object.entries(THREADS).map(([key, thread]) => (
         <article class="note-card">
           <div class="tracked">Thread · {key}</div>
@@ -43,18 +43,15 @@ import { SITE, BASE, u } from "../lib/site";
   </section>
 
   <!-- Observatory pitch -->
-  <section style="padding:clamp(3rem,6vh,5rem) clamp(1rem,4vw,3rem);border-bottom:1px solid var(--bone-line);">
+  <section class="home-section">
     <div class="tracked">Wave 3 · The Observatory</div>
-    <h2 style="margin-top:.5rem;">The benchmark, with handles.</h2>
-    <div style="display:grid;gap:2rem;grid-template-columns:1fr;margin-top:2rem;align-items:start;" class="obs-pitch">
+    <h2>The benchmark, with handles.</h2>
+    <p class="sub" style="color:var(--ink-sub);">
+      The research's strongest engineering surface — agent context as an immutable event log with importance and confidence as pure functions over the log — packaged as a Python primitive you can install and run. Different scorers can be A/B'd against the same historical events; failure modes become deterministically replayable.
+    </p>
+    <div class="obs-pitch">
       <div>
-        <p style="color:var(--ink-sub);max-width:60ch;">
-          The research's strongest engineering surface — agent context as an immutable event log with importance and confidence as pure functions over the log — packaged as a Python primitive you can install and run.
-        </p>
-        <p style="color:var(--ink-sub);max-width:60ch;">
-          Different scorers can be A/B'd against the same historical log. Failure modes become deterministically replayable. The eval harness extends NVIDIA RULER with hygiene-aware metrics.
-        </p>
-        <div style="margin-top:1.5rem;display:flex;flex-wrap:wrap;gap:.6rem;font-family:var(--sans);font-size:.8125rem;">
+        <div style="display:flex;flex-wrap:wrap;gap:.6rem;font-family:var(--sans);font-size:.8125rem;">
           <a href={u("/observatory")} style="border:1px solid var(--ink);padding:.45rem .8rem;color:var(--ink);">Read the design →</a>
           <a href={SITE.repo} target="_blank" rel="noopener" style="border:1px solid var(--bone-line);padding:.45rem .8rem;">GitHub ↗</a>
         </div>
@@ -85,10 +82,10 @@ delta = compare(working, alt)
   </section>
 
   <!-- How to read -->
-  <section style="padding:clamp(3rem,6vh,5rem) clamp(1rem,4vw,3rem);">
+  <section class="home-section" style="border-bottom:0;">
     <div class="tracked">Three ways in</div>
-    <h2 style="margin-top:.5rem;">How to read this notebook.</h2>
-    <div style="display:grid;gap:1.25rem;margin-top:2rem;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));">
+    <h2>How to read this notebook.</h2>
+    <div class="home-grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr));">
       {[
         { time: "10 min", who: "Read the synthesis only.", href: "/synthesis", tag: "Skim" },
         { time: "1 hour", who: "Synthesis + the 3–4 claims most relevant to your work.", href: "/", tag: "Survey" },
@@ -105,8 +102,22 @@ delta = compare(working, alt)
   </section>
 
   <style>
+    .home-grid {
+      display: grid;
+      gap: 1.25rem;
+      margin: 2.25rem auto 0;
+      max-width: 1100px;
+    }
+    .obs-pitch {
+      display: grid;
+      gap: 2rem;
+      grid-template-columns: 1fr;
+      margin: 2rem auto 0;
+      max-width: 1100px;
+      align-items: start;
+    }
     @media (min-width: 980px) {
-      .obs-pitch { grid-template-columns: 1fr 1.2fr !important; }
+      .obs-pitch { grid-template-columns: 1fr 1.2fr; }
     }
   </style>
 </BaseLayout>

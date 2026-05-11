@@ -119,49 +119,49 @@ export interface Roundtable { topic: string; r1: RTRound1Card[]; r2: RTRound2Car
 
 export const ROUNDTABLE: Roundtable = {
   topic:
-    "Should the v1 product expose persona-pair selection to the user?",
+    "Should we ship the proposed Python library — two-tier mutable storage, “git for agent context”?",
   r1: [
     {
-      p: "carmack",
-      text: "Hide it. Two personas, fixed, profiled, frozen. Users can't make the latency budget if you let them stack five lenses.",
-    },
-    {
-      p: "victor",
-      text: "Show it as a knob. The whole pitch is that a persona changes what gets seen. Not letting the user feel that is a self-defeating product.",
-    },
-    {
       p: "hickey",
-      text: "Personas are values. Selection is a place. Users want stable identities they can name and reuse, not a freeform constructor every turn.",
+      text: "You’ve complected place with value, identity with state, and consolidation with the scoring function. Decompose: append-only log of facts, importance and confidence as pure functions over the log. Tier membership isn’t stored — it’s a view. What you have isn’t simple; it’s three things wearing a coat.",
     },
     {
-      p: "ayanokoji",
-      text: "Show none. The product is more honest if it presents one voice and discloses the lenses in an audit panel after the answer.",
+      p: "pg",
+      text: "Wrapper-not-product is the premise, not a risk. Anthropic shipped native Managed Agents memory sixteen days before this session ran. The library is a thin layer around a thing that will become the platform. The only defensible object is the primitive the platform doesn’t ship.",
+    },
+    {
+      p: "taleb",
+      text: "Concave payoff. Best case: a marginal lift on what the platform will eventually offer for free. Worst case: zero. The transaction with Anthropic has already cleared and you weren’t the counterparty. Don’t take the trade.",
+    },
+    {
+      p: "carmack",
+      text: "Where’s the frame-time? Two-tier mutable storage means tier-promotion writes on the hot path. You’re shipping a thing that takes longer than the baseline for less ground truth. Show me the missing number before we ship anything.",
     },
   ],
   r2: [
     {
-      from: "victor",
-      to: "carmack",
-      kind: "dismantle",
-      text: "Frozen pairs don't ship a research product, they ship a chatbot. Latency is a real cost; making the knob invisible doesn't pay it, it hides it.",
-    },
-    {
-      from: "carmack",
-      to: "victor",
+      from: "pg",
+      to: "hickey",
       kind: "steelman",
-      text: "Fine — expose it, but with a meter showing the latency cost in milliseconds before the user commits. Then it's an informed choice, not a vibe.",
+      text: "Hickey’s “complected” is the diagnosis. The architecture that survives isn’t a library — it’s a primitive. Strip the consolidation, ship the scoring as a pure function over the log. The product is the thing the platform can’t undercut.",
     },
     {
       from: "hickey",
-      to: "ayanokoji",
-      kind: "shift",
-      text: "Audit-after is honest but defeats the point. People reason about lenses better when they pick them. I'll move: named-pair presets, no freeform, audit panel still there.",
+      to: "carmack",
+      kind: "steelman",
+      text: "Frame-time is the discriminator I should have led with. Your latency point is the same argument in a different vocabulary: a pure function over the log has no hot-path write. Tier promotion is the cost I was hiding.",
     },
     {
-      from: "ayanokoji",
-      to: "hickey",
-      kind: "steelman",
-      text: "Presets are the compromise that survives. The system declares its bias up front; the user accepts or rejects it. The mask is the contract.",
+      from: "taleb",
+      to: "pg",
+      kind: "shift",
+      text: "I undersold the “premise” point. If the platform ships the wrapper for free, the only ground left is the primitive the platform doesn’t ship. Move: build the scorer-as-pure-function. Don’t build the storage. The optionality is in the primitive, not the library.",
+    },
+    {
+      from: "carmack",
+      to: "taleb",
+      kind: "dismantle",
+      text: "Concave payoff is right about the wrapper, wrong about the primitive. A pure scoring function has open-source optionality regardless of what the platform ships — you can A/B scorers against the same historical log forever. That’s not concave payoff. That’s ambiguous payoff. Build it.",
     },
   ],
 };

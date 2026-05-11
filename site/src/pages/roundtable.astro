@@ -7,19 +7,32 @@ import { u } from "../lib/site";
 
 <BaseLayout
   title="Roundtable"
-  description="Four personas, two rounds, one product question. The v1 product was killed and rebuilt by the cross-examination."
+  description="Four personas, two rounds, one product question. The proposed library was killed and rebuilt by the cross-examination."
   wave="roundtable"
 >
   <main class="roundtable">
     <div class="tracked">Wave 2 · The Roundtable</div>
-    <h1 style="margin-top:0.75rem;">Four personas, two rounds, one product question.</h1>
-    <p style="max-width:65ch;color:var(--ink-sub);margin-top:1rem;">
-      <em>Topic.</em> {ROUNDTABLE.topic} The orchestrator selected four lenses with the largest expected disagreement on this question, ran an opening round, then forced each persona to address one other persona's R1 take in a second round &mdash; either to dismantle it, steelman it, or move toward it.
+    <h1>Four personas. Two rounds. One product killed.</h1>
+    <p class="lede">
+      The agents drafted a Python library — two-tier mutable storage, a "git for agent context" pitch. Then the four-persona roundtable refused it. Round 1: independent takes. Round 2: each persona forced to address one other's R1 take — dismantle, steelman, or move toward it.
     </p>
-    <p style="max-width:65ch;color:var(--ink-sub);margin-top:1rem;">
+    <p>
+      <em>Topic.</em> {ROUNDTABLE.topic}
+    </p>
+    <p>
       Of all the agents in this session, the four roundtable personas (and their R2 doubles) are the only ones that loaded the full persona-skill profile rather than a prompt-level primer. <a href={u("/agents")}>How that worked.</a>
     </p>
 
     <RoundtableTree client:load />
+
+    <hr class="rule" />
+
+    <h2>What survived</h2>
+    <p>
+      The roundtable converged on a sharper architecture: <strong>an immutable append-only event log with importance and confidence as pure functions over the log</strong>. Tier membership is a view, not a stored place. Different scorers can be A/B'd against the same historical events — deterministically replayable, swappable, debuggable.
+    </p>
+    <p>
+      That architecture is what the <a href={u("/observatory")}>Observatory</a> primitive ships. The benchmark on that page measures its central claims under multi-seed conditions — and surfaces a real failure mode of imperfect importance signals that the pure-function design lets you diagnose cleanly.
+    </p>
   </main>
 </BaseLayout>
