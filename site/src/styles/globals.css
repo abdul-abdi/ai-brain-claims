@@ -201,17 +201,16 @@ hr.rule {
 
 .prose-col {
   padding: 3rem clamp(1rem, 4vw, 3rem) 6rem;
-  max-width: calc(var(--col-prose) + 6rem);
+  /* Wide notebook page. Body paragraphs stay at the 65ch reading
+     measure via the global `main p` rule below; the wider container
+     gives tables, charts, and cards room to breathe. */
+  max-width: 1100px;
   width: 100%;
   margin: 0 auto;
   container-type: inline-size;
 }
-/* For prose pages that contain wide content (tables, charts, abstract
-   blocks) — the container widens to ~1100px while body paragraphs stay
-   at the 65ch reading measure thanks to the global `main p` rule. */
-.prose-col.prose-col--wide {
-  max-width: 1100px;
-}
+/* Kept as an alias — anything still using prose-col--wide just inherits. */
+.prose-col.prose-col--wide { max-width: 1100px; }
 .prose-col p,
 .prose-col li {
   max-width: var(--col-prose);
@@ -380,6 +379,52 @@ main .obs-fig > section > p {
   padding: clamp(3rem, 8vh, 7rem) clamp(1rem, 4vw, 3rem) clamp(3rem, 6vh, 5rem);
   border-bottom: 1px solid var(--bone-line);
   position: relative;
+  overflow: hidden;
+}
+
+/* Ambient: three drifting wave traces, lower right of the hero.
+   Hidden on small screens where it would compete with the text. */
+.hero-ambient {
+  position: absolute;
+  right: clamp(1rem, 3vw, 2.5rem);
+  top: clamp(1.5rem, 5vh, 3rem);
+  width: clamp(240px, 28vw, 360px);
+  height: clamp(160px, 22vw, 230px);
+  pointer-events: none;
+  opacity: 0.85;
+  z-index: 0;
+}
+.hero > :not(.hero-ambient) { position: relative; z-index: 1; }
+@media (max-width: 860px) {
+  .hero-ambient { display: none; }
+}
+.hero-ambient .wave {
+  opacity: 0.5;
+  animation: heroWave 11s ease-in-out infinite alternate;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+.hero-ambient .wave-2 { animation-delay: -3.5s; animation-duration: 13s; opacity: 0.45; }
+.hero-ambient .wave-3 { animation-delay: -7s;   animation-duration: 9s;  opacity: 0.45; }
+@keyframes heroWave {
+  0%   { transform: translateX(-14px) scaleY(0.92); }
+  50%  { transform: translateX(0)     scaleY(1.06); }
+  100% { transform: translateX(14px)  scaleY(0.96); }
+}
+.hero-ambient .drifter {
+  animation: drifter 9s linear infinite;
+}
+.hero-ambient .d-2 { animation-duration: 13s; animation-delay: -4s; }
+.hero-ambient .d-3 { animation-duration: 11s; animation-delay: -7s; }
+@keyframes drifter {
+  0%   { transform: translateX(-60px); opacity: 0; }
+  8%   { opacity: 1; }
+  92%  { opacity: 1; }
+  100% { transform: translateX(360px); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-ambient .wave,
+  .hero-ambient .drifter { animation: none; }
 }
 .hero .eyebrow {
   font-family: var(--sans);
@@ -539,7 +584,7 @@ main .obs-fig > section > p {
 }
 .constellation {
   position: relative;
-  width: min(620px, 92vw);
+  width: min(880px, 92vw);
   aspect-ratio: 1;
   margin: 2.5rem auto 0;
   color: var(--ink);

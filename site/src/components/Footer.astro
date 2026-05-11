@@ -1,19 +1,61 @@
 ---
-import { SITE } from "../lib/site";
+import { SITE, NAV_SECONDARY, u } from "../lib/site";
 ---
 
 <footer class="foot">
-  <span>
-    Session 04 · ten-claims-frontier · drafted by autonomous agents · curated, not authored.
-    <span style="color:var(--ink-sub);">By {SITE.author.name}.</span>
-  </span>
-  <span class="pal" aria-label="Verdict palette">
-    <i style="background:var(--v-vindicated)" title="vindicated"></i>
-    <i style="background:var(--v-plausible)" title="plausible"></i>
-    <i style="background:var(--v-contested)" title="contested"></i>
-    <i style="background:var(--v-split)" title="split"></i>
-    <i style="background:var(--v-refuted)" title="refuted"></i>
-    <i style="background:var(--v-unfalsifiable)" title="unfalsifiable"></i>
-    <span style="margin-left:0.5rem;">verdict palette</span>
-  </span>
+  <div class="foot-inner">
+    <div class="foot-meta">
+      <span>
+        Session 04 · ten-claims-frontier · drafted by autonomous agents · curated, not authored.
+      </span>
+      <span style="color:var(--ink-sub);">By {SITE.author.name}.</span>
+    </div>
+
+    <nav class="foot-nav" aria-label="Secondary navigation">
+      {NAV_SECONDARY.map((item) => (
+        <a href={u(item.href)}>{item.label}</a>
+      ))}
+    </nav>
+
+    <span class="pal" aria-label="Verdict palette">
+      <i style="background:var(--v-vindicated)" title="vindicated"></i>
+      <i style="background:var(--v-plausible)" title="plausible"></i>
+      <i style="background:var(--v-contested)" title="contested"></i>
+      <i style="background:var(--v-split)" title="split"></i>
+      <i style="background:var(--v-refuted)" title="refuted"></i>
+      <i style="background:var(--v-unfalsifiable)" title="unfalsifiable"></i>
+      <span style="margin-left:0.5rem;">verdict palette</span>
+    </span>
+  </div>
 </footer>
+
+<style>
+  .foot { display: block; }
+  .foot-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+  @media (min-width: 900px) {
+    .foot-inner {
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+    }
+  }
+  .foot-meta { display: flex; flex-direction: column; gap: 0.25rem; }
+  .foot-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    font-family: var(--sans);
+    font-size: 0.75rem;
+  }
+  .foot-nav a {
+    color: var(--ink-sub);
+    border-bottom: 0;
+  }
+  .foot-nav a:hover { color: var(--accent); }
+</style>

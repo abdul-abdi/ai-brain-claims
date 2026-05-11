@@ -124,6 +124,59 @@ function ScrubNum({
   );
 }
 
+/* ---------- Hero ambient: three drifting waves echoing the timeline strip ---------- */
+function HeroAmbient({ shownClaims }: { shownClaims: number }) {
+  // The waves nudge slightly when shownClaims changes — the ambient is alive
+  // because the page is alive.
+  const phase = shownClaims / 10;
+  return (
+    <svg
+      className="hero-ambient"
+      viewBox="0 0 320 200"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <defs>
+        <linearGradient id="fadeR" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="var(--bone)" stopOpacity="1" />
+          <stop offset="0.2" stopColor="var(--bone)" stopOpacity="0" />
+        </linearGradient>
+        <mask id="leftFade">
+          <rect width="320" height="200" fill="white" />
+          <rect width="320" height="200" fill="url(#fadeR)" />
+        </mask>
+      </defs>
+      <g mask="url(#leftFade)" style={{ ["--phase" as never]: phase }}>
+        <path
+          className="wave wave-1"
+          d="M -20 60 Q 60 30 140 60 T 320 60"
+          stroke="var(--wave-research)"
+          fill="none"
+          strokeWidth="1.5"
+        />
+        <path
+          className="wave wave-2"
+          d="M -20 110 Q 60 80 140 110 T 320 110"
+          stroke="var(--wave-roundtable)"
+          fill="none"
+          strokeWidth="1.5"
+        />
+        <path
+          className="wave wave-3"
+          d="M -20 160 Q 60 130 140 160 T 320 160"
+          stroke="var(--wave-build)"
+          fill="none"
+          strokeWidth="1.5"
+        />
+        {/* Tiny markers travel along the build wave — a claim drifting. */}
+        <circle className="drifter d-1" r="3" fill="var(--accent)" cx="40" cy="60" />
+        <circle className="drifter d-2" r="2.5" fill="var(--wave-roundtable)" cx="100" cy="110" />
+        <circle className="drifter d-3" r="3" fill="var(--wave-build)" cx="180" cy="160" />
+      </g>
+    </svg>
+  );
+}
+
 /* ---------- Hero ---------- */
 function Hero({
   shownClaims,
@@ -138,6 +191,7 @@ function Hero({
 }) {
   return (
     <section className="hero" aria-labelledby="hero-h">
+      <HeroAmbient shownClaims={shownClaims} />
       <div className="eyebrow">
         A research notebook · Session 04 · Personas as analytical lenses
       </div>
