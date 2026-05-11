@@ -118,10 +118,12 @@ export function RoundtableTree() {
           >
             <div className="tracked">What changed between rounds</div>
             <p style={{ color: "var(--ink-sub)" }}>
-              No persona fully reversed. <b style={{ color: "var(--ink)" }}>Hickey</b> moved
-              — the only mover — from "stable named identities" to "named-pair presets,"
-              which is the position the v1 actually shipped. The orchestrator interpreted
-              this as the strongest possible verdict: the roundtable agreed on the
+              Three of four steelmanned each other. <b style={{ color: "var(--ink)" }}>Taleb</b> was
+              the mover — from "don't take the trade" to "build the primitive the platform
+              doesn't ship." That move is the position the v1 actually shipped: not a library,
+              not a wrapper, just a pure scoring function over an immutable log. The
+              orchestrator interpreted the unanimous refusal of the original architecture, plus
+              Taleb's shift, as the strongest possible verdict — the roundtable agreed on the
               narrowest design, not the most ambitious one.
             </p>
           </div>
